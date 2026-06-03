@@ -34,12 +34,38 @@ var Exam = (function () {
         d.topics.forEach(function (t) { if (t.hasQuiz) totalQs++; });
       }
     });
-    html += '<p style="margin-bottom:1.5rem;color:var(--text-secondary);font-size:0.9rem">' + I18N.t('questionBank') + ' <strong>' + totalQs + ' ' + I18N.t('topicsWithQuiz') + '</strong></p>';
+    html += '<p style="margin-bottom:1.25rem;color:var(--text-secondary);font-size:0.9rem">' + I18N.t('questionBank') + ' <strong>' + totalQs + ' ' + I18N.t('topicsWithQuiz') + '</strong></p>';
 
+    // ── PRIMARY: certification/skill-oriented (the default intent) ──
+    html += '<h3 style="font-size:0.95rem;margin:0 0 0.75rem;color:var(--text-primary)">' + I18N.t('examModeOriented') + '</h3>';
+    html += '<div class="dashboard-grid" style="margin-bottom:1.75rem">';
+
+    html += '<div class="stat-card" style="cursor:pointer;border:2px solid var(--info, #0078d4)" data-mode="cert">';
+    html += '<div class="stat-value" style="font-size:1.5rem">&#127891;</div>';
+    html += '<div class="stat-label"><strong>' + I18N.t('byCert') + '</strong><br>' + I18N.t('byCertDesc') + '<br><small style="color:var(--text-secondary)">' + I18N.t('byCertSub') + '</small></div>';
+    html += '</div>';
+
+    if (_hasSkillQuizTopics()) {
+      html += '<div class="stat-card" style="cursor:pointer;border:2px solid var(--warning)" data-mode="skill-pick">';
+      html += '<div class="stat-value" style="font-size:1.5rem">&#128736;</div>';
+      html += '<div class="stat-label"><strong>' + I18N.t('bySkill') + '</strong><br>' + I18N.t('bySkillDesc') + '<br><small style="color:var(--text-secondary)">' + I18N.t('bySkillSub') + '</small></div>';
+      html += '</div>';
+    }
+
+    html += '<div class="stat-card" style="cursor:pointer" data-mode="domain">';
+    html += '<div class="stat-value" style="font-size:1.5rem">&#127919;</div>';
+    html += '<div class="stat-label"><strong>' + I18N.t('byDomain') + '</strong><br>' + I18N.t('byDomainDesc') + '<br><small style="color:var(--text-secondary)">' + I18N.t('byDomainSub') + '</small></div>';
+    html += '</div>';
+    html += '</div>';
+
+    // ── SECONDARY: general mixed modes (cross all certifications) ──
+    html += '<h3 style="font-size:0.95rem;margin:0 0 0.35rem;color:var(--text-secondary)">' + I18N.t('examModeGeneral') + '</h3>';
+    html += '<p style="font-size:0.8rem;color:var(--text-muted);margin:0 0 0.75rem">' + I18N.t('examModeGeneralNote') + '</p>';
     html += '<div class="dashboard-grid" style="margin-bottom:1.5rem">';
-    html += '<div class="stat-card" style="cursor:pointer;border:2px solid var(--accent)" data-mode="full">';
+
+    html += '<div class="stat-card" style="cursor:pointer" data-mode="full">';
     html += '<div class="stat-value" style="font-size:1.5rem">&#128218;</div>';
-    html += '<div class="stat-label"><strong>' + I18N.t('fullExam') + '</strong><br>' + I18N.t('fullExamDesc') + '<br><small style="color:var(--text-secondary)">' + I18N.t('fullExamSub') + '</small></div>';
+    html += '<div class="stat-label"><strong>' + I18N.t('generalExam') + '</strong><br>' + I18N.t('generalExamDesc') + '<br><small style="color:var(--text-secondary)">' + I18N.t('generalExamSub') + '</small></div>';
     html += '</div>';
 
     html += '<div class="stat-card" style="cursor:pointer" data-mode="quick">';
@@ -47,38 +73,22 @@ var Exam = (function () {
     html += '<div class="stat-label"><strong>' + I18N.t('quickMode') + '</strong><br>' + I18N.t('quickModeDesc') + '<br><small style="color:var(--text-secondary)">' + I18N.t('quickModeSub') + '</small></div>';
     html += '</div>';
 
-    html += '<div class="stat-card" style="cursor:pointer" data-mode="domain">';
-    html += '<div class="stat-value" style="font-size:1.5rem">&#127919;</div>';
-    html += '<div class="stat-label"><strong>' + I18N.t('byDomain') + '</strong><br>' + I18N.t('byDomainDesc') + '<br><small style="color:var(--text-secondary)">' + I18N.t('byDomainSub') + '</small></div>';
-    html += '</div>';
-
-    html += '<div class="stat-card" style="cursor:pointer;border:2px solid var(--info, #0078d4)" data-mode="cert">';
-    html += '<div class="stat-value" style="font-size:1.5rem">&#127891;</div>';
-    html += '<div class="stat-label"><strong>' + I18N.t('byCert') + '</strong><br>' + I18N.t('byCertDesc') + '<br><small style="color:var(--text-secondary)">' + I18N.t('byCertSub') + '</small></div>';
-    html += '</div>';
-
     html += '<div class="stat-card" style="cursor:pointer" data-mode="hard">';
     html += '<div class="stat-value" style="font-size:1.5rem">&#128293;</div>';
     html += '<div class="stat-label"><strong>' + I18N.t('challenge') + '</strong><br>' + I18N.t('challengeDesc') + '<br><small style="color:var(--text-secondary)">' + I18N.t('challengeSub') + '</small></div>';
+    html += '</div>';
     html += '</div>';
 
     // Weak-Spot review card (only if there are weak questions)
     var weakCount = State.getWeakCount();
     if (weakCount > 0) {
+      html += '<div class="dashboard-grid" style="margin-bottom:1.5rem">';
       html += '<div class="stat-card" style="cursor:pointer;border:2px solid var(--danger)" data-mode="weak">';
       html += '<div class="stat-value" style="font-size:1.5rem">&#129514;</div>';
       html += '<div class="stat-label"><strong>' + I18N.t('weakReview') + '</strong><br>' + weakCount + ' ' + I18N.t('weakReviewDesc') + '<br><small style="color:var(--text-secondary)">' + I18N.t('weakReviewSub') + '</small></div>';
       html += '</div>';
-    }
-
-    // Skill Quiz card (only if skill topics with quiz exist)
-    if (_hasSkillQuizTopics()) {
-      html += '<div class="stat-card" style="cursor:pointer;border:2px solid var(--warning)" data-mode="skill">';
-      html += '<div class="stat-value" style="font-size:1.5rem">&#128736;</div>';
-      html += '<div class="stat-label"><strong>' + I18N.t('skillQuiz') + '</strong><br>' + I18N.t('skillQuizDesc') + '<br><small style="color:var(--text-secondary)">' + I18N.t('skillQuizSub') + '</small></div>';
       html += '</div>';
     }
-    html += '</div>';
 
     // Last results
     var lastResult = _getLastResult();
@@ -125,6 +135,8 @@ var Exam = (function () {
           _showDomainPicker(container);
         } else if (mode === 'cert') {
           _showCertPicker(container);
+        } else if (mode === 'skill-pick') {
+          _showSkillPicker(container);
         } else if (mode === 'weak') {
           _startWeakReview(container);
         } else {
@@ -230,12 +242,101 @@ var Exam = (function () {
     container.querySelectorAll('[data-cert]').forEach(function (card) {
       card.addEventListener('click', function () {
         var certId = card.getAttribute('data-cert');
-        _startExam(container, 'cert', undefined, certId);
+        var certMeta = (registry.certifications || []).filter(function (c) { return c.id === certId; })[0];
+        _showModeSelection(container, 'cert', certId, certMeta ? certMeta.label : certId);
       });
     });
   }
 
-  function _startExam(container, mode, domainIdx, certId) {
+  // Skill picker — list skill-type domains individually (scoped, not mixed)
+  function _showSkillPicker(container) {
+    var registry = window.K8S_REGISTRY;
+    var html = '<div class="topic-header"><h1>' + I18N.t('selectSkillTitle') + '</h1></div>';
+    html += '<p style="margin-bottom:1.5rem;color:var(--text-secondary)">' + I18N.t('selectSkillDesc') + '</p>';
+
+    html += '<div style="display:flex;flex-direction:column;gap:0.75rem">';
+    registry.domains.forEach(function (domain, idx) {
+      if (domain.type !== 'skill') return;
+      var topicCount = 0;
+      (domain.topics || []).forEach(function (t) { if (t.hasQuiz) topicCount++; });
+      if (topicCount === 0) return;
+
+      html += '<div class="stat-card" style="cursor:pointer;text-align:left;padding:1rem" data-skill-idx="' + idx + '">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center">';
+      html += '<div>';
+      html += '<strong>' + (domain.icon ? domain.icon + ' ' : '') + domain.name + '</strong>';
+      html += '<br><small style="color:var(--text-secondary)">' + topicCount + ' ' + I18N.t('topicsWithQuizInSkill') + '</small>';
+      html += '</div>';
+      html += '<span style="color:var(--accent);font-size:1.2rem">&#8594;</span>';
+      html += '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+
+    html += '<div style="margin-top:1.5rem">';
+    html += '<button class="btn btn-secondary" onclick="window.location.hash=\'#exam\'">' + I18N.t('backLabel') + '</button>';
+    html += '</div>';
+
+    container.innerHTML = html;
+
+    container.querySelectorAll('[data-skill-idx]').forEach(function (card) {
+      card.addEventListener('click', function () {
+        var idx = parseInt(card.getAttribute('data-skill-idx'));
+        _showModeSelection(container, 'skill', idx, registry.domains[idx].name);
+      });
+    });
+  }
+
+  // Length selection — scoped to a chosen cert or skill (full / quick / challenge)
+  function _showModeSelection(container, scopeType, scopeId, scopeLabel) {
+    var html = '<div class="topic-header"><h1>' + I18N.t('chooseLengthTitle') + '</h1></div>';
+    html += '<p style="margin-bottom:1.5rem;color:var(--text-secondary)">' + I18N.t('chooseLengthDesc') + ' <strong>' + scopeLabel + '</strong></p>';
+
+    html += '<div class="dashboard-grid" style="margin-bottom:1.5rem">';
+
+    html += '<div class="stat-card" style="cursor:pointer;border:2px solid var(--accent)" data-len="full">';
+    html += '<div class="stat-value" style="font-size:1.5rem">&#128218;</div>';
+    html += '<div class="stat-label"><strong>' + I18N.t('fullExam') + '</strong><br>' + I18N.t('fullExamDesc') + '<br><small style="color:var(--text-secondary)">' + I18N.t('fullExamSub') + '</small></div>';
+    html += '</div>';
+
+    html += '<div class="stat-card" style="cursor:pointer" data-len="quick">';
+    html += '<div class="stat-value" style="font-size:1.5rem">&#9889;</div>';
+    html += '<div class="stat-label"><strong>' + I18N.t('quickMode') + '</strong><br>' + I18N.t('quickModeDesc') + '<br><small style="color:var(--text-secondary)">' + I18N.t('quickModeSub') + '</small></div>';
+    html += '</div>';
+
+    html += '<div class="stat-card" style="cursor:pointer" data-len="hard">';
+    html += '<div class="stat-value" style="font-size:1.5rem">&#128293;</div>';
+    html += '<div class="stat-label"><strong>' + I18N.t('challenge') + '</strong><br>' + I18N.t('challengeDesc') + '<br><small style="color:var(--text-secondary)">' + I18N.t('challengeSub') + '</small></div>';
+    html += '</div>';
+    html += '</div>';
+
+    html += '<div style="margin-top:0.5rem">';
+    html += '<button class="btn btn-secondary" data-back="' + scopeType + '">' + I18N.t('backLabel') + '</button>';
+    html += '</div>';
+
+    container.innerHTML = html;
+
+    container.querySelectorAll('[data-len]').forEach(function (card) {
+      card.addEventListener('click', function () {
+        var len = card.getAttribute('data-len');
+        if (scopeType === 'cert') {
+          _startExam(container, 'cert', undefined, scopeId, len);
+        } else {
+          _startExam(container, 'skill', scopeId, undefined, len);
+        }
+      });
+    });
+
+    var backBtn = container.querySelector('[data-back]');
+    if (backBtn) {
+      backBtn.addEventListener('click', function () {
+        if (scopeType === 'cert') _showCertPicker(container);
+        else _showSkillPicker(container);
+      });
+    }
+  }
+
+  function _startExam(container, mode, domainIdx, certId, lengthMode) {
     var registry = window.K8S_REGISTRY;
     var allPaths = [];
     var passScore = 66;
@@ -257,15 +358,23 @@ var Exam = (function () {
         if (topic.hasQuiz) allPaths.push(topic.path);
       });
     } else if (mode === 'skill') {
-      // Skill quiz: only skill-type domains
-      registry.domains.forEach(function (domain) {
-        if (domain.type !== 'skill') return;
-        (domain.topics || []).forEach(function (topic) {
+      if (domainIdx !== undefined) {
+        // Scoped skill: a single skill-type domain only
+        var sd = registry.domains[domainIdx];
+        (sd.topics || []).forEach(function (topic) {
           if (topic.hasQuiz) allPaths.push(topic.path);
         });
-      });
+      } else {
+        // Legacy: all skill-type domains mixed
+        registry.domains.forEach(function (domain) {
+          if (domain.type !== 'skill') return;
+          (domain.topics || []).forEach(function (topic) {
+            if (topic.hasQuiz) allPaths.push(topic.path);
+          });
+        });
+      }
     } else {
-      // full, quick, hard: cert-type domains only
+      // full, quick, hard (general/mixed): cert-type domains only
       registry.domains.forEach(function (domain) {
         if (domain.type === 'skill') return;
         domain.topics.forEach(function (topic) {
@@ -301,20 +410,24 @@ var Exam = (function () {
         questions[j] = temp;
       }
 
+      // Effective length: scoped exams (cert/skill) carry their length in
+      // lengthMode; general mixed exams carry it directly in `mode`.
+      var lengthSel = lengthMode || mode;
       var timeMinutes = 120;
-      if (mode === 'quick') {
+      if (lengthSel === 'quick') {
         questions = questions.slice(0, 20);
         timeMinutes = 30;
-      } else if (mode === 'hard') {
+      } else if (lengthSel === 'hard') {
         questions = questions.slice(0, 25);
         timeMinutes = 45;
+      } else if (mode === 'skill') {
+        // Full-length scoped skill exam
+        questions = questions.slice(0, 40);
+        timeMinutes = Math.max(20, Math.ceil(questions.length * 1.4));
       } else if (mode === 'domain') {
         timeMinutes = Math.max(15, Math.ceil(questions.length * 1.5));
       } else if (mode === 'cert') {
         timeMinutes = Math.max(20, Math.ceil(questions.length * 1.5));
-      } else if (mode === 'skill') {
-        questions = questions.slice(0, 30);
-        timeMinutes = 30;
       }
 
       if (questions.length === 0) {

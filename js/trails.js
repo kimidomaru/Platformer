@@ -14,14 +14,14 @@ var Trails = (function () {
       },
       levels: [
         {
-          label: { pt: 'Nível 1 — Fundamentos', en: 'Level 1 — Foundations' },
+          label: { pt: 'Nível 1 — Containers & IaC', en: 'Level 1 — Containers & IaC' },
           topics: [
             'docker/container-fundamentals',
             'docker/docker-compose',
             'docker/docker-production',
+            'iac/terraform-fundamentals',
             'cicd/github-actions',
-            'cicd/tekton',
-            'iac/terraform-fundamentals'
+            'cicd/pipeline-security'
           ]
         },
         {
@@ -29,21 +29,30 @@ var Trails = (function () {
           topics: [
             'cluster-architecture/pods',
             'workloads/deployments',
+            'workloads/configmaps-secrets',
             'services-networking/services',
             'services-networking/ingress',
-            'app-deployment/deployment-strategies',
-            'workloads/autoscaling'
+            'app-deployment/deployment-strategies'
           ]
         },
         {
-          label: { pt: 'Nível 3 — GitOps & Automação', en: 'Level 3 — GitOps & Automation' },
+          label: { pt: 'Nível 3 — Empacotamento & GitOps', en: 'Level 3 — Packaging & GitOps' },
           topics: [
+            'app-deployment/helm',
+            'helm/helm-chart-development',
             'argocd-fundamentals/argocd-architecture',
             'argocd-fundamentals/argocd-applications',
             'argocd-fundamentals/argocd-sync-strategies',
-            'argocd-patterns/argocd-app-of-apps',
-            'fluxcd/fluxcd-fundamentals',
-            'kyverno/kyverno-policies'
+            'fluxcd/fluxcd-fundamentals'
+          ]
+        },
+        {
+          label: { pt: 'Nível 4 — Automação & Confiabilidade', en: 'Level 4 — Automation & Reliability' },
+          topics: [
+            'kyverno/kyverno-policies',
+            'keda/keda-fundamentals',
+            'observability/probes',
+            'iac/terraform-patterns'
           ]
         },
         {
@@ -72,7 +81,7 @@ var Trails = (function () {
             'sre-fundamentals/sre-incident-mgmt',
             'sre-operations/sre-oncall',
             'sre-operations/sre-toil-automation',
-            'opentelemetry/otel-fundamentals'
+            'observability/probes'
           ]
         },
         {
@@ -82,8 +91,8 @@ var Trails = (function () {
             'cluster-architecture/etcd',
             'troubleshooting/app-failure',
             'troubleshooting/cluster-troubleshooting',
-            'storage/pv-pvc',
-            'storage/volumes'
+            'troubleshooting/network-troubleshooting',
+            'storage/pv-pvc'
           ]
         },
         {
@@ -91,6 +100,7 @@ var Trails = (function () {
           topics: [
             'prom-fundamentals/prom-architecture',
             'prom-fundamentals/promql-basics',
+            'prom-fundamentals/promql-advanced',
             'prom-fundamentals/prom-alerting',
             'prom-grafana/grafana-dashboards',
             'prom-grafana/grafana-alerting',
@@ -99,13 +109,13 @@ var Trails = (function () {
           ]
         },
         {
-          label: { pt: 'Nível 4 — Caos & Resiliência', en: 'Level 4 — Chaos & Resilience' },
+          label: { pt: 'Nível 4 — Caos, Capacidade & Custo', en: 'Level 4 — Chaos, Capacity & Cost' },
           topics: [
             'chaos-engineering/chaos-fundamentals',
             'chaos-engineering/chaos-mesh',
-            'finops/finops-practices',
             'sre-fundamentals/sre-capacity-planning',
-            'sre-operations/sre-deployment-safety'
+            'sre-operations/sre-deployment-safety',
+            'finops/finops-practices'
           ]
         },
         {
@@ -130,21 +140,22 @@ var Trails = (function () {
           label: { pt: 'Nível 1 — Kubernetes Profundo', en: 'Level 1 — Deep Kubernetes' },
           topics: [
             'cluster-architecture/pods',
-            'cluster-architecture/etcd',
             'cluster-architecture/rbac',
+            'cluster-architecture/crds-operators',
             'workloads/deployments',
             'services-networking/ingress',
             'storage/pv-pvc'
           ]
         },
         {
-          label: { pt: 'Nível 2 — Extensibilidade', en: 'Level 2 — Extensibility' },
+          label: { pt: 'Nível 2 — Extensibilidade & Policy', en: 'Level 2 — Extensibility & Policy' },
           topics: [
             'kyverno/kyverno-policies',
             'kyverno/kyverno-advanced',
+            'opa/opa-gatekeeper',
             'keda/keda-fundamentals',
             'crossplane/crossplane-fundamentals',
-            'opa/opa-gatekeeper'
+            'crossplane/crossplane-compositions'
           ]
         },
         {
@@ -160,13 +171,15 @@ var Trails = (function () {
           ]
         },
         {
-          label: { pt: 'Nível 4 — Platform Tooling', en: 'Level 4 — Platform Tooling' },
+          label: { pt: 'Nível 4 — Developer Platform (IDP)', en: 'Level 4 — Developer Platform (IDP)' },
           topics: [
             'platform-engineering/idp-concepts',
             'platform-engineering/backstage',
+            'platform-engineering/golden-paths',
             'platform-engineering/platform-metrics',
-            'databases-k8s/db-k8s-fundamentals',
-            'iac/terraform-patterns'
+            'helm/helm-chart-development',
+            'iac/terraform-k8s',
+            'databases-k8s/db-k8s-fundamentals'
           ]
         },
         {
@@ -190,44 +203,45 @@ var Trails = (function () {
         {
           label: { pt: 'Nível 1 — Cloud Fundamentals', en: 'Level 1 — Cloud Fundamentals' },
           topics: [
-            'kcna-k8s-fundamentals/k8s-architecture',
-            'kcna-cloud-native/cloud-native-fundamentals',
+            'aws-cloud-concepts/cloud-fundamentals',
             'aws-cloud-concepts/aws-global-infra',
-            'aws-technology-services/compute-services',
+            'aws-security-compliance/iam-basics',
+            'aws-security-compliance/shared-responsibility',
             'az104-identity/entra-id',
             'az104-networking/vnet-nsg'
           ]
         },
         {
-          label: { pt: 'Nível 2 — AWS Core (SAA)', en: 'Level 2 — AWS Core (SAA)' },
+          label: { pt: 'Nível 2 — Arquitetura AWS (SAA)', en: 'Level 2 — AWS Architecture (SAA)' },
           topics: [
-            'aws-high-perf-arch/compute-optimization',
-            'aws-resilient-arch/ha-fault-tolerance',
-            'aws-secure-arch/network-security',
+            'aws-technology-services/compute-services',
             'aws-technology-services/storage-databases',
+            'aws-secure-arch/network-security',
+            'aws-resilient-arch/ha-fault-tolerance',
             'aws-new-solutions/serverless-architecture',
             'aws-migration/migration-strategies'
           ]
         },
         {
-          label: { pt: 'Nível 3 — Azure Core (AZ-104)', en: 'Level 3 — Azure Core (AZ-104)' },
+          label: { pt: 'Nível 3 — Administração Azure (AZ-104)', en: 'Level 3 — Azure Administration (AZ-104)' },
           topics: [
             'az104-identity/azure-rbac',
             'az104-compute/azure-vms',
             'az104-storage/storage-accounts',
             'az104-networking/azure-lb-appgw',
+            'az104-networking/vpn-expressroute',
             'az104-monitor/azure-monitor'
           ]
         },
         {
-          label: { pt: 'Nível 4 — Arquitetura de Soluções', en: 'Level 4 — Solutions Architecture' },
+          label: { pt: 'Nível 4 — Arquitetura de Soluções (AZ-305)', en: 'Level 4 — Solutions Architecture (AZ-305)' },
           topics: [
             'az305-infrastructure/compute-solutions',
             'az305-infrastructure/network-topology',
             'az305-data/relational-nosql',
+            'az305-security/security-design',
             'az305-continuity/bcdr-design',
-            'aws-continuous-improvement/operational-excellence',
-            'aws-new-solutions/advanced-networking'
+            'az305-application/microservices-design'
           ]
         },
         {
@@ -253,7 +267,7 @@ var Trails = (function () {
           topics: [
             'docker/container-fundamentals',
             'docker/docker-compose',
-            'iac/terraform-fundamentals'
+            'docker/docker-production'
           ]
         },
         {
@@ -262,8 +276,10 @@ var Trails = (function () {
           topics: [
             'kcna-k8s-fundamentals/k8s-architecture',
             'kcna-k8s-fundamentals/k8s-resources',
+            'kcna-k8s-fundamentals/containers-runtime',
             'kcna-orchestration/orchestration-fundamentals',
             'kcna-cloud-native/cloud-native-fundamentals',
+            'kcna-cloud-native/cncf-ecosystem',
             'kcna-observability/observability-fundamentals',
             'kcna-app-delivery/gitops-cicd'
           ]
@@ -273,9 +289,13 @@ var Trails = (function () {
           checkpoint: 'cka',
           topics: [
             'cluster-architecture/pods',
-            'cluster-architecture/etcd',
             'cluster-architecture/rbac',
+            'cluster-architecture/etcd',
+            'cluster-architecture/kubeadm',
             'workloads/deployments',
+            'workloads/scheduling',
+            'services-networking/services',
+            'services-networking/network-policies',
             'services-networking/ingress',
             'storage/pv-pvc',
             'troubleshooting/app-failure',
@@ -286,10 +306,12 @@ var Trails = (function () {
           label: { pt: 'Nível 3 — CKAD', en: 'Level 3 — CKAD' },
           checkpoint: 'ckad',
           topics: [
-            'app-design-build/multi-container',
             'app-design-build/container-images',
+            'app-design-build/multi-container',
+            'app-design-build/workload-resources',
             'app-deployment/deployment-strategies',
             'app-deployment/helm',
+            'observability/probes',
             'app-environment/requests-limits',
             'workloads/configmaps-secrets'
           ]
@@ -300,7 +322,9 @@ var Trails = (function () {
           topics: [
             'kcsa-security-overview/4c-security-model',
             'kcsa-k8s-security/pod-security-overview',
+            'kcsa-k8s-security/rbac-overview',
             'kcsa-cluster-security/k8s-networking-security',
+            'kcsa-threat-model/threat-modeling',
             'kcsa-platform-security/supply-chain-overview',
             'kcsa-compliance/compliance-frameworks'
           ]
@@ -311,10 +335,15 @@ var Trails = (function () {
           topics: [
             'cks-cluster-setup/cis-benchmarks',
             'cks-cluster-hardening/rbac-advanced',
+            'cks-cluster-hardening/api-server-security',
             'cks-system-hardening/seccomp',
+            'cks-system-hardening/apparmor',
             'cks-microservice-vuln/pod-security-standards',
+            'cks-microservice-vuln/secrets-management',
+            'cks-supply-chain/image-scanning',
+            'cks-supply-chain/image-signing',
             'cks-runtime-security/falco',
-            'cks-supply-chain/image-signing'
+            'cks-runtime-security/audit-logging'
           ]
         },
         {

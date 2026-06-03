@@ -1330,13 +1330,28 @@
 .map-panel-related { font-size: 0.82rem; margin-bottom: 0.9rem; }
 .map-panel-related ul { list-style: none; margin: 0.4rem 0 0; padding: 0; }
 .map-panel-related li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
   padding: 0.25rem 0;
   color: var(--accent);
   cursor: pointer;
   border-bottom: 1px solid var(--border);
 }
 .map-panel-related li:last-child { border-bottom: none; }
-.map-panel-related li:hover { text-decoration: underline; }
+.map-panel-related li:hover .map-rel-name { text-decoration: underline; }
+.map-rel-name { flex: 1 1 auto; }
+.map-rel-why {
+  flex: 0 0 auto;
+  max-width: 48%;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .map-panel-open { width: 100%; }
 
 @media (max-width: 640px) {

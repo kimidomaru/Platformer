@@ -1,158 +1,335 @@
-# platformer — Plataforma de Estudo Local
+<div align="center">
 
-Resumo rápido
-- Plataforma offline/local para estudar Kubernetes, SRE e Platform Engineering.
-- Conteúdo versionado em `content/` com teoria, quizzes, flashcards e labs práticos.
-- Engine mínima em `index.html` e `js/` carrega conteúdo dinamicamente via `content/registry.js`.
+# 🛰️ Platformer
 
-**Como a plataforma funciona**
+### A local-first study platform for Cloud Native & Cloud certifications
 
-- O arquivo central é `content/registry.js`: ele descreve domínios, tracks e tópicos (metadados, pesos, caminhos).
-- Cada tópico vive em `content/<domain>/<topic>/topic-en.js` (ex.: `content/cluster-architecture/pods/topic-en.js`) e exporta um objeto com campos:
-  - `theory` (markdown/strings), `quiz` (array), `flashcards` (array) e `lab` (objeto com steps/hints/verify).
-- A UI (`index.html` + `js/`) carrega `registry.js`, constrói a sidebar e carrega os arquivos `topic-en.js` sob demanda (lazy loading).
-- Progresso e estado do usuário são salvos em `localStorage` (visível via DevTools) e gerenciados pelo `js/state.js`.
+Study **Kubernetes (CKA · CKAD · CKS · KCNA · KCSA)**, **AWS (CLF · SAA · SAP)** and **Azure (AZ-104 · AZ-305)** — plus 28 lateral skill tracks — entirely **offline, in a single browser tab**.
 
-**Diagrama de arquitetura (visão geral)**
+No backend. No database. No build step. No internet required.
+
+![Made with Vanilla JS](https://img.shields.io/badge/Made%20with-Vanilla%20JS-f7df1e?logo=javascript&logoColor=black)
+![No build step](https://img.shields.io/badge/Build-none-success)
+![Offline first](https://img.shields.io/badge/Offline-first-blue)
+![License MIT suggested](https://img.shields.io/badge/License-MIT%20(suggested)-green)
+![Topics](https://img.shields.io/badge/Topics-224-blueviolet)
+![Certifications](https://img.shields.io/badge/Certifications-10-orange)
+
+![Dashboard](assets/screenshots/dashboard.png)
+
+</div>
+
+---
+
+## Table of Contents
+
+- [What is Platformer?](#what-is-platformer)
+- [Screenshots](#screenshots)
+- [Features](#features)
+- [Content coverage](#content-coverage)
+- [How it works (architecture)](#how-it-works-architecture)
+- [Running locally](#running-locally)
+- [Fork it: build your own study platform](#fork-it-build-your-own-study-platform)
+- [Adding a new topic](#adding-a-new-topic)
+- [Repository layout](#repository-layout)
+- [Tech & design decisions](#tech--design-decisions)
+- [Roadmap](#roadmap)
+- [License](#license)
+
+---
+
+## What is Platformer?
+
+**Platformer** is a self-contained, offline study application for technical certifications. The entire UI is plain HTML/CSS/JavaScript (no framework, no bundler), and **all study material lives as data** under `content/`. The engine reads a central index (`content/registry.js`) and lazy-loads each topic on demand.
+
+The guiding principle is a **hard separation between engine and content**:
+
+> The platform is generated once. After that, *only content is added* — never the engine. You can drop in a new topic without touching a single line of `index.html`, `js/`, or `css/`.
+
+This makes it trivial to **fork and re-theme** the project for *any* subject — DevOps, networking, a language certification, internal onboarding — by replacing the contents of `content/`.
+
+---
+
+## Screenshots
+
+| Topic view — theory, quizzes, flashcards, labs & troubleshooting in tabs |
+|---|
+| ![Topic](assets/screenshots/topic.png) |
+
+| Mock Exam — certification/skill-focused by default | Learning Trails — role-based study paths |
+|---|---|
+| ![Mock Exam](assets/screenshots/exam.png) | ![Trails](assets/screenshots/trails.png) |
+
+| Topic Map — the whole knowledge graph |
+|---|
+| ![Topic Map](assets/screenshots/map.png) |
+
+---
+
+## Features
+
+- 🎯 **Mock exams** — *certification/skill-focused by default* (scoped to one cert or one skill, with full/quick/challenge lengths). A separate, clearly-flagged "general mode" mixes everything for broad review.
+- 📝 **Quizzes** — per-topic multiple-choice with explanations and study references after each answer.
+- 🃏 **Flashcards with spaced repetition** — SM-2 scheduling (Again/Hard/Good/Easy), due badges, per-card persistence.
+- 🧪 **Hands-on labs** — scenario, objective, estimated duration, step-by-step instructions with hints, solutions, and **`verify` commands** to self-check.
+- 🚑 **Troubleshooting scenarios** — symptom → diagnosis → solution, graded by difficulty.
+- 🛤️ **Learning trails** — 5 role-based paths (DevOps, SRE, Platform, Cloud, K8s Specialist) with levels, checkpoints and certification milestones.
+- 🌌 **Topic map** — an interactive constellation of all topics linked by tags.
+- 📊 **Progress tracking** — per-topic state (*not started / in progress / completed*) persisted in `localStorage`.
+- 🔎 **Local search**, 🌓 **dark mode**, 🌐 **bilingual UI (EN/PT)**, and a 📋 **cheatsheet** view.
+
+---
+
+## Content coverage
+
+| | Count |
+|---|---|
+| **Topics** | **224** (every topic ships quiz + flashcards) |
+| **Hands-on labs** | 167 |
+| **Domains** | 77 |
+| **Skill tracks** | 28 |
+| **Certifications** | 10 |
+| **Languages** | English + Portuguese |
+
+**Certification tracks**
+
+| Cloud Native (Kubestronaut path) | AWS | Azure |
+|---|---|---|
+| CKA · CKAD · CKS · KCNA · KCSA | CLF · SAA · SAP | AZ-104 · AZ-305 |
+
+**Skill tracks** *(certification-independent)*: ArgoCD, FluxCD, Helm, Cilium, Istio, Kong, Prometheus, Grafana, Loki, OpenTelemetry, Kyverno, OPA/Gatekeeper, KEDA, Crossplane, Chaos Engineering, FinOps, SRE, Platform Engineering, Databases-on-K8s, Security Tooling (Vault/cert-manager), Terraform/IaC, CI/CD, AI Engineering, and more.
+
+---
+
+## How it works (architecture)
 
 ```mermaid
 flowchart LR
-   subgraph Browser
-      UI[index.html + js/*]
-      LS[localStorage]
+   subgraph Browser["🌐 Browser (no server needed)"]
+      direction TB
+      IDX["index.html<br/>(thin shell)"]
+      ENGINE["js/* engine<br/>router · loader · renderer<br/>quiz · flashcard · lab · exam"]
+      LS[("localStorage<br/>progress · SRS · settings")]
    end
 
-   subgraph ContentRepo
-      REG[content/registry.js]
-      TOPICS[content/<domain>/<topic>/topic-en.js]
+   subgraph Content["📦 content/ (pure data)"]
+      direction TB
+      REG["registry.js<br/>(central index:<br/>domains · certs · skills · topics)"]
+      T1["domain/topic/topic.js (PT)"]
+      T2["domain/topic/topic-en.js (EN)"]
    end
 
-   UI --> REG
-   UI --> TOPICS
-   UI --> LS
-   REG --> TOPICS
-   TOPICS --> LS
+   IDX --> ENGINE
+   ENGINE -->|1. read index| REG
+   ENGINE -->|2. lazy-load on demand| T1 & T2
+   ENGINE <-->|read/write| LS
+   REG -.-> T1 & T2
 ```
 
-**Executar localmente**
+**Boot flow**
 
-Recomendado: rodar um servidor HTTP simples para evitar restrições de CORS/arquivo.
+1. `index.html` loads the engine scripts and `content/registry.js`.
+2. `registry.js` defines `window.K8S_REGISTRY` — the catalog of certifications, skill tracks, domains and topics (each with metadata + a `path`).
+3. The sidebar, dashboard and search are built entirely from that registry.
+4. When you open a topic, `loader.js` fetches `content/<domain>/<topic>/topic.js` (PT) or `topic-en.js` (EN) **on demand** (lazy loading) — these set `window.K8S_CONTENT` / `window.K8S_CONTENT_EN`.
+5. `renderer.js` renders the topic's theory/quiz/flashcards/lab/troubleshooting tabs.
+6. State (progress, SRS schedule, theme, language) is read/written to `localStorage` via `state.js`.
 
-Python 3 (recomendado):
-```powershell
-# na raiz do repositório
-python -m http.server 8000
-# Abra http://localhost:8000 no navegador
-```
+The key win: **adding content never touches the engine.** New topics are new data files + one registry entry.
 
-Alternativa Node (serve):
+---
+
+## Running locally
+
+Because content is lazy-loaded with `fetch`, serve over HTTP (opening `index.html` via `file://` may hit CORS limits in some browsers).
+
+**Python (recommended — zero dependencies):**
+
 ```bash
-npx serve -s . -l 8000
+# from the repository root
+python -m http.server 8000
+# open http://localhost:8000
 ```
 
-Ou abra `index.html` diretamente (algumas features podem exigir servidor).
+> 💡 Any static file server works (e.g. `php -S localhost:8000`, VS Code "Live Server", `caddy file-server`). No Node toolchain is required.
 
-**Adicionar novo conteúdo (roteiro)**
+That's it — no install, no build, no environment variables.
 
-1. Criar pasta do tópico
-   - Estrutura: `content/<domain>/<topic>/`
-2. Criar arquivo de conteúdo
-   - Nome: `topic-en.js`
-   - Modelo mínimo (JS):
-```js
-window.K8S_CONTENT_EN = window.K8S_CONTENT_EN || {};
-window.K8S_CONTENT_EN['<domain>/<topic>'] = {
-  theory: `# Título\nConteúdo`,
-  quiz: [ /* perguntas */ ],
-  flashcards: [ /* flashcards */ ],
-  lab: { scenario: '', steps: [] }
+---
+
+## Fork it: build your own study platform
+
+Platformer is designed to be **re-skinned for any subject**. To turn it into *your* study platform:
+
+1. **Fork & clone** this repository.
+2. **Wipe the content** — delete the subfolders under `content/` (keep `registry.js`).
+3. **Reset the index** — empty the `domains`, `certifications` and `skillTracks` arrays in `content/registry.js`.
+4. **Add your domains** — one entry per subject area, each with a `topics: []` array.
+5. **Add topics** — follow [Adding a new topic](#adding-a-new-topic) below for each piece of content.
+6. **(Optional) Re-brand** — change the title in `index.html`, swap colors in `css/variables.css`, edit UI strings in `js/i18n.js`.
+7. **Ship it** — push to GitHub and enable **GitHub Pages** (Settings → Pages → deploy from branch). It's fully static, so Pages serves it as-is.
+
+You now have a free, offline, framework-free study platform for *any* topic, with quizzes, flashcards, spaced repetition, labs and mock exams included.
+
+> ✍️ **AI-assisted authoring:** the content schema is intentionally LLM-friendly. Each `topic.js` is a single declarative object, so you can prompt an LLM to generate well-formed topics in bulk (this repo's Kubernetes content was authored this way).
+
+---
+
+## Adding a new topic
+
+**1. Create the content file** `content/<domain>/<topic>/topic.js`:
+
+```javascript
+window.K8S_CONTENT = window.K8S_CONTENT || {};
+window.K8S_CONTENT['my-domain/my-topic'] = {
+  theory: `# My Topic
+
+## Key Concepts
+Concise, practical explanation with \`code\` and examples.
+
+\`\`\`bash
+kubectl get pods
+\`\`\`
+`,
+  quiz: [
+    {
+      question: 'What does X do?',
+      options: ['A', 'B', 'C', 'D'],
+      correct: 0,                       // 0-based index of the right answer
+      explanation: 'Why A is correct.',
+      reference: 'Related concept: study section Y.'   // optional post-answer hint
+    }
+    // ≥ 5 questions recommended (7–10 gives the mock exam more variety)
+  ],
+  flashcards: [
+    { front: 'Question?', back: 'Complete answer.' }
+    // ≥ 6 recommended
+  ],
+  lab: {
+    scenario: 'Practical scenario description.',
+    objective: 'What the learner will achieve.',
+    duration: '15–20 minutes',
+    steps: [
+      {
+        title: 'Step title',
+        instruction: 'What to do (`markdown`).',
+        hints: ['hint 1', 'hint 2'],
+        solution: '```bash\nkubectl ...\n```',
+        verify: '```bash\nkubectl get ...\n# Expected: ...\n```'   // how to self-check
+      }
+    ]
+  },
+  troubleshooting: [
+    {
+      title: 'Scenario name',
+      difficulty: 'easy',               // easy | medium | hard
+      symptom: 'What looks wrong.',
+      diagnosis: '```bash\nkubectl describe ...\n```',
+      solution: 'Explanation + fix commands.'
+    }
+  ]
 };
 ```
-3. Atualizar `content/registry.js`
-   - Adicionar uma entrada no `domains` apropriado (no array `topics`) com os campos: `id`, `name`, `difficulty`, `path`, `hasQuiz`, `hasFlashcards`, `hasLab`, `tags`.
-   - Ex.:
-```js
-{ id: 'meu-topico', name: 'Meu Tópico', difficulty: 'medium', path: 'meu-domain/meu-topico', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['exemplo'] }
-```
-4. Testar carregamento
-   - Suba o servidor e abra a UI. Navegue até o domínio e verifique se o tópico aparece e carrega.
 
-**Fluxo para adicionar conteúdo (visual)**
+> For a bilingual copy, mirror the file as `topic-en.js` using `window.K8S_CONTENT_EN`.
 
-```mermaid
-flowchart TD
-   A[Criar pasta content/<domain>/<topic>] --> B[Criar topic-en.js com theory/quiz/flashcards/lab]
-   B --> C[Atualizar content/registry.js]
-   C --> D[Subir servidor local e abrir UI]
-   D --> E[Testar carregamento e validar passos de `lab.verify`] 
-   E --> F[Abrir PR com checklist e descrição das verificações]
-   F --> G[Code review / merge]
-   G --> H[Conteúdo disponível em platformer]
+**2. Register it** — add one entry to the matching domain's `topics: []` array in `content/registry.js`:
+
+```javascript
+{
+  id: 'my-topic',
+  name: 'My Topic',
+  difficulty: 'medium',                 // easy | medium | hard
+  path: 'my-domain/my-topic',           // must match the content key above
+  hasQuiz: true,
+  hasFlashcards: true,
+  hasLab: true,
+  tags: ['tag1', 'tag2']
+}
 ```
 
-**Formato de tópico (boas práticas)**
-- `theory`: explique com exemplos e comandos (blocões de ```bash``` e ```yaml```).
-- `lab`: include `objective`, `duration`, `steps[]` com `instruction`, `hints`, `solution` e `verify` commands.
-- `quiz`: cada item deve ter `question`, `options` (array), `correct` (index) e `explanation`.
-- `flashcards`: `{front, back}`.
+**3. Verify** — start the server, open the UI, navigate to your topic, and confirm every tab renders.
 
-**Estrutura do repositório (prévia)**
-- `index.html` — app single page
-- `css/` — estilos
-- `js/` — engine: `renderer.js`, `router.js`, `state.js`, `lab.js`, `quiz.js`, etc.
-- `content/` — todos os tópicos em subpastas + `registry.js` (índice)
+### Minimum checklist to accept a topic
 
-**Progresso & evidências**
-- A plataforma registra progresso localmente; para gerar evidências use screenshots, gravações das labs, commits com scripts/infra e colecione PRs relacionados.
+- [ ] `topic.js` present and loads without console errors
+- [ ] `registry.js` updated with a matching `path`
+- [ ] Quiz has ≥ 5 questions with `explanation`
+- [ ] Flashcards have ≥ 6 cards
+- [ ] Lab steps include `verify` commands
+- [ ] Troubleshooting scenarios include a `difficulty`
 
-**Contribuindo**
-- Fork & PR: crie um branch, adicione o tópico e atualize `content/registry.js`, abra PR descrevendo o novo material e exemplos de verificação.
-- Mantenha o padrão de formatação (exemplos nos tópicos existentes). Inclua referências e links de leitura.
+---
 
-**Checklist mínimo para aceitar novo tópico**
-- [ ] `topic-en.js` presente e carga sem erros
-- [ ] Entradas no `registry.js` atualizadas
-- [ ] Lab com `verify` commands ou steps claros
-- [ ] Quiz com pelo menos 5 perguntas (recomendado)
+## Repository layout
 
-**TOC — Conteúdos disponíveis hoje (agregado por tema)**
+```
+.
+├── index.html              # Thin SPA shell — loads the engine + registry
+├── css/
+│   ├── variables.css       # Design tokens, theming, dark mode
+│   ├── layout.css          # Page structure
+│   └── components.css      # Cards, flashcards, quiz, lab, exam components
+├── js/                     # Engine (vanilla JS, one IIFE module per file)
+│   ├── app.js              # Bootstrap
+│   ├── router.js           # Hash-based routing (#dashboard, #exam, #topic/...)
+│   ├── loader.js           # Lazy-loads topic content
+│   ├── state.js            # localStorage progress & settings
+│   ├── renderer.js         # Topic rendering (tabs)
+│   ├── i18n.js             # EN/PT string tables
+│   ├── quiz.js             # Quiz engine
+│   ├── flashcard.js        # Flip cards
+│   ├── srs.js              # SM-2 spaced repetition
+│   ├── lab.js              # Hands-on labs
+│   ├── exam.js             # Mock exam engine (cert/skill-scoped + general)
+│   ├── trails.js           # Role-based learning trails
+│   ├── search.js           # Local search
+│   ├── dashboard.js        # Progress dashboard
+│   ├── constellation.js    # Topic map (knowledge graph)
+│   ├── sidebar.js          # Sidebar navigation
+│   ├── review.js / assessment.js / cheatsheet.js / theme.js / markdown.js
+│   └── ...
+├── content/                # ALL study material (pure data)
+│   ├── registry.js         # Central index — domains, certs, skills, topics
+│   └── <domain>/<topic>/
+│       ├── topic.js        # Content (PT) → window.K8S_CONTENT
+│       └── topic-en.js     # Content (EN) → window.K8S_CONTENT_EN
+└── assets/screenshots/     # README images
+```
 
-- Kubernetes & Core (CKA/CKAD topics)
-  - Cluster architecture, Pods, RBAC, kubeadm, etcd, CRDs & Operators
-  - Workloads: Deployments, ConfigMaps/Secrets, Scheduling, Autoscaling
-  - Services & Networking: Services, Ingress, CoreDNS, NetworkPolicies
-  - Storage: PV/PVC, Volumes, StorageClasses
-  - Troubleshooting: App failures, Cluster/node debugging, Network troubleshooting
+---
 
-- Cloud & Infrastructure (AWS/Azure patterns)
-  - Cloud fundamentals, infra patterns, multi-account, resilience and HA
-  - Terraform & IaC patterns, terraform-k8s
-  - Cloud-native architecture and provider-specific topics
+## Tech & design decisions
 
-- Observability & Monitoring
-  - Prometheus (architecture, PromQL, alerting), Grafana (dashboards & alerting), OpenTelemetry, Loki
-  - Probes, logging, metrics, tracing and SLOs
+| Decision | Rationale |
+|---|---|
+| **Vanilla JS, no framework** | Zero build, zero dependencies, no supply-chain churn. Opens and runs for years without `npm install`. |
+| **No bundler / no build step** | The repo *is* the deployable artifact. Clone and serve. |
+| **Content as data, not code** | Engine and content evolve independently; new topics can't break the app shell. |
+| **Lazy loading per topic** | Fast first paint and low memory even with 200+ topics. |
+| **`localStorage` for state** | Fully offline; no accounts, no server, no privacy concerns. |
+| **IIFE modules** | Simple namespacing without a module loader; works from `file://` and HTTP alike. |
+| **LLM-friendly schema** | Declarative topic objects make automated/bulk content generation reliable. |
 
-- Delivery & GitOps
-  - ArgoCD fundamentals & patterns, FluxCD, CI/CD (Tekton, GitHub Actions), Helm & Kustomize
-  - Deployment strategies, rollout, sync strategies, ApplicationSets
+---
 
-- Platform Engineering
-  - IDP concepts, golden paths, Backstage, Crossplane/Platform APIs, platform patterns and maturity
+## Roadmap
 
-- Security & Supply Chain (CKS/KCSA)
-  - Vault integration, cert-manager, external-secrets
-  - CIS Benchmarks, API server security, service account hardening
-  - Image scanning, image hardening, image signing (supply chain)
-  - Pod Security Standards, OPA/Gatekeeper, Falco, audit logging
+See the maintainer notes for the current strengths/weaknesses analysis and next steps. High-level candidates:
 
-- Networking & Service Mesh
-  - Cilium (fundamentals & advanced), Hubble, BGP/LB, ClusterMesh
-  - Istio fundamentals & advanced (traffic management, mTLS, observability)
+- Cross-content validation in CI (broken `path`s, missing fields).
+- Import/export of progress (the only state today lives in one browser).
+- More EN/PT parity and i18n of remaining hardcoded UI strings.
+- Optional PWA/service-worker for installable offline use.
 
-- SRE & Operations
-  - SRE principles (SLIs/SLOs), incident management, on-call/runbooks, capacity planning
-  - Toil automation, operational excellence, DORA metrics
+---
 
-- Platform-specific & Advanced Topics
-  - Chaos engineering, Crossplane compositions, keda, service meshes, advanced observability patterns
+## License
+
+Recommended: **MIT** (add a `LICENSE` file at the repo root before publishing a fork). Study content is provided for personal use — always verify exam-specific details against official documentation.
+
+---
+
+<div align="center">
+<sub>Built as a local-first, framework-free study tool. Fork it and make it yours.</sub>
+</div>

@@ -68,19 +68,46 @@ var Constellation = (function () {
       _adj[a][b] = e; _adj[b][a] = e;
     }
 
-    // Primary: shared tags
+    // Weighting model (higher = stronger relationship, shown first in panel):
+    //   explicit `related`        → 6  (curated, strongest)
+    //   3+ shared tags            → 5
+    //   2  shared tags            → 4
+    //   same domain (sibling)     → 3  (small cohesive domains = genuinely related)
+    //   1  shared tag             → 2  (weak — a single, often generic, tag)
+    // A single shared generic tag must NOT outrank a real domain sibling, so
+    // domain edges (3) sit above 1-tag edges (2). Multi-tag overlap (4-5) still
+    // wins because sharing several specific tags is a strong signal.
+
+    // Generic tags that span many unrelated areas — ignored as the SOLE link so
+    // they don't create spurious cross-domain edges. (Still fine as part of a
+    // multi-tag overlap.)
+    var STOP_TAGS = {
+      'kubernetes': 1, 'k8s': 1, 'cloud': 1, 'security': 1, 'cncf': 1,
+      'observability': 1, 'monitoring': 1, 'policy': 1, 'container': 1,
+      'networking': 1, 'storage': 1, 'aws': 1, 'azure': 1, 'devops': 1
+    };
+
+    // Primary: shared tags (weighted by how many, generic-only overlaps dropped)
     for (var i = 0; i < _nodes.length; i++) {
       for (var j = i + 1; j < _nodes.length; j++) {
         var A = _nodes[i], B = _nodes[j];
-        var shared = 0;
+        var shared = 0, specific = 0;
         for (var k = 0; k < A.tags.length; k++) {
-          if (B.tags.indexOf(A.tags[k]) !== -1) shared++;
+          if (B.tags.indexOf(A.tags[k]) !== -1) {
+            shared++;
+            if (!STOP_TAGS[A.tags[k].toLowerCase()]) specific++;
+          }
         }
-        if (shared > 0) addEdge(A.id, B.id, shared + 1);
+        // Require at least one SPECIFIC shared tag to draw a tag edge — a lone
+        // generic tag (e.g. only "cloud") is not a real relationship.
+        if (specific > 0) {
+          var w = shared >= 3 ? 5 : (shared === 2 ? 4 : 2);
+          addEdge(A.id, B.id, w);
+        }
       }
     }
 
-    // Secondary: same domain (keeps clusters cohesive even without shared tags)
+    // Secondary: same domain (keeps clusters cohesive; siblings are related)
     var byDomain = {};
     _nodes.forEach(function (n) {
       (byDomain[n.domainId] = byDomain[n.domainId] || []).push(n.id);
@@ -88,14 +115,14 @@ var Constellation = (function () {
     Object.keys(byDomain).forEach(function (dom) {
       var list = byDomain[dom];
       for (var a = 0; a < list.length; a++) {
-        for (var b = a + 1; b < list.length; b++) addEdge(list[a], list[b], 1);
+        for (var b = a + 1; b < list.length; b++) addEdge(list[a], list[b], 3);
       }
     });
 
-    // Override/boost: explicit related links
+    // Override/boost: explicit related links (curated — strongest signal)
     _nodes.forEach(function (n) {
       n.related.forEach(function (rel) {
-        if (byPath[rel]) addEdge(n.id, rel, 4);
+        if (byPath[rel]) addEdge(n.id, rel, 6);
       });
     });
 
@@ -337,12 +364,28 @@ var Constellation = (function () {
     _canvas.style.height = _height + 'px';
   }
 
+  // Why are nodes a and b connected? (most informative reason first)
+  function _relReason(a, b) {
+    if ((a.related && a.related.indexOf(b.id) !== -1) ||
+        (b.related && b.related.indexOf(a.id) !== -1)) {
+      return I18N.t('mapRelLinked');
+    }
+    var shared = a.tags.filter(function (t) { return b.tags.indexOf(t) !== -1; });
+    if (shared.length) return shared.slice(0, 3).join(', ');
+    if (a.domainId === b.domainId) return b.domainName;
+    return '';
+  }
+
   function _showPanel(n) {
     var panel = document.getElementById('map-panel');
     if (!panel) return;
     if (!n) { panel.classList.add('hidden'); return; }
     var prog = State.getProgress(n.id);
-    var nb = Object.keys(_adj[n.id] || {});
+    var adj = _adj[n.id] || {};
+    // Strongest relationships first (higher edge weight = more related)
+    var nb = Object.keys(adj).sort(function (x, y) {
+      return (adj[y] ? adj[y].w : 0) - (adj[x] ? adj[x].w : 0);
+    });
     var html = '<button class="map-panel-close" data-action="close">&times;</button>';
     html += '<div class="map-panel-domain" style="color:' + n.color + '">' + n.icon + ' ' + n.domainName + '</div>';
     html += '<h3 class="map-panel-title">' + n.name + '</h3>';
@@ -355,7 +398,10 @@ var Constellation = (function () {
     html += '<div class="map-panel-related"><strong>' + I18N.t('mapConnected') + ' (' + nb.length + ')</strong><ul>';
     nb.slice(0, 8).forEach(function (id) {
       var t = _byId(id);
-      if (t) html += '<li data-goto="' + id + '">' + t.name + '</li>';
+      if (!t) return;
+      var why = _relReason(n, t);
+      html += '<li data-goto="' + id + '"><span class="map-rel-name">' + t.name + '</span>'
+            + (why ? '<span class="map-rel-why">' + why + '</span>' : '') + '</li>';
     });
     html += '</ul></div>';
     html += '<button class="btn btn-primary map-panel-open" data-goto="' + n.id + '">' + I18N.t('mapOpenTopic') + '</button>';
