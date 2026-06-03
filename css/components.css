@@ -357,12 +357,14 @@
 
 .flashcard {
   perspective: 1000px;
-  min-height: 160px;
   cursor: pointer;
 }
 
+/* Grid stacking: both faces share cell 1/1 so the inner auto-sizes to the
+   taller face — no JS height measurement needed, no overflow on flip. */
 .flashcard-inner {
   position: relative;
+  display: grid;
   width: 100%;
   min-height: 160px;
   transition: transform 0.45s ease;
@@ -374,10 +376,11 @@
 }
 
 .flashcard-front, .flashcard-back {
-  position: absolute;
+  grid-area: 1 / 1 / 2 / 2;
   width: 100%;
   min-height: 160px;
   backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
   display: flex;
   flex-direction: column;
   justify-content: center;

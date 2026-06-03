@@ -80,38 +80,15 @@ var Flashcard = (function () {
     html += '</div>';
     container.innerHTML = html;
 
-    // Equalise height — absolute children don't grow the parent naturally.
-    // Use setTimeout to let the browser finish rendering before measuring.
-    function _setCardHeight(card) {
-      var front = card.querySelector('.flashcard-front');
-      var back  = card.querySelector('.flashcard-back');
-      var inner = card.querySelector('.flashcard-inner');
-      // Temporarily remove minHeight so we get true scrollHeight
-      front.style.minHeight = '';
-      back.style.minHeight  = '';
-      inner.style.minHeight = '';
-      card.style.minHeight  = '';
-      var h = Math.max(front.scrollHeight, back.scrollHeight, 160);
-      card.style.minHeight  = h + 'px';
-      inner.style.minHeight = h + 'px';
-      front.style.minHeight = h + 'px';
-      back.style.minHeight  = h + 'px';
-    }
-
-    // Double RAF ensures layout is complete before measuring
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        container.querySelectorAll('.flashcard').forEach(_setCardHeight);
-      });
-    });
+    // Height is handled purely by CSS: both faces share the same grid cell
+    // (.flashcard-inner { display: grid }), so the inner naturally grows to
+    // the taller face. No JS measurement — that approach raced the render.
 
     // Flip on click (ignore clicks on grade buttons)
     container.querySelectorAll('.flashcard').forEach(function (el) {
       el.addEventListener('click', function (ev) {
         if (ev.target.closest('.fc-grades')) return;
         el.classList.toggle('flipped');
-        // Re-measure after flip in case back is taller than front
-        requestAnimationFrame(function () { _setCardHeight(el); });
       });
     });
 
