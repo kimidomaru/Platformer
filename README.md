@@ -14,8 +14,11 @@ No backend. No database. No build step. No internet required.
 ![License MIT suggested](https://img.shields.io/badge/License-MIT%20(suggested)-green)
 ![Topics](https://img.shields.io/badge/Topics-224-blueviolet)
 ![Certifications](https://img.shields.io/badge/Certifications-10-orange)
+![AI-assisted content](https://img.shields.io/badge/Content-AI--assisted%20%C2%B7%20not%20fully%20verified-yellow)
 
 ![Dashboard](assets/screenshots/dashboard.png)
+
+> ⚠️ **Study aid, not a source of truth.** This is a personal study project. Its content is **AI-assisted and not exhaustively reviewed** — always confirm details against the [official documentation](#disclaimer--content-accuracy) before relying on them for an exam or in production.
 
 </div>
 
@@ -24,6 +27,7 @@ No backend. No database. No build step. No internet required.
 ## Table of Contents
 
 - [What is Platformer?](#what-is-platformer)
+- [Disclaimer & content accuracy](#disclaimer--content-accuracy)
 - [Screenshots](#screenshots)
 - [Features](#features)
 - [Content coverage](#content-coverage)
@@ -42,11 +46,27 @@ No backend. No database. No build step. No internet required.
 
 **Platformer** is a self-contained, offline study application for technical certifications. The entire UI is plain HTML/CSS/JavaScript (no framework, no bundler), and **all study material lives as data** under `content/`. The engine reads a central index (`content/registry.js`) and lazy-loads each topic on demand.
 
+It started as a personal study tool and is shared openly in case it's useful to others. It is **not** an official course, and it is **not** affiliated with the CNCF, the Linux Foundation, AWS, or Microsoft.
+
 The guiding principle is a **hard separation between engine and content**:
 
 > The platform is generated once. After that, *only content is added* — never the engine. You can drop in a new topic without touching a single line of `index.html`, `js/`, or `css/`.
 
 This makes it trivial to **fork and re-theme** the project for *any* subject — DevOps, networking, a language certification, internal onboarding — by replacing the contents of `content/`.
+
+---
+
+## Disclaimer & content accuracy
+
+Please read this before using the material to prepare for an exam.
+
+- **AI-assisted content.** The theory, quizzes, flashcards, labs and troubleshooting scenarios were **generated with the help of large language models** and are **not exhaustively human-reviewed**. Expect occasional inaccuracies, outdated API versions, or commands that need adapting to your environment.
+- **Always verify against official sources.** Treat this as a study companion, not an authority. Cross-check anything important with the official docs:
+  [kubernetes.io/docs](https://kubernetes.io/docs/) · [docs.aws.amazon.com](https://docs.aws.amazon.com/) · [learn.microsoft.com](https://learn.microsoft.com/) · [training.linuxfoundation.org](https://training.linuxfoundation.org/) (CKA/CKAD/CKS/KCNA/KCSA).
+- **Run labs in a throwaway environment.** Practice in a disposable cluster/sandbox (kind, minikube, k3s, a personal cloud account), never against production. Commands are provided as-is, **without warranty**.
+- **No guarantee of exam outcomes.** Passing scores and exam formats change; this project may lag behind. It does not guarantee you will pass any certification.
+- **Trademarks** (Kubernetes, CKA, CKAD, CKS, KCNA, KCSA, AWS, Azure, etc.) belong to their respective owners and are used here for descriptive, educational purposes only.
+- **Found a mistake?** Corrections are very welcome — please open an issue or a pull request. Community review is exactly how this content improves.
 
 ---
 
@@ -326,7 +346,9 @@ See the maintainer notes for the current strengths/weaknesses analysis and next 
 
 ## License
 
-Recommended: **MIT** (add a `LICENSE` file at the repo root before publishing a fork). Study content is provided for personal use — always verify exam-specific details against official documentation.
+Recommended: **MIT** (add a `LICENSE` file at the repo root before publishing a fork).
+
+The code and study content are provided **"as is", without warranty of any kind**, for personal educational use. See [Disclaimer & content accuracy](#disclaimer--content-accuracy) — always verify exam-specific details against official documentation.
 
 ---
 
