@@ -1,0 +1,4 @@
+.claude*
+*.py
+CLAUDE.MD
+tools/

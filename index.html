@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platformer</title>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span class="logo-icon">&#9781;</span>
+        <span class="logo-text">Platformer</span>
+      </div>
+      <div class="header-controls">
+        <button id="lang-toggle" class="lang-toggle" title="Switch to English" aria-label="Switch to English">
+          &#127482;&#127480; EN
+        </button>
+        <button id="theme-toggle" title="Alternar tema" aria-label="Alternar tema">
+          <span class="theme-icon">&#9789;</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="Buscar topicos..." autocomplete="off">
+      <div id="search-results" class="search-results hidden"></div>
+    </div>
+
+    <nav id="sidebar-nav"></nav>
+
+    <div class="sidebar-footer">
+      <button id="btn-dashboard" class="sidebar-btn" data-route="dashboard">
+        <span>&#9632;</span> Dashboard
+      </button>
+      <button id="btn-exam" class="sidebar-btn" data-route="exam">
+        <span>&#9200;</span> Simulado
+      </button>
+      <button id="btn-assessment" class="sidebar-btn" data-route="assessment">
+        <span>&#127919;</span> Avaliacao
+      </button>
+      <button id="btn-review" class="sidebar-btn" data-route="review">
+        <span>&#9201;</span> <span class="btn-review-label">Revisao</span>
+        <span id="review-due-badge" class="review-due-badge hidden">0</span>
+      </button>
+      <button id="btn-map" class="sidebar-btn" data-route="map">
+        <span>&#10022;</span> <span class="btn-map-label">Mapa</span>
+      </button>
+      <button id="btn-trails" class="sidebar-btn" data-route="trails">
+        <span>&#128506;</span> <span class="btn-trails-label">Trilhas</span>
+      </button>
+      <button id="btn-cheatsheet" class="sidebar-btn" data-route="cheatsheet">
+        <span>&#128196;</span> Cheatsheet
+      </button>
+    </div>
+  </aside>
+
+  <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle sidebar">&#9776;</button>
+
+  <main id="main">
+    <div id="breadcrumb" class="breadcrumb"></div>
+    <div id="content-area"></div>
+  </main>
+
+  <!-- Content Registry -->
+  <script src="content/registry.js"></script>
+
+  <!-- Platform Engine (order matters) -->
+  <script src="js/state.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/markdown.js"></script>
+  <script src="js/loader.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/srs.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/flashcard.js"></script>
+  <script src="js/review.js"></script>
+  <script src="js/constellation.js"></script>
+  <script src="js/lab.js"></script>
+  <script src="js/exam.js"></script>
+  <script src="js/assessment.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/cheatsheet.js"></script>
+  <script src="js/trails.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
