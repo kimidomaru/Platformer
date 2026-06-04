@@ -8,10 +8,14 @@ Study **Kubernetes (CKA · CKAD · CKS · KCNA · KCSA)**, **AWS (CLF · SAA · 
 
 No backend. No database. No build step. No internet required.
 
+### [🚀 Live Demo → kimidomaru.github.io/Platformer](https://kimidomaru.github.io/Platformer)
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open%20Platformer-2ea44f?style=for-the-badge&logo=githubpages&logoColor=white)](https://kimidomaru.github.io/Platformer)
+
 ![Made with Vanilla JS](https://img.shields.io/badge/Made%20with-Vanilla%20JS-f7df1e?logo=javascript&logoColor=black)
 ![No build step](https://img.shields.io/badge/Build-none-success)
 ![Offline first](https://img.shields.io/badge/Offline-first-blue)
-![License MIT suggested](https://img.shields.io/badge/License-MIT%20(suggested)-green)
+![License MIT](https://img.shields.io/badge/License-MIT-green)
 ![Topics](https://img.shields.io/badge/Topics-224-blueviolet)
 ![Certifications](https://img.shields.io/badge/Certifications-10-orange)
 ![AI-assisted content](https://img.shields.io/badge/Content-AI--assisted%20%C2%B7%20not%20fully%20verified-yellow)
