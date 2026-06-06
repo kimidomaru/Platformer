@@ -6,6 +6,15 @@ window.K8S_CONTENT_EN['crossplane/crossplane-compositions'] = {
 ## Relevance
 Compositions and XRDs are the most advanced level of Crossplane — where you define your own platform API. Instead of exposing MRs directly (provider-aws-s3), you create abstractions (Databases, Environments, Applications) that development teams consume without needing to know cloud details. This is the true power of "Platform Engineering" with Crossplane.
 
+## ⚠️ Currency: Pipeline (Functions) is the CURRENT mode — Patch-and-Transform is legacy
+> **Important (Crossplane v1.17+):** the native **Patch-and-Transform** mode (\`spec.resources\` with inline \`patches\`/\`transforms\` on the Composition) is **DEPRECATED**. The recommended and **default** mode today is **Pipeline mode** with **Composition Functions** (\`spec.mode: Pipeline\` + \`spec.pipeline\`). Even classic P&T logic now runs as a *function* (\`function-patch-and-transform\`).
+>
+> **What this changes in practice:**
+> - Write new Compositions with \`mode: Pipeline\`. Do not internalize \`spec.resources\` as the "normal" way.
+> - P&T becomes *one step* inside the pipeline (via \`function-patch-and-transform\`), not the root mechanism.
+> - Functions enable logic P&T never could: loops, conditionals, templates (KCL/Go-templating), validation, and chaining multiple functions in sequence.
+> - The sections below on \`patches\`/\`transforms\` remain valid as **conceptual reference** (and because you will see them in existing Compositions), but the **target** is the Pipeline mode shown in "Composition with Pipeline Mode (Functions)".
+
 ## Core Concepts
 
 ### The Full Hierarchy

@@ -3,107 +3,102 @@ window.K8S_CONTENT_EN['platform-engineering/platform-metrics'] = {
   theory: `# Platform Metrics: DORA, SPACE & Developer Experience
 
 ## Relevance
-> Platform engineers need to measure the platform's impact on team productivity. DORA metrics are the industry standard — they appear in Staff/Principal Engineer interviews and in frameworks such as SPACE and DevOps Research.
+> Platform engineers must **prove value**: did the platform cut lead time? Increase deploy frequency? Reduce friction? Without metrics you manage by opinion. DORA and SPACE are the two industry-reference frameworks, and they come up in Staff/Principal interviews and in leadership conversations about investing in the platform.
 
 ## DORA Metrics — The Industry Standard
 
-Developed by DORA (DevOps Research and Assessment), these 4 metrics differentiate high-performing teams:
+Developed by Google's **DORA (DevOps Research and Assessment)** program, these 4 metrics consistently separate high and low performers. The core insight: **speed and stability are NOT a trade-off** — elite teams have both.
 
-| Metric | What it measures | Elite | High | Medium | Low |
-|--------|-----------------|-------|------|--------|-----|
-| **Deployment Frequency** | How often deploys to production | Multiple times/day | 1x/week to 1x/month | 1x/month to 1x/6months | < 6 months |
-| **Lead Time for Changes** | From commit to production | < 1 hour | 1 day to 1 week | 1 week to 1 month | > 6 months |
-| **Change Failure Rate** | % of deploys that cause an incident | < 5% | 5-10% | 10-15% | > 15% |
-| **Time to Restore (MTTR)** | Time to recover from an incident | < 1 hour | < 1 day | 1 day to 1 week | > 6 months |
+| Metric | What it measures | Category | Elite | High | Medium | Low |
+|--------|------------------|----------|-------|------|--------|-----|
+| **Deployment Frequency** | How often you deploy to production | Throughput | Multiple/day | 1/wk-1/mo | 1/mo-1/6mo | < 6 months |
+| **Lead Time for Changes** | From commit to running in production | Throughput | < 1 hour | 1 day-1 wk | 1 wk-1 mo | > 6 months |
+| **Change Failure Rate** | % of deploys that cause an incident | Stability | < 5% | 5-10% | 10-15% | > 15% |
+| **Time to Restore (MTTR)** | Time to recover from an incident | Stability | < 1 hour | < 1 day | 1 day-1 wk | > 6 months |
 
-### Collecting DORA with Prometheus + DORA Metrics Exporter
+> **In 2023 DORA added a 5th metric: Reliability** (how well the service meets user expectations — availability, performance), recognizing that speed without reliability is not sustainable.
 
-\`\`\`yaml
-# Helm values for dora-metrics exporter
-config:
-  deploymentFrequency:
-    source: github
-    repositories:
-      - org/repo-frontend
-      - org/repo-backend
-    branch: main
+### Why these 4?
+- **Throughput (DF + LT)** measures how fast value reaches the user.
+- **Stability (CFR + MTTR)** measures the quality of the delivery flow.
+- Measuring only one side drives bad behavior: optimizing speed alone breeds instability; optimizing stability alone breeds paralysis.
 
-  leadTime:
-    enabled: true
-    pipelineIntegration: github-actions
-
-  changeFailureRate:
-    incidentSource: pagerduty
-    deploymentSource: github
-\`\`\`
-
+### Collecting DORA with Prometheus
 \`\`\`promql
-# DORA: Deployment Frequency (last 7 days)
+# Deployment Frequency (production deploys in the last 7 days)
 sum(increase(deployments_total{environment="production"}[7d]))
 
-# DORA: Change Failure Rate
-rate(deployments_total{status="failed"}[7d])
-/ rate(deployments_total{environment="production"}[7d]) * 100
+# Change Failure Rate (% of deploys that failed)
+sum(rate(deployments_total{status="failed",environment="production"}[7d]))
+/ sum(rate(deployments_total{environment="production"}[7d])) * 100
 
-# DORA: MTTR (average incident resolution time)
-avg(incident_resolution_duration_seconds{severity!="low"})
+# MTTR (avg incident resolution time, in minutes)
+avg(incident_resolution_duration_seconds{severity!="low"}) / 60
+
+# Lead Time (P50 of commit -> production time, via pipeline labels)
+histogram_quantile(0.5, sum(rate(pipeline_lead_time_seconds_bucket[30d])) by (le))
 \`\`\`
 
-## SPACE Framework
+Ready-made tools: **DevLake (Apache)**, **Four Keys (Google)**, **dora-metrics exporter**, or **Backstage** itself (DORA plugin). All correlate CI/CD events (deploys) with incidents (PagerDuty/Opsgenie).
 
-SPACE is a more comprehensive framework than DORA, covering 5 dimensions:
+## SPACE Framework — Going Beyond DORA
 
-| Dimension | Example Metrics |
-|-----------|----------------|
-| **S**atisfaction & wellbeing | Developer NPS, eNPS, burnout scores |
-| **P**erformance | Delivery quality, code review velocity |
-| **A**ctivity | Commits, PRs, builds, deploy frequency |
-| **C**ommunication & collaboration | PR review time, code ownership, team coupling |
-| **E**fficiency & flow | Wait time, WIP items, flow efficiency |
+DORA measures the **delivery system**. SPACE (Nicole Forsgren et al., 2021) measures **developer productivity holistically**, recognizing that productivity is not a single dimension. The golden rule: **pick at least 1 metric from 3 different dimensions**, and always combine **perception (surveys)** with **system data**.
 
-## Platform Health Metrics
+| Dimension | What it captures | Example metrics |
+|-----------|------------------|-----------------|
+| **S — Satisfaction & wellbeing** | How satisfied and healthy devs are | Developer NPS/eNPS, burnout score, retention |
+| **P — Performance** | Outcome/quality of work | Change Failure Rate, PR quality, MTTR, SLOs met |
+| **A — Activity** | Volume of actions (careful: volume != value) | Commits, PRs, builds, deploys, tickets closed |
+| **C — Communication & collaboration** | How the team works together | PR review time, doc discoverability, onboarding time |
+| **E — Efficiency & flow** | Ability to flow without interruption | Wait time, WIP, % of deep-work time, handoffs |
 
-Beyond DORA, internal platforms need to measure their own health:
+### Why NOT to measure Activity alone
+Activity (commits/PRs) is the easiest metric to collect and the most dangerous in isolation: a team doing lots of **rework** generates more commits; forcing tiny PRs inflates the PR count. SPACE exists precisely to keep "busy" from being mistaken for "productive". **Activity alone becomes a gameable target** (Goodhart's Law).
 
+## Platform Health & Adoption Metrics
+
+Beyond measuring client teams, the platform must measure its **own health and adoption** (it is a product):
 \`\`\`promql
-# Platform adoption (namespaces using the golden path vs total)
+# Adoption rate: % of namespaces using the golden path
 count(kube_namespace_labels{label_platform_version!=""})
-/ count(kube_namespace_info) * 100
+/ count(kube_namespace_created) * 100
 
-# Self-service success rate (portal requests that succeeded)
-rate(backstage_scaffold_task_completed_total[7d])
-/ rate(backstage_scaffold_task_created_total[7d]) * 100
+# Self-service success rate (portal templates completing without a ticket)
+sum(rate(backstage_scaffold_task_completed_total[7d]))
+/ sum(rate(backstage_scaffold_task_created_total[7d])) * 100
 
-# Cognitive load: how many different tools devs need to access per deploy
-# (qualitative metric, collected in periodic survey)
+# Time to first deploy (median, new dev -> first prod deploy)
+histogram_quantile(0.5, sum(rate(onboarding_first_deploy_seconds_bucket[90d])) by (le))
 
-# Average onboarding time for a new dev until first deploy
-avg(time_to_first_deploy_seconds)
+# Manual support tickets against the platform (we want this dropping)
+sum(increase(platform_support_tickets_total[30d]))
 \`\`\`
 
-### Developer Satisfaction Survey (periodic)
-
+### Developer Experience Survey (quarterly)
+System metrics do not capture perceived friction. Combine with a short survey (1-5 scale):
 \`\`\`yaml
-# Example questions from Developer Experience Survey (quarterly)
 questions:
-  - "I can deploy without needing help from another team? (1-5)"
-  - "My project's build time is acceptable? (1-5)"
-  - "I know where to find the documentation I need? (1-5)"
-  - "The platform helps me meet security requirements without friction? (1-5)"
+  - "Can I deploy without depending on another team? (1-5)"
+  - "Is my project build time acceptable? (1-5)"
+  - "Do I know where to find the documentation I need? (1-5)"
+  - "Does the platform help me meet security without friction? (1-5)"
   - "What frustrates you most about the platform today? (open)"
 \`\`\`
 
 ## Common Mistakes in Platform Metrics
+1. **Measuring only activity**: number of commits/PRs does not indicate productivity — more rework = more commits.
+2. **Gaming metrics**: once a team knows it is measured by deployment frequency, it starts doing trivial deploys (Goodhart's Law: "when a measure becomes a target, it ceases to be a good measure").
+3. **Ignoring the qualitative**: DORA without a developer survey is blind to real day-to-day friction.
+4. **No baseline**: before improving, measure where you are. Without a baseline you cannot prove improvement nor justify investment.
+5. **Vanity vs actionable**: "10k commits/month" is a vanity metric; "lead time dropped from 3 days to 4 hours" is actionable and tied to business outcome.
+6. **Comparing teams against each other**: DORA/SPACE are for a team to measure its **own** evolution over time, not to rank teams (which breeds dysfunction).
 
-1. **Measuring only activity**: number of commits/PRs does not indicate productivity — teams with more rework have more commits.
-2. **Gamifying metrics**: teams that know they are measured by deploy frequency start making trivial deploys.
-3. **Ignoring qualitative metrics**: DORA without developer survey is incomplete — you can have high deployment frequency with a terrible developer experience.
-4. **Not defining a baseline**: before improving, measure where you are. Without a baseline, there is no way to prove improvement.
-`,
-
+## Killer.sh Style Challenge
+Leadership wants a dashboard proving the new platform improved delivery. You have Prometheus + Grafana in the cluster. Define: (1) which of the 4 DORA metrics you instrument first and where each event comes from (deploy, incident); (2) one SPACE **perception** metric to complement; (3) one platform **adoption** metric. Implement the PromQL queries and build a panel with baseline (month 0) vs current, defending why each metric is actionable and not vanity.`,
   quiz: [
     {
-      question: 'Which of the 4 DORA metrics measures system stability (not delivery speed)?',
+      question: 'Which of the 4 DORA metrics measure STABILITY (not throughput)?',
       options: [
         'Deployment Frequency and Lead Time for Changes',
         'Change Failure Rate and Time to Restore (MTTR)',
@@ -111,172 +106,139 @@ questions:
         'Deployment Frequency and Change Failure Rate'
       ],
       correct: 1,
-      explanation: 'DORA divides the metrics into two groups: speed (Deployment Frequency, Lead Time for Changes) and stability (Change Failure Rate, Time to Restore/MTTR). Elite teams manage to be both fast AND stable at the same time — contradicting the belief that speed and stability are trade-offs.',
-      reference: 'DORA Metrics table — the first two measure throughput, the last two measure stability.'
+      explanation: 'DORA splits the metrics into throughput (Deployment Frequency, Lead Time) and stability (Change Failure Rate, MTTR). The core insight is that elite teams are fast AND stable at once — speed and stability are not a trade-off.',
+      reference: 'DORA Metrics table — the Category column separates Throughput from Stability.'
     },
     {
-      question: 'A team has a Change Failure Rate of 25%. What does this indicate and what is the DORA level?',
+      question: 'A team has a Change Failure Rate of 25%. What does that indicate and which DORA level?',
       options: [
         '25% of deploys fail; Elite level (acceptable for high frequency)',
-        '25% of deploys cause production incidents; Low level (below Medium which is 10-15%)',
+        '25% of deploys cause a production incident; Low level (above the 15% threshold)',
         '25% of changes arrive late; Medium level',
-        'A CFR of 25% is within acceptable range for large teams'
+        'A 25% CFR is acceptable for large teams'
       ],
       correct: 1,
-      explanation: 'Change Failure Rate > 15% is classified as Low level in DORA. It means 1 in every 4 deploys causes an incident requiring a hotfix or rollback. This indicates: lack of automated tests, no canary/feature flags, or insufficient code review process. The target for Elite teams is < 5%.',
-      reference: 'DORA Metrics table — ideal CFR < 5% (Elite) or 5-10% (High).'
+      explanation: 'CFR > 15% is classified as Low. It means 1 in 4 deploys causes an incident requiring a hotfix/rollback — a symptom of missing automated tests, no canary/feature flags, or insufficient review. The Elite target is < 5%.',
+      reference: 'DORA Metrics table — ideal CFR < 5% (Elite), Low is > 15%.'
     },
     {
-      question: 'Why is measuring only activity metrics (number of commits, merged PRs) insufficient to evaluate development productivity?',
+      question: 'Why is measuring only Activity (commits, PRs) insufficient and even dangerous?',
       options: [
-        'Because commits and PRs do not automatically appear in JIRA',
-        'Because teams with a lot of rework have more commits, masking low quality — activity is not productivity',
-        'Because activity metrics are easily manipulated only by managers',
-        'Because commit measurement tools are expensive and difficult to implement'
+        'Because commits and PRs do not appear in JIRA automatically',
+        'Because volume is not value: rework generates more commits, and Activity in isolation becomes a gameable target (Goodhart law)',
+        'Because activity metrics can only be collected by managers',
+        'Because commit-measuring tools are expensive'
       ],
       correct: 1,
-      explanation: 'Activity metrics measure volume, not value. A team may have many commits because it is rewriting buggy code, or many PRs because granularity is too fine by imposition. The SPACE framework emphasizes that productivity is multidimensional: satisfaction + performance + activity + communication + flow efficiency.',
-      reference: 'SPACE Framework section — activity (A) is only one of the 5 dimensions.'
-    }
-  ],
-
-  flashcards: [
-    {
-      front: 'What are the 4 DORA metrics and what does each measure?',
-      back: '1. **Deployment Frequency** — how often you deploy to production (Elite target: multiple times/day)\n\n2. **Lead Time for Changes** — from commit to running in production (Elite target: < 1 hour)\n\n3. **Change Failure Rate** — % of deploys that cause an incident (Elite target: < 5%)\n\n4. **Time to Restore (MTTR)** — average time to recover from an incident (Elite target: < 1 hour)\n\nSpeed: DF + LT | Stability: CFR + MTTR'
+      explanation: 'Activity measures volume, not value. A buggy team rewrites code (more commits); forced fine-grained PRs inflate the count. SPACE includes Activity as just 1 of 5 dimensions precisely to avoid mistaking "busy" for "productive".',
+      reference: 'SPACE Framework section — Why NOT to measure Activity alone.'
     },
     {
-      front: 'How do you measure the impact of an internal platform on the developer experience?',
-      back: '**Quantitative metrics**:\n- Time to first deploy (new dev → first deploy)\n- Self-service success rate (portal without manual tickets)\n- Platform adoption rate (teams using the golden path)\n- Deployment frequency per team (improved after adopting platform?)\n\n**Qualitative metrics**:\n- Developer NPS (Net Promoter Score)\n- Quarterly developer survey (1-5 per dimension)\n- Support tickets opened about the platform\n- Number of documented "workarounds"\n\n**Rule**: combine quantitative + qualitative for the complete picture.'
+      question: 'What is the recommended practical rule when using the SPACE framework?',
+      options: [
+        'Measure all 5 dimensions with a single system metric each',
+        'Pick at least 1 metric from 3 different dimensions, combining perception (survey) with system data',
+        'Use only the Performance dimension, since it encompasses the others',
+        'Replace DORA entirely, since SPACE is superior'
+      ],
+      correct: 1,
+      explanation: 'SPACE recommends covering at least 3 different dimensions and always cross-referencing objective data (system) with perception (surveys). It is not about collecting everything, but about avoiding a one-dimensional picture of productivity.',
+      reference: 'SPACE Framework section — the golden rule of 3 dimensions + perception.'
+    },
+    {
+      question: 'What does the 5th metric DORA added in 2023, Reliability, capture?',
+      options: [
+        'How often the team deploys to production',
+        'How well the service meets user expectations (availability, performance, SLOs)',
+        'Infrastructure cost per deploy',
+        'The number of developers per team'
+      ],
+      correct: 1,
+      explanation: 'Reliability measures how well the service meets users operational expectations (availability, latency, SLO attainment). It was added to recognize that delivery throughput and stability are not enough if the service itself is not reliable.',
+      reference: 'DORA Metrics section — note on the 5th metric (2023).'
+    },
+    {
+      question: 'What is Goodhart law in the context of platform metrics?',
+      options: [
+        'The more metrics you collect, the more accurate the evaluation',
+        'When a measure becomes a target, it ceases to be a good measure (the team optimizes the number, not the outcome)',
+        'Stability metrics always beat speed metrics',
+        'The cost of collecting metrics grows linearly with the number of teams'
+      ],
+      correct: 1,
+      explanation: 'Goodhart law explains why gaming metrics is dangerous: turning deployment frequency into a target makes the team do trivial deploys to "hit the number", destroying the metric informational value. That is why metrics should inform conversations, not become isolated targets.',
+      reference: 'Common Mistakes section — item 2 (gaming metrics).'
+    },
+    {
+      question: 'For an internal platform (treated as a product), which metric measures ADOPTION in an actionable way?',
+      options: [
+        'Total number of pods running in the cluster',
+        '% of namespaces using the golden path vs total namespaces',
+        'CPU consumed by Prometheus',
+        'Number of engineers on the platform team'
+      ],
+      correct: 1,
+      explanation: 'Adoption rate (golden-path namespaces / total) shows whether teams actually use the platform. It is actionable: low adoption triggers investigation into friction or missing features. Total pods or Prometheus CPU are vanity metrics that do not measure adoption.',
+      reference: 'Platform Health & Adoption Metrics section — adoption rate query.'
     }
   ],
-
+  flashcards: [
+    { front: 'What are the 4 DORA metrics and their Elite targets?', back: 'Deployment Frequency (multiple/day), Lead Time for Changes (< 1h), Change Failure Rate (< 5%), Time to Restore/MTTR (< 1h). Throughput = DF+LT; Stability = CFR+MTTR.' },
+    { front: 'Are speed and stability a trade-off?', back: 'No. The DORA core finding is that elite teams have both at once — those who ship fast with quality also recover fast. Optimizing only one side degrades the other.' },
+    { front: 'What does SPACE stand for and what is the usage rule?', back: 'Satisfaction, Performance, Activity, Communication/collaboration, Efficiency/flow. Rule: pick >=1 metric from 3 different dimensions and combine survey (perception) with system data.' },
+    { front: 'Why is Activity alone a bad metric?', back: 'Volume != value. Rework generates more commits; forced fine PRs inflate the count. In isolation it becomes a gameable target (Goodhart law). It is just 1 of the 5 SPACE dimensions.' },
+    { front: 'How do you measure the platform impact on DevEx?', back: 'Quantitative: time-to-first-deploy, self-service success rate, adoption rate, falling support tickets. Qualitative: developer NPS, quarterly 1-5 survey, number of workarounds. Combine both.' },
+    { front: 'What is Goodhart law and why does it matter for metrics?', back: '"When a measure becomes a target, it ceases to be a good measure." That is why DORA/SPACE should inform conversations and measure a team own evolution over time — never become a gameable target or a cross-team ranking.' }
+  ],
   lab: {
-    scenario: 'Create a basic DORA metrics dashboard using Kubernetes cluster metrics.',
-    objective: 'Understand how to measure Deployment Frequency and Change Failure Rate using data from the cluster itself.',
-    duration: '20-25 minutes',
+    scenario: 'You have a cluster with kube-prometheus-stack (Prometheus + Grafana) installed. Leadership wants to see DORA metrics. You will expose deploy events as metrics, simulate successful and failed deploys, and build the queries that feed a panel.',
+    objective: 'Instrument Deployment Frequency and Change Failure Rate from real cluster deploy events, write the PromQL queries, and validate the results in Prometheus.',
+    duration: '25-30 minutes',
     steps: [
       {
-        title: 'Create deployment metrics with standardized labels',
-        instruction: 'Configure deployments with version labels to track changes and failures.',
-        hints: ['Labels app.kubernetes.io/version tracks versions', 'Annotation deployment-time for lead time'],
-        solution: `\`\`\`bash
-# Create demo namespace
-kubectl create namespace dora-demo
-
-# Deploy with standardized DORA labels
-cat << 'EOF' | kubectl apply -f -
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: webapp
-  namespace: dora-demo
-  labels:
-    app: webapp
-    app.kubernetes.io/version: "1.2.3"
-    team: platform
-  annotations:
-    deployment.kubernetes.io/timestamp: "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-    deployment.kubernetes.io/change-id: "pr-456"
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: webapp
-  template:
-    metadata:
-      labels:
-        app: webapp
-        version: "1.2.3"
-    spec:
-      containers:
-        - name: webapp
-          image: nginx:alpine
-EOF
-
-echo "Deploy with DORA labels created"
-\`\`\``,
-        verify: `\`\`\`bash
-kubectl get deployment webapp -n dora-demo \
-  -o jsonpath='{.metadata.labels}' | jq .
-# Expected: labels with app.kubernetes.io/version
-
-kubectl get deployment webapp -n dora-demo \
-  -o jsonpath='{.metadata.annotations}' | jq .
-# Expected: annotations with deployment timestamp
-\`\`\``
+        title: 'Install the observability stack (Prometheus + Grafana)',
+        instruction: 'Install kube-prometheus-stack via Helm and confirm Prometheus and Grafana are Running. This stack ships an optional Pushgateway for batch/event metrics.',
+        hints: ['Helm repo: https://prometheus-community.github.io/helm-charts', 'Enable the pushgateway with --set prometheus-pushgateway.enabled=true', 'kubectl get pods -n monitoring'],
+        solution: '```bash\nhelm repo add prometheus-community https://prometheus-community.github.io/helm-charts\nhelm repo update\nhelm install kps prometheus-community/kube-prometheus-stack \\\n  --namespace monitoring --create-namespace \\\n  --set prometheus-pushgateway.enabled=true\n\nkubectl get pods -n monitoring\n```',
+        verify: '```bash\nkubectl get pods -n monitoring | grep -E "prometheus|grafana|pushgateway"\n# Expected: prometheus, grafana and pushgateway pods Running\nkubectl get svc -n monitoring | grep pushgateway\n# Expected: pushgateway service (port 9091)\n```'
       },
       {
-        title: 'Simulate deployment frequency and Change Failure Rate',
-        instruction: 'Simulate multiple deploys (successful and failed) and calculate the metrics manually.',
-        hints: ['kubectl rollout status with timeout detects failure', 'History with kubectl rollout history'],
-        solution: `\`\`\`bash
-# Simulate 5 deploys (4 success, 1 failure)
-for version in 1.2.4 1.2.5 1.2.6; do
-  echo "Deploying version $version..."
-  kubectl set image deployment/webapp webapp=nginx:alpine \
-    -n dora-demo && \
-  kubectl rollout status deployment/webapp -n dora-demo --timeout=60s && \
-  echo "Deploy $version: SUCCESS"
-done
-
-# Simulate a failed deploy (non-existent image)
-kubectl set image deployment/webapp webapp=nginx:nonexistent-tag -n dora-demo
-sleep 10
-if ! kubectl rollout status deployment/webapp -n dora-demo --timeout=30s; then
-  echo "Deploy FAILED - rolling back"
-  kubectl rollout undo deployment/webapp -n dora-demo
-fi
-
-# View rollout history
-kubectl rollout history deployment/webapp -n dora-demo
-
-# Manually calculate Change Failure Rate
-echo "Total deploys: 4 | Failed deploys: 1 | CFR: 25% (above ideal!)"
-
-# Cleanup
-kubectl delete namespace dora-demo
-\`\`\``,
-        verify: `\`\`\`bash
-kubectl rollout history deployment/webapp -n dora-demo 2>/dev/null || \
-  echo "Namespace cleaned - check before deletion"
-# Expected: history with multiple revisions
-\`\`\``
+        title: 'Emit a deploy event as a metric (Deployment Frequency)',
+        instruction: 'Use the Pushgateway to record a successful production deploy event as the `deployments_total` metric. In production this would come from your CI/CD pipeline; here you simulate it with curl.',
+        hints: ['Pushgateway accepts POST at /metrics/job/<job>', 'Use environment and status labels on the metric', 'port-forward the pushgateway service to localhost:9091'],
+        solution: '```bash\nkubectl port-forward -n monitoring svc/kps-prometheus-pushgateway 9091:9091 &\nsleep 3\n\n# Record a SUCCESSFUL production deploy\ncat <<EOF | curl --data-binary @- http://localhost:9091/metrics/job/deploy/env/production/status/success\n# TYPE deployments_total counter\ndeployments_total 1\nEOF\n\n# Check the Pushgateway\ncurl -s http://localhost:9091/metrics | grep deployments_total\n```',
+        verify: '```bash\ncurl -s http://localhost:9091/metrics | grep \'deployments_total\'\n# Expected: deployments_total{...environment...status="success"...} 1\n```'
+      },
+      {
+        title: 'Simulate failed deploys and compute Change Failure Rate',
+        instruction: 'Record a few more deploys (including a failure) and write the Change Failure Rate PromQL query. Validate the result by querying Prometheus.',
+        hints: ['Repeat the push with status/failed for a bad deploy', 'CFR = failed / total * 100', 'Query the Prometheus API at /api/v1/query'],
+        solution: '```bash\n# 3 successful deploys + 1 failed\nfor i in 1 2 3; do\n  echo \'deployments_total 1\' | curl --data-binary @- \\\n    http://localhost:9091/metrics/job/deploy/env/production/status/success\ndone\necho \'deployments_total 1\' | curl --data-binary @- \\\n  http://localhost:9091/metrics/job/deploy/env/production/status/failed\n\n# port-forward Prometheus\nkubectl port-forward -n monitoring svc/kps-kube-prometheus-stack-prometheus 9090:9090 &\nsleep 3\n\n# Change Failure Rate query (%)\ncurl -s \'http://localhost:9090/api/v1/query\' --data-urlencode \\\n  \'query=sum(deployments_total{status=\"failed\"}) / sum(deployments_total) * 100\'\n```',
+        verify: '```bash\ncurl -s \'http://localhost:9090/api/v1/query\' --data-urlencode \\\n  \'query=sum(deployments_total{status=\"failed\"}) / sum(deployments_total) * 100\' | grep -o \'\"value\".*\'\n# Expected: value close to 25 (1 failure in 4 deploys = 25% CFR)\n```'
       }
     ]
   },
-
   troubleshooting: [
     {
-      title: 'DORA metrics show high Deployment Frequency but MTTR is also high',
+      title: 'High Deployment Frequency but MTTR also high',
       difficulty: 'medium',
-      symptom: 'The team has a Deployment Frequency of 5x/day (Elite) but an average MTTR of 4 hours (Low). Leadership questions whether the speed is causing instability.',
-      diagnosis: `\`\`\`bash
-# Correlate deploys with incidents in Prometheus
-# Check if incidents occur close to deploys
-rate(deployments_total{environment="production"}[1h])
-# vs
-rate(incidents_created_total[1h])
-
-# Check Change Failure Rate
-rate(deployments_total{status="failed"}[30d])
-/ rate(deployments_total[30d]) * 100
-\`\`\``,
-      solution: `**Diagnosis**: high deploy frequency with high MTTR generally indicates:
-
-1. **Deploys without canary/feature flags**: each deploy exposes 100% of users immediately.
-
-2. **No automatic smoke tests post-deploy**: failures take too long to be detected.
-
-3. **Slow rollback process**: manual rollback that takes too long.
-
-**Actions**:
-1. Implement canary deployment (expose 10% first)
-2. Add automatic smoke tests post-deploy with automatic rollback on failure
-3. Define and test rollback runbook (target: < 15 minutes)
-4. Configure error rate alerts with threshold < 1% for rollback trigger
-
-**Target**: maintain high deploy frequency AND improve MTTR to < 1 hour.`
+      symptom: 'The team has DF of 5x/day (Elite) but average MTTR of 4 hours (Low). Leadership questions whether speed is causing instability.',
+      diagnosis: '```promql\n# Correlate deploys with incidents in the same window\nrate(deployments_total{environment="production"}[1h])\nrate(incidents_created_total[1h])\n\n# Check the Change Failure Rate\nsum(rate(deployments_total{status="failed"}[30d]))\n/ sum(rate(deployments_total[30d])) * 100\n```',
+      solution: 'High DF with high MTTR usually means: (1) deploys without canary/feature flags (each deploy hits 100% of users at once), (2) no post-deploy smoke tests (failures take long to detect), (3) slow manual rollback. Actions: implement canary (10% first), automated smoke tests with auto-rollback, a tested rollback runbook (target < 15 min), and an error-rate alert with a threshold to trigger rollback. Goal: keep frequency high AND bring MTTR down to < 1h.'
+    },
+    {
+      title: 'SPACE Activity metrics rise, but devs complain about productivity',
+      difficulty: 'medium',
+      symptom: 'Commits and PRs per dev went up, but the quarterly developer survey shows falling satisfaction and teams say they are actually slower.',
+      diagnosis: '```text\n1. Cross Activity (commits/PRs) with Efficiency & flow (wait time, WIP, review time).\n2. Look at PR size: are PRs getting smaller/more numerous due to process pressure?\n3. Check rework: % of commits that revert/fix recent changes.\n4. Read the survey open responses (qualitative signal of real friction).\n```',
+      solution: 'Activity in isolation is misleading (Goodhart law). More commits/PRs may be rework or forced granularity, not more value delivered. Rebalance the SPACE picture: add Efficiency & flow metrics (wait time, WIP) and Performance (CFR, quality), and treat the satisfaction survey as a first-class signal. Stop using Activity as a target; use it only as context. The goal is not more activity, it is more flow with quality.'
+    },
+    {
+      title: 'DORA dashboard with no Lead Time data',
+      difficulty: 'hard',
+      symptom: 'Deployment Frequency and Change Failure Rate show up on the panel, but Lead Time for Changes is empty or shows absurd values (negative / way too many hours).',
+      diagnosis: '```promql\n# Is the lead-time metric being collected?\ncount(pipeline_lead_time_seconds_bucket)\n\n# Are the commit and deploy timestamps correct?\n# Lead time = deploy_time - first_commit_time of the change\nhistogram_quantile(0.5, sum(rate(pipeline_lead_time_seconds_bucket[30d])) by (le))\n```',
+      solution: 'Lead Time is the hardest DORA metric to instrument because it requires correlating the **first commit** of a change with the **moment it deploys** to production. Common causes: the pipeline only records the deploy timestamp (no commit one), or uses the merge timestamp instead of the first commit (underestimates), or there is timezone/clock skew (produces negatives). Fix: capture in the pipeline the commit SHA + first-commit timestamp of the PR and the deploy timestamp, compute the difference at deploy time, and export it as a histogram. Tools like DevLake and Four Keys already do this correlation via the Git API + deploy events.'
     }
   ]
 };

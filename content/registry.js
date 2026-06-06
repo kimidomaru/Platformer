@@ -581,7 +581,10 @@ window.K8S_REGISTRY = {
       topics: [
         { id: 'cilium-service-mesh', name: 'Service Mesh & Gateway API', difficulty: 'hard', path: 'cilium-advanced/cilium-service-mesh', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['service-mesh','gateway-api','mtls','envoy','traffic-splitting','sidecar-free'] },
         { id: 'cilium-bgp-lb', name: 'BGP & Load Balancing', difficulty: 'hard', path: 'cilium-advanced/cilium-bgp-lb', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['bgp','lb-ipam','dsr','maglev','xdp','loadbalancer'] },
-        { id: 'cilium-cluster-mesh', name: 'ClusterMesh & Multi-Cluster', difficulty: 'hard', path: 'cilium-advanced/cilium-cluster-mesh', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['clustermesh','multi-cluster','global-service','failover','disaster-recovery'] }
+        { id: 'cilium-cluster-mesh', name: 'ClusterMesh & Multi-Cluster', difficulty: 'hard', path: 'cilium-advanced/cilium-cluster-mesh', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['clustermesh','multi-cluster','global-service','failover','disaster-recovery'] },
+        { id: 'cilium-tetragon', name: 'Tetragon: Runtime Security', difficulty: 'hard', path: 'cilium-advanced/cilium-tetragon', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['tetragon','ebpf','runtime-security','tracingpolicy','enforcement','observability'], related: ['cilium-fundamentals/cilium-architecture', 'cks-runtime-security/falco', 'cilium-fundamentals/cilium-hubble'] },
+        { id: 'cilium-encryption', name: 'Transparent Encryption (WireGuard/IPsec)', difficulty: 'hard', path: 'cilium-advanced/cilium-encryption', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['wireguard','ipsec','encryption','transparent-encryption','compliance','zero-trust'], related: ['cilium-fundamentals/cilium-architecture', 'cks-cluster-setup/ingress-tls', 'services-networking/network-policies'] },
+        { id: 'cilium-egress-gateway', name: 'Egress Gateway (Static Egress IP)', difficulty: 'hard', path: 'cilium-advanced/cilium-egress-gateway', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['egress-gateway','egress-ip','snat','static-ip','firewall','allowlist'], related: ['cilium-fundamentals/cilium-network-policies', 'services-networking/services', 'cilium-fundamentals/cilium-architecture'] }
       ]
     },
 
@@ -603,7 +606,8 @@ window.K8S_REGISTRY = {
       topics: [
         { id: 'istio-security', name: 'Security & mTLS', difficulty: 'hard', path: 'istio-advanced/istio-security', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['mtls','peerauthentication','authorizationpolicy','requestauthentication','jwt','spiffe'] },
         { id: 'istio-observability', name: 'Observability & Telemetry', difficulty: 'medium', path: 'istio-advanced/istio-observability', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['kiali','jaeger','tracing','metrics','access-log','telemetry-api'] },
-        { id: 'istio-advanced-patterns', name: 'Advanced Traffic Patterns', difficulty: 'hard', path: 'istio-advanced/istio-advanced-patterns', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['canary','circuit-breaker','mirroring','locality-lb','service-entry','multi-cluster','wasm'] }
+        { id: 'istio-advanced-patterns', name: 'Advanced Traffic Patterns', difficulty: 'hard', path: 'istio-advanced/istio-advanced-patterns', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['canary','circuit-breaker','mirroring','locality-lb','service-entry','multi-cluster','wasm'] },
+        { id: 'istio-ambient', name: 'Ambient Mesh (sidecar-less)', difficulty: 'hard', path: 'istio-advanced/istio-ambient', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['ambient','ztunnel','waypoint','hbone','sidecar-less','gateway-api'] }
       ]
     },
 
@@ -685,7 +689,7 @@ window.K8S_REGISTRY = {
       name: 'Crossplane & Platform APIs',
       weight: 0, icon: '\u{2693}', track: ['crossplane'], type: 'skill',
       topics: [
-        { id: 'crossplane-fundamentals', name: 'Crossplane Fundamentals', difficulty: 'medium', path: 'crossplane/crossplane-fundamentals', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['crossplane','control-plane','providers','managed-resources','composite','xrd','cncf'], related: ['platform-engineering/golden-paths', 'cluster-architecture/crds-operators'] },
+        { id: 'crossplane-fundamentals', name: 'Crossplane Fundamentals', difficulty: 'medium', path: 'crossplane/crossplane-fundamentals', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['crossplane','control-plane','providers','managed-resources','composite','xrd','cncf'], related: ['platform-engineering/golden-paths', 'cluster-architecture/crds-operators'] },
         { id: 'crossplane-providers', name: 'Crossplane Providers & MRs', difficulty: 'hard', path: 'crossplane/crossplane-providers', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['provider-aws','provider-gcp','provider-azure','managed-resources','providerconfig','s3','rds','vpc'] },
         { id: 'crossplane-compositions', name: 'Compositions & XRDs', difficulty: 'hard', path: 'crossplane/crossplane-compositions', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['xrd','composition','compositeresource','claim','patches','transforms','pipeline-mode','function'] }
       ]

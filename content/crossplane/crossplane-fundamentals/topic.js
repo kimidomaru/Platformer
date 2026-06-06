@@ -372,7 +372,41 @@ managementPolicy:
       back: '**Instalar Crossplane:**\n\`\`\`bash\nhelm repo add crossplane-stable \\\n  https://charts.crossplane.io/stable\nhelm install crossplane \\\n  crossplane-stable/crossplane \\\n  -n crossplane-system --create-namespace\n\`\`\`\n\n**Instalar Provider:**\n\`\`\`yaml\napiVersion: pkg.crossplane.io/v1\nkind: Provider\nmetadata:\n  name: provider-aws-s3\nspec:\n  package: xpkg.upbound.io/upbound/provider-aws-s3:v1.14.0\n\`\`\`\n\n**Verificar:**\n\`\`\`bash\nkubectl get providers\n# INSTALLED=True, HEALTHY=True\nkubectl get crds | grep aws\n# CRDs dos recursos AWS instalados\n\`\`\`'
     }
   ],
-  lab: null,
+  lab: {
+    scenario: 'Voce tem um cluster Kubernetes (kind/minikube) sem nenhuma credencial de nuvem. Quer aprender o fluxo do Crossplane de ponta a ponta usando o provider-kubernetes, que gerencia objetos do proprio cluster como Managed Resources — assim o lab roda 100% local, sem AWS/GCP.',
+    objective: 'Instalar o Crossplane via Helm, configurar o provider-kubernetes, criar um ProviderConfig e provisionar um Managed Resource (Object) de forma declarativa, entendendo o ciclo Provider -> ProviderConfig -> Managed Resource.',
+    duration: '20-25 minutos',
+    steps: [
+      {
+        title: 'Instalar o Crossplane no cluster',
+        instruction: 'Instale o core do Crossplane no namespace `crossplane-system` usando o Helm chart oficial e confirme que os pods estao Running.',
+        hints: ['O repo Helm e https://charts.crossplane.io/stable', 'Use --create-namespace', 'O deployment principal e crossplane + crossplane-rbac-manager'],
+        solution: '```bash\nhelm repo add crossplane-stable https://charts.crossplane.io/stable\nhelm repo update\nhelm install crossplane crossplane-stable/crossplane \\\n  --namespace crossplane-system --create-namespace\n\nkubectl get pods -n crossplane-system\n```',
+        verify: '```bash\nkubectl get deploy -n crossplane-system\n# Saida esperada: crossplane e crossplane-rbac-manager com READY 1/1\nkubectl get crds | grep crossplane.io | head\n# Saida esperada: providers.pkg.crossplane.io, configurations.pkg.crossplane.io, etc.\n```'
+      },
+      {
+        title: 'Instalar o provider-kubernetes',
+        instruction: 'Crie um recurso `Provider` apontando para o provider-kubernetes (gerencia objetos do proprio cluster, sem credenciais de nuvem) e aguarde ficar Healthy.',
+        hints: ['kind: Provider, apiVersion pkg.crossplane.io/v1', 'package: xpkg.upbound.io/crossplane-contrib/provider-kubernetes:v0.13.0', 'kubectl get provider mostra INSTALLED e HEALTHY'],
+        solution: '```bash\ncat <<EOF | kubectl apply -f -\napiVersion: pkg.crossplane.io/v1\nkind: Provider\nmetadata:\n  name: provider-kubernetes\nspec:\n  package: xpkg.upbound.io/crossplane-contrib/provider-kubernetes:v0.13.0\nEOF\n\nkubectl get provider provider-kubernetes -w\n```',
+        verify: '```bash\nkubectl get provider provider-kubernetes\n# Saida esperada: INSTALLED=True  HEALTHY=True\nkubectl get crds | grep kubernetes.crossplane.io\n# Saida esperada: objects.kubernetes.crossplane.io (o CRD do Managed Resource)\n```'
+      },
+      {
+        title: 'Configurar o ProviderConfig (identidade do provider)',
+        instruction: 'Crie um `ProviderConfig` que diz ao provider-kubernetes para usar a ServiceAccount do proprio pod (credentials source: InjectedIdentity), evitando qualquer secret.',
+        hints: ['apiVersion kubernetes.crossplane.io/v1alpha1, kind ProviderConfig', 'spec.credentials.source: InjectedIdentity', 'O provider precisa de RBAC; em lab voce pode dar cluster-admin ao SA do provider'],
+        solution: '```bash\ncat <<EOF | kubectl apply -f -\napiVersion: kubernetes.crossplane.io/v1alpha1\nkind: ProviderConfig\nmetadata:\n  name: default\nspec:\n  credentials:\n    source: InjectedIdentity\nEOF\n\n# RBAC para o SA do provider (apenas para o lab)\nSA=$(kubectl get sa -n crossplane-system -o name | grep provider-kubernetes | head -1)\nkubectl create clusterrolebinding provider-kubernetes-admin \\\n  --clusterrole=cluster-admin \\\n  --serviceaccount=crossplane-system:$(basename $SA)\n```',
+        verify: '```bash\nkubectl get providerconfig.kubernetes.crossplane.io default\n# Saida esperada: o ProviderConfig "default" existe (AGE preenchido)\n```'
+      },
+      {
+        title: 'Provisionar um Managed Resource declarativo',
+        instruction: 'Crie um `Object` (Managed Resource do provider-kubernetes) que faz o Crossplane provisionar e reconciliar um ConfigMap no cluster. Edite/Delete o ConfigMap a mao e observe o Crossplane reconciliar de volta (drift correction).',
+        hints: ['kind: Object, apiVersion kubernetes.crossplane.io/v1alpha2', 'spec.forProvider.manifest contem o ConfigMap desejado', 'Delete o ConfigMap e veja o Crossplane recria-lo'],
+        solution: '```bash\ncat <<EOF | kubectl apply -f -\napiVersion: kubernetes.crossplane.io/v1alpha2\nkind: Object\nmetadata:\n  name: platform-config\nspec:\n  forProvider:\n    manifest:\n      apiVersion: v1\n      kind: ConfigMap\n      metadata:\n        name: platform-config\n        namespace: default\n      data:\n        owner: platform-team\n        managedBy: crossplane\n  providerConfigRef:\n    name: default\nEOF\n\n# Drift test: apague o ConfigMap e veja o Crossplane recriar\nkubectl delete configmap platform-config -n default\nsleep 5\nkubectl get configmap platform-config -n default\n```',
+        verify: '```bash\nkubectl get object.kubernetes.crossplane.io platform-config\n# Saida esperada: SYNCED=True  READY=True\nkubectl get configmap platform-config -n default -o jsonpath=\'{.data.managedBy}{\"\\n\"}\'\n# Saida esperada: crossplane (recriado pelo Crossplane mesmo apos delete = drift correction)\n```'
+      }
+    ]
+  },
   troubleshooting: [
     {
       title: 'Managed Resource fica em Synced=False com erro de credenciais',

@@ -6,6 +6,15 @@ window.K8S_CONTENT['crossplane/crossplane-compositions'] = {
 ## Relevancia
 Compositions e XRDs sao o nivel mais avancado do Crossplane — onde voce define sua propria API de plataforma. Em vez de expor MRs diretamente (provider-aws-s3), voce cria abstractions (Databases, Environments, Applications) que times de desenvolvimento consomem sem precisar conhecer os detalhes da cloud. Este e o verdadeiro poder do "Platform Engineering" com Crossplane.
 
+## ⚠️ Currency: Pipeline (Functions) e o modo ATUAL — Patch-and-Transform e legado
+> **Importante (Crossplane v1.17+):** o modo nativo **Patch-and-Transform** (campo \`spec.resources\` com \`patches\`/\`transforms\` direto na Composition) esta **DEPRECATED**. O modo recomendado e **default** hoje e o **Pipeline mode** com **Composition Functions** (\`spec.mode: Pipeline\` + \`spec.pipeline\`). Ate a logica de P&T classica agora roda como uma *function* (\`function-patch-and-transform\`).
+>
+> **O que isso muda na pratica:**
+> - Escreva novas Compositions com \`mode: Pipeline\`. Nao internalize \`spec.resources\` como o jeito "normal".
+> - P&T vira *um passo* dentro do pipeline (via \`function-patch-and-transform\`), nao o mecanismo raiz.
+> - Functions permitem logica que P&T nunca conseguiu: loops, condicionais, templates (KCL/Go-templating), validacao, e composicao de varias functions em sequencia.
+> - As secoes abaixo sobre \`patches\`/\`transforms\` continuam validas como **referencia conceitual** (e porque voce vai ve-las em Compositions existentes), mas o **alvo** e o Pipeline mode mostrado em "Composition com Pipeline Mode (Functions)".
+
 ## Conceitos Fundamentais
 
 ### A Hierarquia Completa
