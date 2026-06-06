@@ -36,23 +36,31 @@ var Trails = (function () {
           ]
         },
         {
-          label: { pt: 'Nível 3 — Empacotamento & GitOps', en: 'Level 3 — Packaging & GitOps' },
+          label: { pt: 'Nível 3 — Empacotamento, GitOps & CI', en: 'Level 3 — Packaging, GitOps & CI' },
           topics: [
             'app-deployment/helm',
             'helm/helm-chart-development',
+            'helm/helm-advanced',
             'argocd-fundamentals/argocd-architecture',
             'argocd-fundamentals/argocd-applications',
             'argocd-fundamentals/argocd-sync-strategies',
-            'fluxcd/fluxcd-fundamentals'
+            'argocd-fundamentals/argocd-projects',
+            'fluxcd/fluxcd-fundamentals',
+            'fluxcd/fluxcd-sources',
+            'cicd/tekton'
           ]
         },
         {
-          label: { pt: 'Nível 4 — Automação & Confiabilidade', en: 'Level 4 — Automation & Reliability' },
+          label: { pt: 'Nível 4 — GitOps Avançado & Confiabilidade', en: 'Level 4 — Advanced GitOps & Reliability' },
           topics: [
+            'argocd-patterns/argocd-app-of-apps',
+            'argocd-patterns/argocd-advanced',
+            'fluxcd/fluxcd-advanced',
             'kyverno/kyverno-policies',
             'keda/keda-fundamentals',
             'observability/probes',
-            'iac/terraform-patterns'
+            'iac/terraform-patterns',
+            'iac/terraform-testing'
           ]
         },
         {
@@ -102,10 +110,15 @@ var Trails = (function () {
             'prom-fundamentals/promql-basics',
             'prom-fundamentals/promql-advanced',
             'prom-fundamentals/prom-alerting',
+            'prom-fundamentals/prom-service-discovery',
+            'prom-fundamentals/prom-exporters',
             'prom-grafana/grafana-dashboards',
             'prom-grafana/grafana-alerting',
             'loki/loki-fundamentals',
-            'opentelemetry/otel-k8s'
+            'loki/logql-alerting',
+            'opentelemetry/otel-fundamentals',
+            'opentelemetry/otel-k8s',
+            'opentelemetry/otel-collector'
           ]
         },
         {
@@ -113,9 +126,14 @@ var Trails = (function () {
           topics: [
             'chaos-engineering/chaos-fundamentals',
             'chaos-engineering/chaos-mesh',
+            'chaos-engineering/litmus-chaos',
             'sre-fundamentals/sre-capacity-planning',
             'sre-operations/sre-deployment-safety',
-            'finops/finops-practices'
+            'sre-operations/sre-capacity',
+            'keda/keda-fundamentals',
+            'keda/keda-advanced',
+            'finops/finops-practices',
+            'finops/k8s-cost-management'
           ]
         },
         {
@@ -150,12 +168,17 @@ var Trails = (function () {
         {
           label: { pt: 'Nível 2 — Extensibilidade & Policy', en: 'Level 2 — Extensibility & Policy' },
           topics: [
+            'kyverno/kyverno-fundamentals',
             'kyverno/kyverno-policies',
             'kyverno/kyverno-advanced',
             'opa/opa-gatekeeper',
+            'opa/opa-beyond-k8s',
             'keda/keda-fundamentals',
             'crossplane/crossplane-fundamentals',
-            'crossplane/crossplane-compositions'
+            'crossplane/crossplane-providers',
+            'crossplane/crossplane-compositions',
+            'security-tooling/cert-manager',
+            'security-tooling/external-secrets'
           ]
         },
         {
@@ -164,10 +187,16 @@ var Trails = (function () {
             'cilium-fundamentals/cilium-architecture',
             'cilium-fundamentals/cilium-network-policies',
             'cilium-fundamentals/cilium-hubble',
+            'cilium-advanced/cilium-service-mesh',
+            'cilium-advanced/cilium-bgp-lb',
+            'cilium-advanced/cilium-cluster-mesh',
             'istio-fundamentals/istio-architecture',
             'istio-fundamentals/istio-traffic-mgmt',
+            'istio-fundamentals/istio-gateway',
             'istio-advanced/istio-security',
-            'kong/kong-fundamentals'
+            'istio-advanced/istio-observability',
+            'kong/kong-fundamentals',
+            'kong/kong-plugins'
           ]
         },
         {
@@ -179,7 +208,26 @@ var Trails = (function () {
             'platform-engineering/platform-metrics',
             'helm/helm-chart-development',
             'iac/terraform-k8s',
-            'databases-k8s/db-k8s-fundamentals'
+            'fluxcd/fluxcd-sources',
+            'fluxcd/fluxcd-advanced',
+            'databases-k8s/db-k8s-fundamentals',
+            'databases-k8s/postgresql-k8s',
+            'databases-k8s/redis-k8s',
+            'finops/k8s-cost-management'
+          ]
+        },
+        {
+          label: { pt: 'Nível 5 — Especialização Avançada', en: 'Level 5 — Advanced Specialization' },
+          topics: [
+            'cilium-advanced/cilium-tetragon',
+            'cilium-advanced/cilium-encryption',
+            'cilium-advanced/cilium-egress-gateway',
+            'istio-advanced/istio-advanced-patterns',
+            'istio-advanced/istio-ambient',
+            'kong/kong-advanced',
+            'argocd-patterns/argocd-app-of-apps',
+            'argocd-patterns/argocd-advanced',
+            'security-tooling/vault-k8s'
           ]
         },
         {
@@ -241,7 +289,10 @@ var Trails = (function () {
             'az305-data/relational-nosql',
             'az305-security/security-design',
             'az305-continuity/bcdr-design',
-            'az305-application/microservices-design'
+            'az305-application/microservices-design',
+            'iac/terraform-fundamentals',
+            'iac/terraform-patterns',
+            'iac/terraform-testing'
           ]
         },
         {
@@ -351,9 +402,51 @@ var Trails = (function () {
           topics: [
             'cilium-fundamentals/cilium-architecture',
             'cilium-fundamentals/cilium-hubble',
+            'cilium-advanced/cilium-service-mesh',
+            'cilium-advanced/cilium-bgp-lb',
+            'cilium-advanced/cilium-cluster-mesh',
+            'cilium-advanced/cilium-tetragon',
+            'cilium-advanced/cilium-encryption',
+            'cilium-advanced/cilium-egress-gateway',
             'istio-fundamentals/istio-architecture',
+            'istio-advanced/istio-security',
+            'istio-advanced/istio-ambient',
             'security-tooling/vault-k8s',
+            'argocd-patterns/argocd-app-of-apps',
             'ai-engineering/llm-fundamentals'
+          ]
+        }
+      ]
+    },
+    {
+      id: 'ai-devops',
+      icon: '🤖',
+      color: '#9b59b6',
+      label: { pt: 'AI for DevOps / SRE', en: 'AI for DevOps / SRE' },
+      summary: {
+        pt: 'Usar IA generativa e agêntica para acelerar engenharia de plataforma, operações e automação.',
+        en: 'Use generative and agentic AI to accelerate platform engineering, operations and automation.'
+      },
+      levels: [
+        {
+          label: { pt: 'Nível 1 — Fundamentos de LLMs', en: 'Level 1 — LLM Fundamentals' },
+          topics: [
+            'ai-engineering/llm-fundamentals',
+            'ai-engineering/copilot-devops'
+          ]
+        },
+        {
+          label: { pt: 'Nível 2 — Ferramentas & Assistência', en: 'Level 2 — Tools & Assistance' },
+          topics: [
+            'ai-engineering/claude-code-platform',
+            'ai-engineering/rag-platform'
+          ]
+        },
+        {
+          label: { pt: 'Nível 3 — Agentes & Automação', en: 'Level 3 — Agents & Automation' },
+          topics: [
+            'ai-engineering/llm-harness',
+            'ai-engineering/sdd-cases'
           ]
         }
       ]
