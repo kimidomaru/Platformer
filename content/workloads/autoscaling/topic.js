@@ -866,21 +866,73 @@ Diferencial do KEDA: pode escalar para **zero replicas** (HPA nativo tem minRepl
   troubleshooting: [
     {
       title: 'HPA mostrando "unknown" para CPU e nao escalando',
+      difficulty: 'medium',
       symptom: 'O HPA foi criado mas o campo TARGETS mostra "<unknown>/50%" em vez da utilizacao real. O Deployment nao e escalado automaticamente mesmo com carga alta.',
       diagnosis: '```bash\n# Ver status do HPA\nkubectl get hpa web-app\n# TARGETS: <unknown>/50%\n\n# Descrever para ver o erro\nkubectl describe hpa web-app\n# Procurar: "unable to get metrics for resource cpu"\n# Ou: "FailedGetResourceMetric"\n\n# Verificar se o Metrics Server esta rodando\nkubectl get pods -n kube-system | grep metrics-server\n\n# Testar se metricas estao disponiveis\nkubectl top pods\nkubectl top nodes\n# Se falhar: "error: Metrics API not available"\n\n# Verificar se os Pods tem resources.requests definidos\nkubectl describe pod <nome-do-pod> | grep -A5 "Requests"\n```',
       solution: '```bash\n# Causa 1: Metrics Server nao instalado\nkubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml\n\n# Para clusters locais (certificado auto-assinado)\nkubectl patch deployment metrics-server \\\n  -n kube-system \\\n  --type=json \\\n  -p \'[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]\'\n\n# Aguardar o Metrics Server ficar pronto\nkubectl rollout status deployment metrics-server -n kube-system\n\n# Causa 2: Pods sem resources.requests\nkubectl patch deployment web-app \\\n  --type=json \\\n  -p \'[{"op":"add","path":"/spec/template/spec/containers/0/resources","value":{"requests":{"cpu":"100m","memory":"64Mi"}}}]\'\n\n# Verificar que o HPA agora mostra valores reais\nkubectl get hpa web-app\n# TARGETS deve mostrar algo como: 5%/50%\n```'
     },
     {
       title: 'Pod reiniciando continuamente (CrashLoopBackOff) por Liveness Probe',
+      difficulty: 'medium',
       symptom: 'O Pod entra em CrashLoopBackOff. Os restarts aumentam a cada ciclo. A aplicacao parece funcionar quando testada manualmente. "kubectl describe pod" mostra "Liveness probe failed" nos Events.',
       diagnosis: '```bash\n# Ver restarts e status\nkubectl get pod <nome> -o wide\n\n# Descrever para ver eventos de probe\nkubectl describe pod <nome>\n# Procurar: "Liveness probe failed: HTTP probe failed"\n# Ou: "Liveness probe failed: Get http://...: dial tcp ... connection refused"\n\n# Verificar logs do container (antes do ultimo restart)\nkubectl logs <nome> --previous\n\n# Testar o endpoint manualmente\nkubectl exec <nome> -- wget -q -O- http://localhost:8080/healthz\n\n# Verificar timing: a aplicacao pode nao ter tempo de inicializar\nkubectl get pod <nome> -o jsonpath=\'{.spec.containers[0].livenessProbe}\'\n```',
       solution: '```bash\n# Causa 1: initialDelaySeconds muito baixo\n# A aplicacao nao tem tempo de inicializar antes da primeira probe\n# Solucao A: Aumentar initialDelaySeconds\nkubectl patch deployment <nome> --type=json -p \'[{"op":"replace","path":"/spec/template/spec/containers/0/livenessProbe/initialDelaySeconds","value":30}]\'\n\n# Solucao B (melhor): Adicionar Startup Probe\n# A startup probe da tempo ao app e so depois ativa a liveness\n# startupProbe:\n#   httpGet:\n#     path: /healthz\n#     port: 8080\n#   failureThreshold: 30\n#   periodSeconds: 10\n\n# Causa 2: endpoint da probe incorreto (path ou porta errada)\n# Verificar qual porta a aplicacao realmente usa\nkubectl exec <nome> -- ss -tlnp\n# Corrigir path/porta na probe\n\n# Causa 3: timeoutSeconds muito baixo para aplicacao lenta\n# Aumentar de 1s para 5-10s\n\n# Causa 4: Liveness verifica dependencia externa (anti-pattern)\n# A liveness deve ser SIMPLES e LOCAL\n# Remover checagem de DB/API externas da liveness\n# Mover para readiness probe\n```'
     },
     {
       title: 'HPA nao escala para baixo (scale down nao funciona)',
+      difficulty: 'medium',
       symptom: 'O HPA escalou o Deployment para muitas replicas durante pico de carga, mas nao esta reduzindo as replicas mesmo com a carga tendo diminuido ha mais de 10 minutos.',
       diagnosis: '```bash\n# Ver status atual do HPA\nkubectl get hpa <nome>\n# Verificar TARGETS: se o uso esta abaixo do target\n\n# Descrever para ver condicoes\nkubectl describe hpa <nome>\n# Procurar:\n# - "ScaleDown: disabled" \n# - "stabilization window"\n# - "behavior policies"\n\n# Verificar se ha behavior customizado\nkubectl get hpa <nome> -o yaml | grep -A20 behavior\n\n# Verificar metricas atuais\nkubectl top pods -l app=<label>\n\n# Verificar se existem multiplas metricas\n# O HPA usa a que resultar em MAIS replicas\nkubectl get hpa <nome> -o jsonpath=\'{.spec.metrics}\'\n```',
       solution: '```bash\n# Causa 1: stabilizationWindowSeconds muito alto\n# O padrao para scale down e 300s (5 min)\n# Se configurado com valor alto, aguarde\n\n# Reduzir a janela de estabilizacao\nkubectl patch hpa <nome> --type=merge -p \'{\n  "spec": {\n    "behavior": {\n      "scaleDown": {\n        "stabilizationWindowSeconds": 120\n      }\n    }\n  }\n}\'\n\n# Causa 2: selectPolicy: Disabled no scaleDown\n# Isso DESABILITA o scale down completamente\n# Alterar para Min ou Max\n\n# Causa 3: Multiplas metricas - uma delas ainda e alta\n# O HPA usa o valor que resulta em mais replicas\n# Verificar todas as metricas individuais\nkubectl describe hpa <nome>\n\n# Causa 4: Policy limitada (ex: max 1 pod por 5 min)\n# O scale down pode estar acontecendo, mas muito devagar\n# Ajustar policies:\n# scaleDown:\n#   policies:\n#   - type: Pods\n#     value: 4\n#     periodSeconds: 60\n```'
+    },
+    {
+      title: 'Pods Pending e o Cluster Autoscaler nao adiciona nodes',
+      difficulty: 'hard',
+      symptom: 'Varios Pods ficam em estado Pending com evento "0/3 nodes are available: Insufficient cpu". O Cluster Autoscaler esta instalado, mas nenhum node novo e provisionado mesmo apos varios minutos.',
+      diagnosis: `\`\`\`bash
+# 1. Confirmar o motivo do Pending (precisa ser falta de recurso/agendamento)
+kubectl describe pod <pod-pending> | grep -A10 Events
+# Esperado: "Insufficient cpu/memory" ou "didn't match node selector"
+
+# 2. Ver os logs/decisoes do Cluster Autoscaler
+kubectl -n kube-system logs deploy/cluster-autoscaler --tail=50 | grep -i 'scale\\|node group\\|max'
+
+# 3. Ver o status do CA (registra por que NAO escalou)
+kubectl -n kube-system get configmap cluster-autoscaler-status -o yaml
+
+# 4. Conferir limites do node group (max ja atingido?)
+# (na cloud) verificar minSize/maxSize do ASG/MIG/node pool
+
+# 5. O Pod cabe em ALGUM tipo de node novo?
+kubectl get pod <pod> -o jsonpath='{.spec.containers[*].resources.requests}'
+\`\`\``,
+      solution: `O Cluster Autoscaler **so adiciona um node se o Pod Pending puder ser agendado nele**. Causas comuns de "nao escala":
+
+1. **Node group ja no maxSize** — o CA respeita o \`--max-nodes\`/maxSize do grupo. Aumente o limite do node group (ASG/MIG/pool) na cloud.
+
+2. **Pod requests maiores que qualquer node disponivel** — se o Pod pede 8 CPU e o maior node tem 4, nenhum node novo o acomoda. O CA nao escala. Reduza os requests ou use um node group com instancias maiores.
+
+3. **Restricoes que nenhum node novo satisfaz** — nodeSelector/affinity/taints que nenhum node do grupo escalavel atende. O CA so cria nodes do template do grupo; se o template nao tem o label/taint exigido, ele nao ajuda.
+
+4. **Pods "unschedulable" mas com PodDisruptionBudget/local storage** que o CA ignora por anotacao:
+\`\`\`bash
+# CA ignora pods com esta annotation ao decidir scale-up/down
+# "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+kubectl get pod <pod> -o jsonpath='{.metadata.annotations}'
+\`\`\`
+
+5. **expander/node group mal configurado** — sem node group elegivel (\`--nodes=min:max:asgName\` ausente ou tag errada na cloud).
+
+\`\`\`bash
+# Acao tipica: subir o teto do grupo (exemplo conceitual)
+# AWS:   aws autoscaling update-auto-scaling-group --max-size 6 ...
+# Depois, observar o CA decidir o scale-up:
+kubectl -n kube-system logs deploy/cluster-autoscaler -f | grep -i 'scale_up\\|final'
+\`\`\`
+
+**Diferenca-chave (cai em prova):** o **HPA** muda o numero de **Pods**; o **Cluster Autoscaler** muda o numero de **nodes**. Pods Pending por falta de CPU sao problema do CA, nao do HPA.
+
+**Prevencao:** defina requests realistas, dimensione o maxSize do node group para o pico e alerte sobre Pods Pending de longa duracao.`
     }
   ]
 };

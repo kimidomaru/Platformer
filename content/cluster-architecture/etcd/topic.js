@@ -756,21 +756,83 @@ grep etcd-servers /etc/kubernetes/manifests/kube-apiserver.yaml
   troubleshooting: [
     {
       title: 'etcdctl: connection refused ao tentar fazer backup',
+      difficulty: 'medium',
       symptom: 'Ao executar "etcdctl snapshot save", o comando falha com erro: "Error: dial tcp 127.0.0.1:2379: connect: connection refused" ou "context deadline exceeded". O backup nao e criado.',
       diagnosis: '```bash\n# 1. Verificar se o pod do etcd esta rodando\nkubectl get pods -n kube-system | grep etcd\n\n# 2. Verificar se o manifesto existe\nls /etc/kubernetes/manifests/etcd.yaml\n\n# 3. Verificar logs do etcd\nkubectl logs -n kube-system etcd-<node-name> --tail=30\n\n# 4. Verificar se o endpoint esta correto\ngrep "listen-client-urls" /etc/kubernetes/manifests/etcd.yaml\n\n# 5. Verificar se as flags TLS estao corretas\nls -la /etc/kubernetes/pki/etcd/\n\n# 6. Testar conexao com curl\ncurl -k https://127.0.0.1:2379/health \\\n  --cert /etc/kubernetes/pki/etcd/healthcheck-client.crt \\\n  --key /etc/kubernetes/pki/etcd/healthcheck-client.key \\\n  --cacert /etc/kubernetes/pki/etcd/ca.crt\n\n# 7. Verificar se a porta esta em uso\nss -tlnp | grep 2379\n```',
       solution: '```bash\n# Causa 1: ETCDCTL_API nao exportado ou endpoint errado\nexport ETCDCTL_API=3\n\n# Verificar o endpoint correto no manifesto\nGREP_ENDPOINT=$(grep "listen-client-urls" /etc/kubernetes/manifests/etcd.yaml | awk -F= \'{print $2}\')\necho "Endpoint: $GREP_ENDPOINT"\n\n# Usar o endpoint correto no comando\nETCDCTL_API=3 etcdctl \\\n  --endpoints=${GREP_ENDPOINT} \\\n  --cacert=/etc/kubernetes/pki/etcd/ca.crt \\\n  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \\\n  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key \\\n  endpoint health\n\n# Causa 2: Certificado incorreto (usar healthcheck-client em vez de server)\nETCDCTL_API=3 etcdctl \\\n  --endpoints=https://127.0.0.1:2379 \\\n  --cacert=/etc/kubernetes/pki/etcd/ca.crt \\\n  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \\\n  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key \\\n  snapshot save /opt/etcd-backup/snapshot.db\n\n# Causa 3: etcd parado - verificar e reiniciar static pod\nls /etc/kubernetes/manifests/ | grep etcd\n# Se nao estiver la, mover de volta:\nmv /tmp/etcd.yaml /etc/kubernetes/manifests/\nsleep 15\nkubectl get pods -n kube-system | grep etcd\n```'
     },
     {
       title: 'Cluster nao responde apos restauracao do etcd',
+      difficulty: 'hard',
       symptom: 'Apos restaurar o etcd a partir de um snapshot e reiniciar o manifesto, o kubectl para de responder, os pods ficam em estado desconhecido e o API Server nao esta acessivel.',
       diagnosis: '```bash\n# 1. Verificar se o etcd iniciou corretamente\ntail -f /var/log/pods/kube-system_etcd-*/etcd/*.log\n\n# 2. Verificar se o manifesto do etcd tem o data-dir correto\ngrep data-dir /etc/kubernetes/manifests/etcd.yaml\n\n# 3. Verificar permissoes do data-dir\nls -la /var/lib/etcd\n\n# 4. Verificar se o API Server consegue conectar ao etcd\ntail -50 /var/log/pods/kube-system_kube-apiserver-*/kube-apiserver/*.log\n\n# 5. Verificar se o etcd esta ouvindo na porta\nss -tlnp | grep 2379\n\n# 6. Verificar crisp do kubelet\njournalctl -u kubelet --since "10 minutes ago" | grep -i "etcd\\|apiserver"\n```',
       solution: '```bash\n# Causa 1: Permissoes incorretas no data-dir restaurado\nchown -R etcd:etcd /var/lib/etcd\nchmod -R 700 /var/lib/etcd\n\n# Reiniciar etcd\nmv /etc/kubernetes/manifests/etcd.yaml /tmp/\nsleep 10\nmv /tmp/etcd.yaml /etc/kubernetes/manifests/\n\n# Causa 2: data-dir no manifesto nao coincide com o diretorio restaurado\n# Verificar e corrigir o manifesto\ngrep data-dir /etc/kubernetes/manifests/etcd.yaml\n# Se restaurou para /var/lib/etcd-restored, atualizar:\nsed -i \'s|--data-dir=/var/lib/etcd|--data-dir=/var/lib/etcd-restored|\' \\\n  /etc/kubernetes/manifests/etcd.yaml\n\n# Causa 3: Volumes do manifesto nao atualizados\n# O hostPath no volumes tambem precisa ser atualizado\nvi /etc/kubernetes/manifests/etcd.yaml\n# Atualizar a secao volumes.hostPath.path para o novo diretorio\n\n# Verificar recuperacao\nsleep 30\nETCDCTL_API=3 etcdctl \\\n  --endpoints=https://127.0.0.1:2379 \\\n  --cacert=/etc/kubernetes/pki/etcd/ca.crt \\\n  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \\\n  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key \\\n  endpoint health\n\nkubectl get nodes\n```'
     },
     {
       title: 'etcd com alta latencia e erros "etcdserver: request timed out"',
+      difficulty: 'hard',
       symptom: 'O API Server lanca erros esporadicos como "etcdserver: request timed out" ou "context deadline exceeded". Operacoes kubectl ficam lentas ou travam. Os logs do etcd mostram avisos de "slow fdatasync" ou "failed to send out heartbeat on time".',
       diagnosis: '```bash\n# 1. Verificar latencia do disco no node do etcd\n# (alta latencia de I/O e a causa mais comum)\niostat -x 1 5\n# Ou:\ndd if=/dev/zero of=/var/lib/etcd/test-latency bs=4096 count=1000 oflag=dsync\nrm /var/lib/etcd/test-latency\n# Latencia > 10ms indica problema de disco\n\n# 2. Verificar tamanho do banco de dados do etcd\nETCDCTL_API=3 etcdctl \\\n  --endpoints=https://127.0.0.1:2379 \\\n  --cacert=/etc/kubernetes/pki/etcd/ca.crt \\\n  --cert=/etc/kubernetes/pki/etcd/server.crt \\\n  --key=/etc/kubernetes/pki/etcd/server.key \\\n  endpoint status --write-out=table\n# dbSize muito grande indica necessidade de compactacao\n\n# 3. Ver logs do etcd para mensagens de lentidao\nkubectl logs -n kube-system etcd-<node> --tail=100 | grep -i "slow\\|timeout\\|heartbeat"\n\n# 4. Verificar uso de CPU e memoria no node\ntop -n 1\nfree -h\n\n# 5. Verificar se outros processos estao usando muito I/O\niotop -o\n```',
       solution: '```bash\n# Causa 1: Banco de dados grande - compactar e defragmentar\nREV=$(ETCDCTL_API=3 etcdctl \\\n  --endpoints=https://127.0.0.1:2379 \\\n  --cacert=/etc/kubernetes/pki/etcd/ca.crt \\\n  --cert=/etc/kubernetes/pki/etcd/server.crt \\\n  --key=/etc/kubernetes/pki/etcd/server.key \\\n  endpoint status --write-out=json | python3 -c \\\n  "import json,sys; data=json.load(sys.stdin); print(data[0][\'Status\'][\'header\'][\'revision\'])")\n\nETCDCTL_API=3 etcdctl \\\n  --endpoints=https://127.0.0.1:2379 \\\n  --cacert=/etc/kubernetes/pki/etcd/ca.crt \\\n  --cert=/etc/kubernetes/pki/etcd/server.crt \\\n  --key=/etc/kubernetes/pki/etcd/server.key \\\n  compact $REV\n\nETCDCTL_API=3 etcdctl \\\n  --endpoints=https://127.0.0.1:2379 \\\n  --cacert=/etc/kubernetes/pki/etcd/ca.crt \\\n  --cert=/etc/kubernetes/pki/etcd/server.crt \\\n  --key=/etc/kubernetes/pki/etcd/server.key \\\n  defrag\n\n# Causa 2: Disco lento - mover data-dir para disco SSD dedicado\n# Parar etcd\nmv /etc/kubernetes/manifests/etcd.yaml /tmp/\nsleep 10\n\n# Mover dados para o novo disco (ex: SSD montado em /mnt/ssd)\nrsync -av /var/lib/etcd/ /mnt/ssd/etcd/\nchown -R etcd:etcd /mnt/ssd/etcd\n\n# Atualizar manifesto do etcd\nsed -i \'s|/var/lib/etcd|/mnt/ssd/etcd|g\' /tmp/etcd.yaml\n\n# Reiniciar etcd\nmv /tmp/etcd.yaml /etc/kubernetes/manifests/\n\n# Causa 3: Aumentar os timeouts do etcd no manifesto\n# Adicionar ao command do etcd:\n# - --heartbeat-interval=250 (padrao: 100ms)\n# - --election-timeout=2500 (padrao: 1000ms)\nvi /etc/kubernetes/manifests/etcd.yaml\n\n# Verificar melhora\nETCDCTL_API=3 etcdctl \\\n  --endpoints=https://127.0.0.1:2379 \\\n  --cacert=/etc/kubernetes/pki/etcd/ca.crt \\\n  --cert=/etc/kubernetes/pki/etcd/server.crt \\\n  --key=/etc/kubernetes/pki/etcd/server.key \\\n  endpoint status --write-out=table\n```'
+    },
+    {
+      title: 'Membro do etcd HA caido: remover o defeituoso e adicionar um novo',
+      difficulty: 'hard',
+      symptom: 'Em um cluster etcd com 3 membros (HA), um node morreu. `etcdctl member list` mostra um membro como unreachable/unstarted e o cluster funciona mas perdeu a tolerancia a falhas. Voce precisa substituir o membro defeituoso.',
+      diagnosis: `\`\`\`bash
+# Alias para encurtar (rode no node de um membro saudavel)
+alias e='ETCDCTL_API=3 etcdctl \\
+  --endpoints=https://127.0.0.1:2379 \\
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \\
+  --cert=/etc/kubernetes/pki/etcd/server.crt \\
+  --key=/etc/kubernetes/pki/etcd/server.key'
+
+# 1. Listar membros e identificar o defeituoso
+e member list -w table
+# Procure o membro sem nome (unstarted) ou cujo node esta down
+
+# 2. Confirmar a saude por endpoint (o membro morto falha)
+e endpoint health --cluster
+
+# 3. Anotar o ID hex do membro defeituoso (1a coluna do member list)
+\`\`\``,
+      solution: `**Sequencia correta: REMOVER o membro defeituoso ANTES de adicionar o novo** (etcd exige quorum; nunca adicione um 4o membro a um cluster ja degradado sem antes remover o morto).
+
+\`\`\`bash
+# 1. Remover o membro defeituoso pelo ID (ex.: 8211f1d0f64f3269)
+e member remove 8211f1d0f64f3269
+# Agora o cluster tem 2 membros saudaveis (quorum mantido)
+
+# 2. Adicionar o novo membro (ainda em "unstarted" ate ele subir)
+e member add etcd-node3 \\
+  --peer-urls=https://10.0.0.13:2380
+# A saida imprime variaveis de ambiente (ETCD_NAME,
+# ETCD_INITIAL_CLUSTER, ETCD_INITIAL_CLUSTER_STATE=existing)
+\`\`\`
+
+**3. No NOVO node**, suba o etcd com \`--initial-cluster-state=existing\` e o \`--initial-cluster\` retornado:
+\`\`\`bash
+# Limpar qualquer data-dir antigo no node novo
+rm -rf /var/lib/etcd/*
+
+# No manifesto/unit do etcd do node novo, garantir:
+#   --initial-cluster-state=existing
+#   --initial-cluster=etcd-node1=https://10.0.0.11:2380,etcd-node2=...,etcd-node3=https://10.0.0.13:2380
+#   --name=etcd-node3
+\`\`\`
+
+**4. Validar a recuperacao:**
+\`\`\`bash
+e member list -w table          # 3 membros, todos started
+e endpoint health --cluster     # todos healthy
+\`\`\`
+
+**Armadilhas:**
+- Adicionar antes de remover quebra o quorum (3→4 com 1 morto = so 2 de 4 vivos, sem maioria).
+- Esquecer de limpar o data-dir do node novo causa "member already bootstrapped".
+- Use \`--initial-cluster-state=existing\` (nao \`new\`) ao juntar a um cluster existente.
+
+**Prevencao:** mantenha numero IMPAR de membros (3 ou 5) e monitore \`etcd_server_has_leader\` no Prometheus.`
     }
   ]
 };

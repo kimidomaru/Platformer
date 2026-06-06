@@ -653,6 +653,55 @@ kubectl get hpa <name> -o yaml | grep -A5 scaleTargetRef
 
 kubectl get deployment  # Compare with scaleTargetRef.name
 \`\`\``
+    },
+    {
+      title: 'Pods Pending and the Cluster Autoscaler does not add nodes',
+      difficulty: 'hard',
+      symptom: 'Several Pods stay Pending with the event "0/3 nodes are available: Insufficient cpu". The Cluster Autoscaler is installed, but no new node is provisioned even after several minutes.',
+      diagnosis: `\`\`\`bash
+# 1. Confirm the Pending reason (must be lack of resource/scheduling)
+kubectl describe pod <pending-pod> | grep -A10 Events
+# Expected: "Insufficient cpu/memory" or "didn't match node selector"
+
+# 2. See the Cluster Autoscaler logs/decisions
+kubectl -n kube-system logs deploy/cluster-autoscaler --tail=50 | grep -i 'scale\\|node group\\|max'
+
+# 3. See the CA status (records why it did NOT scale)
+kubectl -n kube-system get configmap cluster-autoscaler-status -o yaml
+
+# 4. Check node group limits (max already reached?)
+# (in cloud) check the ASG/MIG/node pool minSize/maxSize
+
+# 5. Does the Pod fit on ANY new node type?
+kubectl get pod <pod> -o jsonpath='{.spec.containers[*].resources.requests}'
+\`\`\``,
+      solution: `The Cluster Autoscaler **only adds a node if the Pending Pod could be scheduled on it**. Common "does not scale" causes:
+
+1. **Node group already at maxSize** — the CA respects the group \`--max-nodes\`/maxSize. Raise the node group limit (ASG/MIG/pool) in the cloud.
+
+2. **Pod requests larger than any available node** — if the Pod asks for 8 CPU and the largest node has 4, no new node accommodates it. The CA does not scale. Reduce requests or use a node group with bigger instances.
+
+3. **Constraints no new node satisfies** — nodeSelector/affinity/taints that no node in the scalable group meets. The CA only creates nodes from the group template; if the template lacks the required label/taint, it does not help.
+
+4. **Pods marked not safe to evict** that the CA respects via annotation:
+\`\`\`bash
+# CA ignores pods with this annotation when deciding scale-up/down
+# "cluster-autoscaler.kubernetes.io/safe-to-evict": "false"
+kubectl get pod <pod> -o jsonpath='{.metadata.annotations}'
+\`\`\`
+
+5. **Misconfigured expander/node group** — no eligible node group (\`--nodes=min:max:asgName\` missing or wrong cloud tag).
+
+\`\`\`bash
+# Typical action: raise the group ceiling (conceptual example)
+# AWS:   aws autoscaling update-auto-scaling-group --max-size 6 ...
+# Then watch the CA decide the scale-up:
+kubectl -n kube-system logs deploy/cluster-autoscaler -f | grep -i 'scale_up\\|final'
+\`\`\`
+
+**Key difference (exam favorite):** the **HPA** changes the number of **Pods**; the **Cluster Autoscaler** changes the number of **nodes**. Pods Pending due to lack of CPU are a CA problem, not an HPA one.
+
+**Prevention:** set realistic requests, size the node group maxSize for peak, and alert on long-standing Pending Pods.`
     }
   ]
 };

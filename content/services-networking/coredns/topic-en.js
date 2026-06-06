@@ -639,6 +639,48 @@ ssh <node>
 sudo cat /var/lib/kubelet/config.yaml | grep clusterDNS
 # Must match kube-dns service ClusterIP
 \`\`\``
+    },
+    {
+      title: 'CoreDNS in CrashLoopBackOff with "plugin/loop: Loop detected"',
+      difficulty: 'hard',
+      symptom: 'CoreDNS pods restart continuously. Logs show "plugin/loop: Loop ... detected for zone ." and DNS for the entire cluster is unavailable.',
+      diagnosis: `\`\`\`bash
+# 1. CoreDNS state and logs
+kubectl get pods -n kube-system -l k8s-app=kube-dns
+kubectl logs -n kube-system -l k8s-app=kube-dns --tail=30
+# Look for: "Loop (127.0.0.1:53 -> :53) detected for zone ."
+
+# 2. Check the Corefile — where does forward point?
+kubectl get configmap coredns -n kube-system -o yaml | grep -A2 forward
+# Typical problematic: forward . /etc/resolv.conf
+
+# 3. Inspect the node /etc/resolv.conf (the root of the loop)
+cat /etc/resolv.conf
+# If it contains "nameserver 127.0.0.1" (e.g. systemd-resolved), CoreDNS
+# forwards to itself -> loop.
+\`\`\``,
+      solution: `**Cause:** the \`forward . /etc/resolv.conf\` plugin makes CoreDNS forward queries to the node \`/etc/resolv.conf\`. If that file points to \`127.0.0.1\` (common with \`systemd-resolved\`), CoreDNS forwards to itself, detects the loop, and aborts.
+
+**Fixes (pick one):**
+
+1. **Point the kubelet to the real system resolv.conf** (recommended):
+\`\`\`bash
+# systemd-resolved exposes the real upstream here:
+# --resolv-conf=/run/systemd/resolve/resolv.conf for the kubelet
+sudo sed -i 's#/etc/resolv.conf#/run/systemd/resolve/resolv.conf#' \\
+  /var/lib/kubelet/config.yaml   # resolvConf field
+sudo systemctl restart kubelet
+\`\`\`
+
+2. **Point the CoreDNS forward to an explicit upstream**:
+\`\`\`bash
+kubectl edit configmap coredns -n kube-system
+# Change:  forward . /etc/resolv.conf
+# To:      forward . 8.8.8.8 1.1.1.1
+kubectl rollout restart deployment/coredns -n kube-system
+\`\`\`
+
+**Prevention:** on nodes with systemd-resolved, configure the kubelet with \`resolvConf: /run/systemd/resolve/resolv.conf\` from bootstrap.`
     }
   ]
 };

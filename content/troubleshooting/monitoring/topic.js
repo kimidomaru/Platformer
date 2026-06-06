@@ -491,6 +491,7 @@ cat /var/log/kubernetes/audit.log | python3 -m json.tool | grep "verb\\|user\\|r
   troubleshooting: [
     {
       title: 'kubectl top retorna erro - Metrics Server nao disponivel',
+      difficulty: 'medium',
       symptom: 'Ao executar kubectl top nodes ou kubectl top pods, o comando retorna: "Error from server (ServiceUnavailable): the server is currently unable to handle the request (get nodes.metrics.k8s.io)" ou "Metrics API not available".',
       diagnosis: `**Passos de diagnostico:**
 
@@ -549,6 +550,7 @@ kubectl describe pod -n kube-system -l app.kubernetes.io/name=metrics-server
     },
     {
       title: 'Pod em CrashLoopBackOff - diagnostico de logs',
+      difficulty: 'medium',
       symptom: 'Um pod esta em estado CrashLoopBackOff. Os restarts aumentam continuamente (RESTARTS: 5, 10, 15...). O pod fica rodando por alguns segundos e crasha novamente. kubectl logs mostra o container nao esta rodando.',
       diagnosis: `**Passos de diagnostico:**
 
@@ -624,6 +626,7 @@ kubectl edit deployment <nome>
     },
     {
       title: 'Logs de container nao aparecem ou estao truncados',
+      difficulty: 'easy',
       symptom: 'kubectl logs meu-pod retorna saida vazia ou logs muito antigos foram perdidos. Nao e possivel ver logs de execucoes anteriores de pods que ja foram removidos. Logs do node nao aparecem no journalctl.',
       diagnosis: `**Passos de diagnostico:**
 

@@ -573,6 +573,7 @@ kubectl run final-test --rm -it --image=busybox:1.35 --restart=Never -- sh -c "
   troubleshooting: [
     {
       title: 'Pod nao consegue resolver nomes DNS de Services do cluster',
+      difficulty: 'medium',
       symptom: 'Aplicacao dentro de um Pod falha com erros como "could not resolve host", "name resolution failed" ou timeout ao tentar conectar usando nome do Service. Ping para o IP do Service funciona, mas pelo nome nao.',
       diagnosis: `Diagnostico sistematico:
 
@@ -653,6 +654,94 @@ kubectl patch pod <pod> -n <namespace> --type merge \
   -p '{"spec":{"dnsPolicy":"ClusterFirst"}}'
 # Nota: pode ser necessario recriar o Pod se nao aceitar patch em dnsPolicy
 \`\`\``
+    },
+    {
+      title: 'CoreDNS em CrashLoopBackOff com erro "plugin/loop: Loop detected"',
+      difficulty: 'hard',
+      symptom: 'Os Pods do CoreDNS reiniciam continuamente. Os logs mostram "plugin/loop: Loop ... detected for zone ." e o DNS do cluster inteiro fica indisponivel.',
+      diagnosis: `\`\`\`bash
+# 1. Estado e logs do CoreDNS
+kubectl get pods -n kube-system -l k8s-app=kube-dns
+kubectl logs -n kube-system -l k8s-app=kube-dns --tail=30
+# Procurar: "Loop (127.0.0.1:53 -> :53) detected for zone ."
+
+# 2. Ver o Corefile — o forward aponta para onde?
+kubectl get configmap coredns -n kube-system -o yaml | grep -A2 forward
+# Tipico problematico: forward . /etc/resolv.conf
+
+# 3. Inspecionar o resolv.conf do node (a raiz do loop)
+cat /etc/resolv.conf
+# Se contiver "nameserver 127.0.0.1" (ex.: systemd-resolved), o CoreDNS
+# encaminha para si mesmo -> loop.
+\`\`\``,
+      solution: `**Causa:** o plugin \`forward . /etc/resolv.conf\` faz o CoreDNS encaminhar consultas para o \`/etc/resolv.conf\` do node. Se esse arquivo aponta para \`127.0.0.1\` (comum com \`systemd-resolved\`), o CoreDNS encaminha para ele mesmo e detecta o loop, abortando.
+
+**Correcoes (escolha uma):**
+
+1. **Apontar o kubelet para o resolv.conf real do sistema** (recomendado):
+\`\`\`bash
+# systemd-resolved expoe o upstream real aqui:
+# --resolv-conf=/run/systemd/resolve/resolv.conf no kubelet
+sudo sed -i 's#/etc/resolv.conf#/run/systemd/resolve/resolv.conf#' \\
+  /var/lib/kubelet/config.yaml   # campo resolvConf
+sudo systemctl restart kubelet
+\`\`\`
+
+2. **Apontar o forward do CoreDNS para um upstream explicito**:
+\`\`\`bash
+kubectl edit configmap coredns -n kube-system
+# Trocar:  forward . /etc/resolv.conf
+# Por:     forward . 8.8.8.8 1.1.1.1
+kubectl rollout restart deployment/coredns -n kube-system
+\`\`\`
+
+**Prevencao:** em nodes com systemd-resolved, configure o kubelet com \`resolvConf: /run/systemd/resolve/resolv.conf\` desde o bootstrap.`
+    },
+    {
+      title: 'Resolucao DNS lenta/intermitente (timeouts de ~5s e ndots)',
+      difficulty: 'medium',
+      symptom: 'Conexoes para nomes externos (ex.: APIs na internet) ou ate internos demoram ~5 segundos de forma intermitente. Funciona, mas com latencia perceptivel a cada nova resolucao.',
+      diagnosis: `\`\`\`bash
+# 1. Ver ndots e search domains do Pod
+kubectl exec <pod> -- cat /etc/resolv.conf
+# Tipico: options ndots:5  + varios search domains
+
+# 2. Medir a resolucao
+kubectl exec <pod> -- sh -c 'time nslookup google.com'
+
+# 3. CoreDNS sob carga? (poucas replicas para o tamanho do cluster)
+kubectl get deploy coredns -n kube-system
+kubectl top pods -n kube-system -l k8s-app=kube-dns
+
+# 4. Ver se ha muitos NXDOMAIN nos logs (sintoma do ndots)
+kubectl logs -n kube-system -l k8s-app=kube-dns --tail=100 | grep -c NXDOMAIN
+\`\`\``,
+      solution: `**Por que acontece:** com \`ndots:5\`, qualquer nome com menos de 5 pontos e primeiro testado contra TODOS os search domains (\`.svc.cluster.local\`, \`.cluster.local\`, etc.) antes de tentar como FQDN. Para nomes externos isso gera varias consultas NXDOMAIN antes do acerto — e cada falha de UDP pode bater o timeout de ~5s (conntrack race em alguns kernels).
+
+**Correcoes:**
+
+1. **Usar FQDN com ponto final** para nomes externos (pula os search domains):
+\`\`\`bash
+# google.com.  (note o ponto no fim)
+curl https://google.com./
+\`\`\`
+
+2. **Reduzir ndots por Pod** via dnsConfig quando a app fala muito com a internet:
+\`\`\`yaml
+spec:
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "2"
+\`\`\`
+
+3. **Escalar/ajustar o CoreDNS** em clusters grandes:
+\`\`\`bash
+kubectl scale deployment coredns -n kube-system --replicas=3
+# Considerar NodeLocal DNSCache para reduzir latencia e o conntrack race
+\`\`\`
+
+**Prevencao:** habilite **NodeLocal DNSCache** em clusters de producao — elimina o timeout de 5s e descarrega o CoreDNS central.`
     }
   ]
 };

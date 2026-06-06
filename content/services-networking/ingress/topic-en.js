@@ -665,6 +665,98 @@ kubectl get endpoints api-service -n <namespace>
 # Test Ingress
 curl -H "Host: myapp.example.com" http://<ingress-ip>/api
 \`\`\``
+    },
+    {
+      title: 'HTTPS not working: invalid certificate or plain-text connection',
+      difficulty: 'medium',
+      symptom: 'Accessing via https:// returns a certificate error (e.g. "Kubernetes Ingress Controller Fake Certificate"), the browser complains about an invalid cert, or port 443 does not respond, even though HTTP works.',
+      diagnosis: `\`\`\`bash
+# 1. Does the Ingress have a tls section referencing the right Secret?
+kubectl get ingress my-ingress -o jsonpath='{.spec.tls}'
+# Expected: [{"hosts":["app.local"],"secretName":"app-tls"}]
+
+# 2. Does the Secret exist, of the right type, in the SAME namespace as the Ingress?
+kubectl get secret app-tls -o jsonpath='{.type}'
+# Expected: kubernetes.io/tls  (must have tls.crt and tls.key)
+
+# 3. Does the certificate host match the accessed host (CN/SAN)?
+kubectl get secret app-tls -o jsonpath='{.data.tls\\.crt}' | base64 -d | openssl x509 -noout -subject -ext subjectAltName
+
+# 4. Did the controller load the certificate? (otherwise it uses the "Fake Certificate")
+kubectl logs -n ingress-nginx deploy/ingress-nginx-controller | grep -i 'ssl\\|certificate\\|app-tls'
+
+# 5. Test bypassing validation to isolate
+curl -kv https://app.local --resolve app.local:443:INGRESS_IP 2>&1 | head -20
+\`\`\``,
+      solution: `**Causes and fixes:**
+
+1. **Secret missing/in the wrong namespace** — the TLS Secret must be in the **same namespace** as the Ingress. Recreate it there:
+\`\`\`bash
+kubectl create secret tls app-tls --cert=tls.crt --key=tls.key -n <ingress-ns>
+\`\`\`
+
+2. **nginx "Fake Certificate"** — means the controller did not find the Secret referenced in \`spec.tls\`. Confirm \`secretName\` matches the real name and the Secret is of type \`kubernetes.io/tls\`.
+
+3. **Host outside the certificate** — the cert CN/SAN must cover the accessed host. Generate a cert with the correct SAN (or use cert-manager to automate).
+
+4. **TLS not declared** — without the \`spec.tls\` section, nginx serves HTTPS only with the default certificate. Add:
+\`\`\`yaml
+spec:
+  tls:
+    - hosts: [app.local]
+      secretName: app-tls
+\`\`\`
+
+**Prevention:** use **cert-manager** to issue/renew certificates automatically and avoid manual Secrets expiring.`
+    },
+    {
+      title: 'Path routing broken: 404 on subpaths or incorrect rewrite',
+      difficulty: 'hard',
+      symptom: 'The root route works, but subpaths return 404, OR the application receives a different path than expected (e.g. backend sees /api/users instead of /users), typically after using rewrite-target.',
+      diagnosis: `\`\`\`bash
+# 1. Check the pathType of each rule (Prefix vs Exact vs ImplementationSpecific)
+kubectl get ingress my-ingress -o jsonpath='{range .spec.rules[*].http.paths[*]}{.path}{" -> "}{.pathType}{"\\n"}{end}'
+
+# 2. Check rewrite annotations
+kubectl get ingress my-ingress -o jsonpath='{.metadata.annotations}' | tr ',' '\\n' | grep -i rewrite
+
+# 3. See how the backend receives the path (app logs)
+kubectl logs deploy/api --tail=20 | grep -i 'GET\\|path'
+
+# 4. Test each path explicitly
+curl -H "Host: app.local" http://INGRESS_IP/api/users -v
+\`\`\``,
+      solution: `**Understanding the problem:**
+
+- **pathType Exact** only matches the identical path — \`/api\` does NOT match \`/api/users\`. Use \`Prefix\` to match subpaths.
+- **rewrite-target with capture** — when using \`rewrite-target: /$2\` with a regex path, you need the correct capture group:
+
+\`\`\`yaml
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+    - host: app.local
+      http:
+        paths:
+          - path: /api(/|$)(.*)   # $2 captures the rest
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: api
+                port:
+                  number: 80
+\`\`\`
+
+With this, \`/api/users\` reaches the backend as \`/users\`.
+
+**Quick fixes:**
+- 404 on subpath → change \`pathType: Exact\` to \`Prefix\`.
+- Backend receives wrong path → review the path regex + the group in \`rewrite-target\`.
+- No rewrite and want to preserve the path → simply do not use the rewrite-target annotation.
+
+**Prevention:** prefer \`pathType: Prefix\` without rewrite when the backend already expects the full path; reserve rewrite for when you really need to strip the prefix.`
     }
   ]
 };

@@ -55,7 +55,8 @@ window.K8S_REGISTRY = {
         { id: 'kubeadm', name: 'Kubeadm & Cluster Lifecycle', difficulty: 'hard', path: 'cluster-architecture/kubeadm', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['kubeadm','install','upgrade','cluster'] },
         { id: 'etcd', name: 'ETCD Backup & Restore', difficulty: 'hard', path: 'cluster-architecture/etcd', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['etcd','backup','restore','snapshot'] },
         { id: 'helm-kustomize', name: 'Helm & Kustomize', difficulty: 'medium', path: 'cluster-architecture/helm-kustomize', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['helm','kustomize','package','template'], related: ['app-deployment/helm', 'app-deployment/kustomize', 'fluxcd/fluxcd-sources'] },
-        { id: 'crds-operators', name: 'CRDs, Operators & Extensions', difficulty: 'hard', path: 'cluster-architecture/crds-operators', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['crd','operator','cni','csi','cri'], related: ['kyverno/kyverno-fundamentals'] }
+        { id: 'crds-operators', name: 'CRDs, Operators & Extensions', difficulty: 'hard', path: 'cluster-architecture/crds-operators', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['crd','operator','cni','csi','cri'], related: ['kyverno/kyverno-fundamentals'] },
+        { id: 'kubectl-productivity', name: 'kubectl: Speed, JSONPath & Output', difficulty: 'medium', path: 'cluster-architecture/kubectl-productivity', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['kubectl','jsonpath','dry-run','custom-columns','imperative','exam-speed'], related: ['cluster-architecture/pods', 'workloads/deployments', 'troubleshooting/monitoring'] }
       ]
     },
     // ═══════════════════════════════════════════════════════════════════════
@@ -82,7 +83,8 @@ window.K8S_REGISTRY = {
       topics: [
         { id: 'services', name: 'Service Types & Endpoints', difficulty: 'medium', path: 'services-networking/services', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['service','clusterip','nodeport','loadbalancer','endpoint'], related: ['cilium-advanced/cilium-service-mesh', 'istio-fundamentals/istio-traffic-mgmt'] },
         { id: 'network-policies', name: 'Network Policies', difficulty: 'hard', path: 'services-networking/network-policies', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['networkpolicy','ingress','egress','isolation'], related: ['cilium-fundamentals/cilium-network-policies', 'kcsa-cluster-security/k8s-networking-security'] },
-        { id: 'ingress', name: 'Ingress & Gateway API', difficulty: 'medium', path: 'services-networking/ingress', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['ingress','ingresscontroller','gateway','routing'], related: ['kong/kong-fundamentals', 'security-tooling/cert-manager', 'istio-fundamentals/istio-gateway'] },
+        { id: 'ingress', name: 'Ingress & Gateway API', difficulty: 'medium', path: 'services-networking/ingress', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['ingress','ingresscontroller','gateway','routing'], related: ['services-networking/gateway-api', 'kong/kong-fundamentals', 'security-tooling/cert-manager', 'istio-fundamentals/istio-gateway'] },
+        { id: 'gateway-api', name: 'Gateway API', difficulty: 'medium', path: 'services-networking/gateway-api', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['gateway-api','gatewayclass','httproute','referencegrant','routing','traffic-splitting'], related: ['services-networking/ingress', 'services-networking/services', 'istio-fundamentals/istio-gateway', 'cilium-advanced/cilium-service-mesh'] },
         { id: 'coredns', name: 'CoreDNS', difficulty: 'medium', path: 'services-networking/coredns', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['dns','coredns','service-discovery','resolution'] }
       ]
     },
@@ -103,7 +105,8 @@ window.K8S_REGISTRY = {
       weight: 30, icon: '\u{1F527}', cert: ['cka'], type: 'cert',
       topics: [
         { id: 'app-failure', name: 'Application Failure', difficulty: 'hard', path: 'troubleshooting/app-failure', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['debug','crashloopbackoff','logs','events'] },
-        { id: 'cluster-troubleshooting', name: 'Cluster & Node Troubleshooting', difficulty: 'hard', path: 'troubleshooting/cluster-troubleshooting', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['kubelet','node','notready','component'] },
+        { id: 'cluster-troubleshooting', name: 'Cluster & Node Troubleshooting', difficulty: 'hard', path: 'troubleshooting/cluster-troubleshooting', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['kubelet','node','notready','component'], related: ['troubleshooting/crictl-runtime'] },
+        { id: 'crictl-runtime', name: 'crictl & Container Runtime Debugging', difficulty: 'hard', path: 'troubleshooting/crictl-runtime', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['crictl','containerd','cri','static-pod','runtime','kubelet'], related: ['troubleshooting/cluster-troubleshooting', 'cluster-architecture/kubeadm', 'cluster-architecture/etcd'] },
         { id: 'network-troubleshooting', name: 'Service & Network Troubleshooting', difficulty: 'hard', path: 'troubleshooting/network-troubleshooting', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['service','dns','connectivity','endpoint'] },
         { id: 'monitoring', name: 'Monitoring & Logging', difficulty: 'medium', path: 'troubleshooting/monitoring', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['metrics','top','logs','events','monitoring'], related: ['prom-fundamentals/prom-architecture', 'kcna-observability/observability-fundamentals', 'opentelemetry/otel-fundamentals', 'sre-fundamentals/sre-observability'] }
       ]

@@ -552,6 +552,65 @@ ETCDCTL_API=3 etcdctl snapshot restore /opt/backup.db \\
   --data-dir=/var/lib/etcd
 # No manifest change needed!
 \`\`\``
+    },
+    {
+      title: 'Failed etcd HA member: remove the broken one and add a new one',
+      difficulty: 'hard',
+      symptom: 'In a 3-member etcd cluster (HA), one node died. `etcdctl member list` shows a member as unreachable/unstarted and the cluster works but lost fault tolerance. You need to replace the broken member.',
+      diagnosis: `\`\`\`bash
+# Alias to shorten (run on a healthy member node)
+alias e='ETCDCTL_API=3 etcdctl \\
+  --endpoints=https://127.0.0.1:2379 \\
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \\
+  --cert=/etc/kubernetes/pki/etcd/server.crt \\
+  --key=/etc/kubernetes/pki/etcd/server.key'
+
+# 1. List members and identify the broken one
+e member list -w table
+# Look for the member with no name (unstarted) or whose node is down
+
+# 2. Confirm per-endpoint health (the dead member fails)
+e endpoint health --cluster
+
+# 3. Note the hex ID of the broken member (1st column of member list)
+\`\`\``,
+      solution: `**Correct sequence: REMOVE the broken member BEFORE adding the new one** (etcd requires quorum; never add a 4th member to an already-degraded cluster without removing the dead one first).
+
+\`\`\`bash
+# 1. Remove the broken member by ID (e.g. 8211f1d0f64f3269)
+e member remove 8211f1d0f64f3269
+# Now the cluster has 2 healthy members (quorum kept)
+
+# 2. Add the new member (stays "unstarted" until it comes up)
+e member add etcd-node3 \\
+  --peer-urls=https://10.0.0.13:2380
+# The output prints env variables (ETCD_NAME,
+# ETCD_INITIAL_CLUSTER, ETCD_INITIAL_CLUSTER_STATE=existing)
+\`\`\`
+
+**3. On the NEW node**, start etcd with \`--initial-cluster-state=existing\` and the returned \`--initial-cluster\`:
+\`\`\`bash
+# Clear any old data-dir on the new node
+rm -rf /var/lib/etcd/*
+
+# In the new node etcd manifest/unit, ensure:
+#   --initial-cluster-state=existing
+#   --initial-cluster=etcd-node1=https://10.0.0.11:2380,etcd-node2=...,etcd-node3=https://10.0.0.13:2380
+#   --name=etcd-node3
+\`\`\`
+
+**4. Validate the recovery:**
+\`\`\`bash
+e member list -w table          # 3 members, all started
+e endpoint health --cluster     # all healthy
+\`\`\`
+
+**Pitfalls:**
+- Adding before removing breaks quorum (3→4 with 1 dead = only 2 of 4 alive, no majority).
+- Forgetting to clear the new node data-dir causes "member already bootstrapped".
+- Use \`--initial-cluster-state=existing\` (not \`new\`) when joining an existing cluster.
+
+**Prevention:** keep an ODD number of members (3 or 5) and monitor \`etcd_server_has_leader\` in Prometheus.`
     }
   ]
 };

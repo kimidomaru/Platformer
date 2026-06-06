@@ -638,6 +638,7 @@ curl -v -H "Host: app.local" http://$INGRESS_IP/ 2>&1 | grep "Location:"
   troubleshooting: [
     {
       title: 'Ingress retorna 404 ou 503 mesmo com servicos funcionando',
+      difficulty: 'medium',
       symptom: 'curl para o IP do Ingress retorna 404 Not Found ou 503 Service Unavailable, mas os Services e Pods estao funcionando corretamente quando testados diretamente.',
       diagnosis: `Diagnostico passo a passo:
 
@@ -688,6 +689,98 @@ kubectl describe endpoints api-svc
 # Ver eventos do Ingress para erros especificos
 kubectl describe ingress meu-ingress | grep -A 10 Events
 \`\`\``
+    },
+    {
+      title: 'HTTPS nao funciona: certificado invalido ou conexao em texto claro',
+      difficulty: 'medium',
+      symptom: 'O acesso por https:// retorna erro de certificado (ex.: "Kubernetes Ingress Controller Fake Certificate"), o navegador reclama de certificado invalido, ou a porta 443 nao responde, embora o HTTP funcione.',
+      diagnosis: `\`\`\`bash
+# 1. O Ingress tem a secao tls referenciando o Secret correto?
+kubectl get ingress meu-ingress -o jsonpath='{.spec.tls}'
+# Esperado: [{"hosts":["app.local"],"secretName":"app-tls"}]
+
+# 2. O Secret existe, e do tipo certo e no MESMO namespace do Ingress?
+kubectl get secret app-tls -o jsonpath='{.type}'
+# Esperado: kubernetes.io/tls  (precisa ter tls.crt e tls.key)
+
+# 3. O host do certificado bate com o host acessado (CN/SAN)?
+kubectl get secret app-tls -o jsonpath='{.data.tls\\.crt}' | base64 -d | openssl x509 -noout -subject -ext subjectAltName
+
+# 4. O controller carregou o certificado? (senao usa o "Fake Certificate")
+kubectl logs -n ingress-nginx deploy/ingress-nginx-controller | grep -i 'ssl\\|certificate\\|app-tls'
+
+# 5. Testar ignorando validacao para isolar
+curl -kv https://app.local --resolve app.local:443:INGRESS_IP 2>&1 | head -20
+\`\`\``,
+      solution: `**Causas e correcoes:**
+
+1. **Secret ausente/no namespace errado** — o Secret de TLS precisa estar no **mesmo namespace** do Ingress. Recrie-o la:
+\`\`\`bash
+kubectl create secret tls app-tls --cert=tls.crt --key=tls.key -n <ns-do-ingress>
+\`\`\`
+
+2. **"Fake Certificate" do nginx** — significa que o controller nao encontrou o Secret referenciado em \`spec.tls\`. Confirme que \`secretName\` bate com o nome real e que o Secret e do tipo \`kubernetes.io/tls\`.
+
+3. **Host fora do certificado** — o CN/SAN do certificado precisa cobrir o host acessado. Gere um cert com o SAN correto (ou use cert-manager para automatizar).
+
+4. **TLS nao declarado** — sem a secao \`spec.tls\`, o nginx serve HTTPS apenas com o certificado padrao. Adicione:
+\`\`\`yaml
+spec:
+  tls:
+    - hosts: [app.local]
+      secretName: app-tls
+\`\`\`
+
+**Prevencao:** use **cert-manager** para emitir/renovar certificados automaticamente e evitar Secrets manuais expirando.`
+    },
+    {
+      title: 'Roteamento por path quebrado: 404 em subpaths ou rewrite incorreto',
+      difficulty: 'hard',
+      symptom: 'A rota raiz funciona, mas subpaths retornam 404, OU a aplicacao recebe um path diferente do esperado (ex.: backend ve /api/users em vez de /users), tipicamente apos usar rewrite-target.',
+      diagnosis: `\`\`\`bash
+# 1. Conferir o pathType de cada regra (Prefix vs Exact vs ImplementationSpecific)
+kubectl get ingress meu-ingress -o jsonpath='{range .spec.rules[*].http.paths[*]}{.path}{" -> "}{.pathType}{"\\n"}{end}'
+
+# 2. Conferir annotations de rewrite
+kubectl get ingress meu-ingress -o jsonpath='{.metadata.annotations}' | tr ',' '\\n' | grep -i rewrite
+
+# 3. Ver como o backend recebe o path (logs da app)
+kubectl logs deploy/api --tail=20 | grep -i 'GET\\|path'
+
+# 4. Testar cada path explicitamente
+curl -H "Host: app.local" http://INGRESS_IP/api/users -v
+\`\`\``,
+      solution: `**Entendendo o problema:**
+
+- **pathType Exact** so casa o path identico — \`/api\` NAO casa \`/api/users\`. Use \`Prefix\` para casar subpaths.
+- **rewrite-target com captura** — quando se usa \`rewrite-target: /$2\` e o path como regex, e preciso o grupo de captura correto:
+
+\`\`\`yaml
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+    - host: app.local
+      http:
+        paths:
+          - path: /api(/|$)(.*)   # $2 captura o resto
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: api
+                port:
+                  number: 80
+\`\`\`
+
+Com isso, \`/api/users\` chega ao backend como \`/users\`.
+
+**Correcoes rapidas:**
+- 404 em subpath → trocar \`pathType: Exact\` por \`Prefix\`.
+- Backend recebe path errado → revisar a regex do path + o grupo no \`rewrite-target\`.
+- Sem rewrite e querendo preservar o path → simplesmente nao use a annotation rewrite-target.
+
+**Prevencao:** prefira \`pathType: Prefix\` sem rewrite quando o backend ja espera o path completo; reserve rewrite para quando realmente precisa remover o prefixo.`
     }
   ]
 };
