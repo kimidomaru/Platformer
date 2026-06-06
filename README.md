@@ -122,17 +122,6 @@ Please read this before using the material to prepare for an exam.
 
 **Skill tracks** *(certification-independent)*: Cilium & eBPF, Istio, Kong, Prometheus, Grafana, Loki, OpenTelemetry, ArgoCD, FluxCD, Helm, Kyverno, OPA/Gatekeeper, KEDA, Crossplane, Chaos Engineering, FinOps, SRE Practices, Platform Engineering, Databases-on-K8s, Security Tooling (Vault · cert-manager · external-secrets), Terraform/IaC, CI/CD, AI Engineering.
 
-**Notable depth areas**
-
-| Area | What's covered |
-|---|---|
-| **CKA (2025 curriculum)** | Full exam surface including Gateway API, crictl/containerd debugging, kubectl speed/JSONPath — new in the 2025 revision |
-| **Cilium & eBPF** | Architecture, Hubble, NetworkPolicy, BGP/LB, Cluster Mesh, Service Mesh, **Tetragon (runtime security)**, **WireGuard/IPsec encryption**, **Egress Gateway** |
-| **Istio** | Traffic management, security/mTLS, observability, advanced patterns, **Ambient Mesh (ztunnel + waypoint, GA Istio 1.24)** |
-| **Crossplane** | Fundamentals (with hands-on lab), Providers, Compositions with **Composition Functions/pipeline mode** (P&T deprecated) |
-| **Platform Engineering** | IDP concepts, Backstage, Golden Paths, **Platform Metrics (DORA · SPACE · adoption)** |
-| **CKS** | All 6 exam domains with labs: CIS benchmarks, API server hardening, Seccomp/AppArmor, supply chain (image scanning/signing), Falco runtime security |
-
 ---
 
 ## Career trails
