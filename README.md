@@ -4,7 +4,7 @@
 
 ### A local-first study platform for Cloud Native & Cloud certifications
 
-Study **Kubernetes (CKA · CKAD · CKS · KCNA · KCSA)**, **AWS (CLF · SAA · SAP)** and **Azure (AZ-104 · AZ-305)** — plus 28 lateral skill tracks — entirely **offline, in a single browser tab**.
+Study **Kubernetes (CKA · CKAD · CKS · KCNA · KCSA)**, **AWS (CLF · SAA · SAP)** and **Azure (AZ-104 · AZ-305)** — plus 23 lateral skill tracks — entirely **offline, in a single browser tab**.
 
 No backend. No database. No build step. No internet required.
 
@@ -16,8 +16,6 @@ No backend. No database. No build step. No internet required.
 ![No build step](https://img.shields.io/badge/Build-none-success)
 ![Offline first](https://img.shields.io/badge/Offline-first-blue)
 ![License MIT](https://img.shields.io/badge/License-MIT-green)
-![Topics](https://img.shields.io/badge/Topics-224-blueviolet)
-![Certifications](https://img.shields.io/badge/Certifications-10-orange)
 ![AI-assisted content](https://img.shields.io/badge/Content-AI--assisted%20%C2%B7%20not%20fully%20verified-yellow)
 
 ![Dashboard](assets/screenshots/dashboard.png)
@@ -35,13 +33,13 @@ No backend. No database. No build step. No internet required.
 - [Screenshots](#screenshots)
 - [Features](#features)
 - [Content coverage](#content-coverage)
+- [Career trails](#career-trails)
 - [How it works (architecture)](#how-it-works-architecture)
 - [Running locally](#running-locally)
 - [Fork it: build your own study platform](#fork-it-build-your-own-study-platform)
 - [Adding a new topic](#adding-a-new-topic)
 - [Repository layout](#repository-layout)
 - [Tech & design decisions](#tech--design-decisions)
-- [Roadmap](#roadmap)
 - [License](#license)
 
 ---
@@ -97,7 +95,7 @@ Please read this before using the material to prepare for an exam.
 - 🃏 **Flashcards with spaced repetition** — SM-2 scheduling (Again/Hard/Good/Easy), due badges, per-card persistence.
 - 🧪 **Hands-on labs** — scenario, objective, estimated duration, step-by-step instructions with hints, solutions, and **`verify` commands** to self-check.
 - 🚑 **Troubleshooting scenarios** — symptom → diagnosis → solution, graded by difficulty.
-- 🛤️ **Learning trails** — 5 role-based paths (DevOps, SRE, Platform, Cloud, K8s Specialist) with levels, checkpoints and certification milestones.
+- 🛤️ **Learning trails** — 6 role-based career paths (DevOps, SRE, Platform Engineer, Cloud Engineer, K8s Specialist, AI for DevOps/SRE) with curated levels, checkpoints and certification milestones. Every topic in the catalog is reachable from at least one trail.
 - 🌌 **Topic map** — an interactive constellation of all topics linked by tags.
 - 📊 **Progress tracking** — per-topic state (*not started / in progress / completed*) persisted in `localStorage`.
 - 🔎 **Local search**, 🌓 **dark mode**, 🌐 **bilingual UI (EN/PT)**, and a 📋 **cheatsheet** view.
@@ -108,12 +106,13 @@ Please read this before using the material to prepare for an exam.
 
 | | Count |
 |---|---|
-| **Topics** | **224** (every topic ships quiz + flashcards) |
-| **Hands-on labs** | 167 |
+| **Topics** | **231** (every topic ships quiz + flashcards) |
+| **Hands-on labs** | ~175 |
 | **Domains** | 77 |
-| **Skill tracks** | 28 |
+| **Skill tracks** | 23 |
 | **Certifications** | 10 |
-| **Languages** | English + Portuguese |
+| **Career trails** | 6 |
+| **Languages** | English + Portuguese (full parity) |
 
 **Certification tracks**
 
@@ -121,7 +120,33 @@ Please read this before using the material to prepare for an exam.
 |---|---|---|
 | CKA · CKAD · CKS · KCNA · KCSA | CLF · SAA · SAP | AZ-104 · AZ-305 |
 
-**Skill tracks** *(certification-independent)*: ArgoCD, FluxCD, Helm, Cilium, Istio, Kong, Prometheus, Grafana, Loki, OpenTelemetry, Kyverno, OPA/Gatekeeper, KEDA, Crossplane, Chaos Engineering, FinOps, SRE, Platform Engineering, Databases-on-K8s, Security Tooling (Vault/cert-manager), Terraform/IaC, CI/CD, AI Engineering, and more.
+**Skill tracks** *(certification-independent)*: Cilium & eBPF, Istio, Kong, Prometheus, Grafana, Loki, OpenTelemetry, ArgoCD, FluxCD, Helm, Kyverno, OPA/Gatekeeper, KEDA, Crossplane, Chaos Engineering, FinOps, SRE Practices, Platform Engineering, Databases-on-K8s, Security Tooling (Vault · cert-manager · external-secrets), Terraform/IaC, CI/CD, AI Engineering.
+
+**Notable depth areas**
+
+| Area | What's covered |
+|---|---|
+| **CKA (2025 curriculum)** | Full exam surface including Gateway API, crictl/containerd debugging, kubectl speed/JSONPath — new in the 2025 revision |
+| **Cilium & eBPF** | Architecture, Hubble, NetworkPolicy, BGP/LB, Cluster Mesh, Service Mesh, **Tetragon (runtime security)**, **WireGuard/IPsec encryption**, **Egress Gateway** |
+| **Istio** | Traffic management, security/mTLS, observability, advanced patterns, **Ambient Mesh (ztunnel + waypoint, GA Istio 1.24)** |
+| **Crossplane** | Fundamentals (with hands-on lab), Providers, Compositions with **Composition Functions/pipeline mode** (P&T deprecated) |
+| **Platform Engineering** | IDP concepts, Backstage, Golden Paths, **Platform Metrics (DORA · SPACE · adoption)** |
+| **CKS** | All 6 exam domains with labs: CIS benchmarks, API server hardening, Seccomp/AppArmor, supply chain (image scanning/signing), Falco runtime security |
+
+---
+
+## Career trails
+
+Six role-based paths cross-reference topics from multiple domains into a structured learning journey. Each trail shows per-level progress, certification checkpoints, and links directly into topics.
+
+| Trail | Levels | Topics | Target certifications |
+|---|---|---|---|
+| 🛠️ **DevOps Engineer** | 4 | 30 | CKAD → CKA |
+| 📡 **Site Reliability Engineer** | 4 | 35 | CKA |
+| 🏗️ **Platform Engineer** | 5 | 51 | CKA → CKS |
+| ☁️ **Cloud Engineer** | 4 | 27 | AZ-104 → AZ-305 → AWS SAA |
+| ⚙️ **Kubernetes Specialist** | 7 | 63 | KCNA → CKA → CKAD → KCSA → CKS |
+| 🤖 **AI for DevOps / SRE** | 3 | 6 | — |
 
 ---
 
@@ -132,7 +157,7 @@ flowchart LR
    subgraph Browser["🌐 Browser (no server needed)"]
       direction TB
       IDX["index.html<br/>(thin shell)"]
-      ENGINE["js/* engine<br/>router · loader · renderer<br/>quiz · flashcard · lab · exam"]
+      ENGINE["js/* engine<br/>router · loader · renderer<br/>quiz · flashcard · lab · exam · trails"]
       LS[("localStorage<br/>progress · SRS · settings")]
    end
 
@@ -154,7 +179,7 @@ flowchart LR
 
 1. `index.html` loads the engine scripts and `content/registry.js`.
 2. `registry.js` defines `window.K8S_REGISTRY` — the catalog of certifications, skill tracks, domains and topics (each with metadata + a `path`).
-3. The sidebar, dashboard and search are built entirely from that registry.
+3. The sidebar, dashboard, trails and search are built entirely from that registry.
 4. When you open a topic, `loader.js` fetches `content/<domain>/<topic>/topic.js` (PT) or `topic-en.js` (EN) **on demand** (lazy loading) — these set `window.K8S_CONTENT` / `window.K8S_CONTENT_EN`.
 5. `renderer.js` renders the topic's theory/quiz/flashcards/lab/troubleshooting tabs.
 6. State (progress, SRS schedule, theme, language) is read/written to `localStorage` via `state.js`.
@@ -195,7 +220,7 @@ Platformer is designed to be **re-skinned for any subject**. To turn it into *yo
 
 You now have a free, offline, framework-free study platform for *any* topic, with quizzes, flashcards, spaced repetition, labs and mock exams included.
 
-> ✍️ **AI-assisted authoring:** the content schema is intentionally LLM-friendly. Each `topic.js` is a single declarative object, so you can prompt an LLM to generate well-formed topics in bulk (this repo's Kubernetes content was authored this way).
+> ✍️ **AI-assisted authoring:** the content schema is intentionally LLM-friendly. Each `topic.js` is a single declarative object, so you can prompt an LLM to generate well-formed topics in bulk (this repo's content was authored this way).
 
 ---
 
@@ -277,10 +302,11 @@ kubectl get pods
 ### Minimum checklist to accept a topic
 
 - [ ] `topic.js` present and loads without console errors
+- [ ] `topic-en.js` present with the same content keys (PT/EN parity)
 - [ ] `registry.js` updated with a matching `path`
 - [ ] Quiz has ≥ 5 questions with `explanation`
 - [ ] Flashcards have ≥ 6 cards
-- [ ] Lab steps include `verify` commands
+- [ ] Lab steps include `verify` commands and a `duration`
 - [ ] Troubleshooting scenarios include a `difficulty`
 
 ---
@@ -306,7 +332,7 @@ kubectl get pods
 │   ├── srs.js              # SM-2 spaced repetition
 │   ├── lab.js              # Hands-on labs
 │   ├── exam.js             # Mock exam engine (cert/skill-scoped + general)
-│   ├── trails.js           # Role-based learning trails
+│   ├── trails.js           # Role-based career trails (6 paths)
 │   ├── search.js           # Local search
 │   ├── dashboard.js        # Progress dashboard
 │   ├── constellation.js    # Topic map (knowledge graph)
@@ -330,21 +356,11 @@ kubectl get pods
 | **Vanilla JS, no framework** | Zero build, zero dependencies, no supply-chain churn. Opens and runs for years without `npm install`. |
 | **No bundler / no build step** | The repo *is* the deployable artifact. Clone and serve. |
 | **Content as data, not code** | Engine and content evolve independently; new topics can't break the app shell. |
-| **Lazy loading per topic** | Fast first paint and low memory even with 200+ topics. |
+| **Lazy loading per topic** | Fast first paint and low memory even with 230+ topics. |
 | **`localStorage` for state** | Fully offline; no accounts, no server, no privacy concerns. |
 | **IIFE modules** | Simple namespacing without a module loader; works from `file://` and HTTP alike. |
-| **LLM-friendly schema** | Declarative topic objects make automated/bulk content generation reliable. |
-
----
-
-## Roadmap
-
-See the maintainer notes for the current strengths/weaknesses analysis and next steps. High-level candidates:
-
-- Cross-content validation in CI (broken `path`s, missing fields).
-- Import/export of progress (the only state today lives in one browser).
-- More EN/PT parity and i18n of remaining hardcoded UI strings.
-- Optional PWA/service-worker for installable offline use.
+| **Full PT/EN parity** | Every topic ships both `topic.js` (PT) and `topic-en.js` (EN). The loader falls back gracefully. |
+| **LLM-friendly schema** | Declarative topic objects make automated/bulk content generation reliable and consistent. |
 
 ---
 
