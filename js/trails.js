@@ -5,6 +5,7 @@ var Trails = (function () {
   var TRAILS = [
     {
       id: 'devops',
+      roadmap: 'devops',
       icon: '🛠️',
       color: '#0078d4',
       label: { pt: 'DevOps Engineer', en: 'DevOps Engineer' },
@@ -73,6 +74,7 @@ var Trails = (function () {
     },
     {
       id: 'sre',
+      roadmap: 'sre',
       icon: '📡',
       color: '#107c10',
       label: { pt: 'Site Reliability Engineer', en: 'Site Reliability Engineer' },
@@ -146,6 +148,7 @@ var Trails = (function () {
     },
     {
       id: 'platform',
+      roadmap: 'platform',
       icon: '🏗️',
       color: '#8764b8',
       label: { pt: 'Platform Engineer', en: 'Platform Engineer' },
@@ -240,6 +243,7 @@ var Trails = (function () {
     },
     {
       id: 'cloud',
+      roadmap: 'cloud',
       icon: '☁️',
       color: '#e74c3c',
       label: { pt: 'Cloud Engineer', en: 'Cloud Engineer' },
@@ -305,6 +309,7 @@ var Trails = (function () {
     },
     {
       id: 'k8s-specialist',
+      roadmap: 'kubernetes',
       icon: '⚙️',
       color: '#326ce5',
       label: { pt: 'Kubernetes Specialist', en: 'Kubernetes Specialist' },
@@ -420,6 +425,7 @@ var Trails = (function () {
     },
     {
       id: 'ai-devops',
+      roadmap: 'ai',
       icon: '🤖',
       color: '#9b59b6',
       label: { pt: 'AI for DevOps / SRE', en: 'AI for DevOps / SRE' },
@@ -557,25 +563,44 @@ var Trails = (function () {
       html += '</div>';
     });
 
+    // Roadmap-only paths (no matching trail) — e.g. Security. Open straight in roadmap view.
+    if (typeof Roadmap !== 'undefined') {
+      var linked = {};
+      TRAILS.forEach(function (t) { if (t.roadmap) linked[t.roadmap] = 1; });
+      Roadmap.ROADMAPS.forEach(function (rm) {
+        if (linked[rm.id]) return;
+        var nodes = 0, forks = 0;
+        rm.steps.forEach(function (s) {
+          if (s.type === 'core') nodes += (s.topics || []).filter(_topicExists).length;
+          else if (s.type === 'fork') { forks++; (s.branches || []).forEach(function (b) { nodes += (b.topics || []).filter(_topicExists).length; }); }
+        });
+        html += '<div class="trail-card" data-roadmap="' + rm.id + '" style="--trail-color:' + rm.color + '">';
+        html += '<div class="trail-card__header"><span class="trail-card__icon">' + rm.icon + '</span>';
+        html += '<div><h3 class="trail-card__title">' + rm.label[lang] + '</h3>';
+        html += '<span class="trail-card__badge trail-card__badge--rm">' + I18N.t('roadmapOnlyBadge') + '</span></div></div>';
+        html += '<p class="trail-card__summary">' + rm.summary[lang] + '</p>';
+        html += '<div class="trail-card__meta"><span>' + nodes + ' ' + I18N.t('trailTopicsCount') + '</span>';
+        html += '<span>' + forks + ' ' + I18N.t('roadmapForks') + '</span></div>';
+        html += '<button class="btn-primary trail-card__btn" data-roadmap="' + rm.id + '">' + I18N.t('roadmapOpen') + '</button>';
+        html += '</div>';
+      });
+    }
+
     html += '</div></div>';
     container.innerHTML = html;
 
-    // Bind clicks
+    // Bind clicks (cards may be trail-backed [data-trail] or roadmap-only [data-roadmap])
+    function _goCard(el) {
+      var tid = el.getAttribute('data-trail');
+      var rid = el.getAttribute('data-roadmap');
+      if (tid) { _setActiveTrail(tid); window.location.hash = '#trails/' + tid; }
+      else if (rid) { window.location.hash = '#roadmap/' + rid; }
+    }
     container.querySelectorAll('.trail-card__btn').forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        var id = btn.getAttribute('data-trail');
-        _setActiveTrail(id);
-        window.location.hash = '#trails/' + id;
-      });
+      btn.addEventListener('click', function (e) { e.stopPropagation(); _goCard(btn); });
     });
-
     container.querySelectorAll('.trail-card').forEach(function (card) {
-      card.addEventListener('click', function () {
-        var id = card.getAttribute('data-trail');
-        _setActiveTrail(id);
-        window.location.hash = '#trails/' + id;
-      });
+      card.addEventListener('click', function () { _goCard(card); });
     });
   }
 
@@ -608,17 +633,48 @@ var Trails = (function () {
     html += '<div class="trail-detail__progress-label">' + pct + '% ' + I18N.t('trailComplete') + '</div>';
     html += '</div>';
 
-    // Levels
-    html += '<div class="trail-levels">';
+    // View toggle (only when a roadmap is linked to this trail)
+    var hasRoadmap = trail.roadmap && typeof Roadmap !== 'undefined' && Roadmap.has(trail.roadmap);
+    var view = hasRoadmap ? _getView() : 'list';
+    if (hasRoadmap) {
+      html += '<div class="path-toggle">';
+      html += '<button class="path-toggle__btn' + (view === 'list' ? ' active' : '') + '" data-view="list">📋 ' + I18N.t('trailViewList') + '</button>';
+      html += '<button class="path-toggle__btn' + (view === 'roadmap' ? ' active' : '') + '" data-view="roadmap">🛠️ ' + I18N.t('trailViewRoadmap') + '</button>';
+      html += '</div>';
+    }
 
+    // View body — filled by showList()/showRoadmap()
+    html += '<div class="trail-view-body" id="trail-view-body"></div>';
+    html += '</div>'; // trail-detail
+
+    container.innerHTML = html;
+
+    var body = container.querySelector('#trail-view-body');
+    function showList() { body.innerHTML = _levelsHTML(trail, lang); _bindLevels(body); }
+    function showRoadmap() { Roadmap.renderEmbedded(body, trail.roadmap); }
+
+    if (view === 'roadmap' && hasRoadmap) showRoadmap(); else showList();
+
+    // Bind the view toggle
+    container.querySelectorAll('.path-toggle__btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var v = btn.getAttribute('data-view');
+        _setView(v);
+        container.querySelectorAll('.path-toggle__btn').forEach(function (b) { b.classList.toggle('active', b === btn); });
+        if (v === 'roadmap') showRoadmap(); else showList();
+      });
+    });
+  }
+
+  // Build the vertical levels (list view) HTML for a trail.
+  function _levelsHTML(trail, lang) {
+    var html = '<div class="trail-levels">';
     trail.levels.forEach(function (level, levelIdx) {
       var lp = _levelProgress(level);
       var levelDone = lp.total > 0 && lp.done === lp.total;
       var hasCheckpoint = !!level.checkpoint;
 
       html += '<div class="trail-level' + (levelDone ? ' trail-level--done' : '') + '">';
-
-      // Level header
       html += '<div class="trail-level__header">';
       html += '<div class="trail-level__number">' + (levelIdx + 1) + '</div>';
       html += '<div class="trail-level__info">';
@@ -627,12 +683,9 @@ var Trails = (function () {
         html += '<span class="trail-level__sub">' + lp.done + '/' + lp.total + ' ' + I18N.t('trailTopicsDone') + '</span>';
       }
       html += '</div>';
-      if (levelDone) {
-        html += '<span class="trail-level__check">✓</span>';
-      }
+      if (levelDone) { html += '<span class="trail-level__check">✓</span>'; }
       html += '</div>';
 
-      // Topics in this level
       if (!level.certs) {
         html += '<div class="trail-level__topics">';
         level.topics.forEach(function (topicPath) {
@@ -649,56 +702,48 @@ var Trails = (function () {
           html += '<div class="trail-topic ' + statusClass + (exists ? ' trail-topic--clickable' : ' trail-topic--missing') + '"' + (exists ? ' data-topic="' + topicPath + '"' : '') + '>';
           html += '<span class="trail-topic__icon">' + statusIcon + '</span>';
           html += '<span class="trail-topic__name">' + name + '</span>';
-          if (!exists) {
-            html += '<span class="trail-topic__coming">' + I18N.t('comingSoon') + '</span>';
-          } else {
-            html += '<span class="trail-topic__arrow">→</span>';
-          }
+          if (!exists) { html += '<span class="trail-topic__coming">' + I18N.t('comingSoon') + '</span>'; }
+          else { html += '<span class="trail-topic__arrow">→</span>'; }
           html += '</div>';
         });
         html += '</div>';
       } else {
-        // Cert/exam level
         html += '<div class="trail-level__certs">';
         html += '<p>' + I18N.t('trailCertLabel') + ' <strong>' + level.topics.join(', ') + '</strong></p>';
         html += '<button class="btn-secondary trail-exam-btn" data-cert="' + (level.exam ? level.exam[0] : '') + '">' + I18N.t('trailExamBtn') + '</button>';
         html += '</div>';
       }
 
-      // Checkpoint badge
       if (hasCheckpoint) {
         html += '<div class="trail-checkpoint">';
         html += '<span class="trail-checkpoint__flag">🏁</span> ';
         html += '<span>' + I18N.t('trailCheckpoint') + ': ' + level.checkpoint.toUpperCase() + '</span>';
-        if (levelDone) {
-          html += ' <span class="trail-checkpoint__done">✓ ' + I18N.t('trailCheckpointDone') + '</span>';
-        }
+        if (levelDone) { html += ' <span class="trail-checkpoint__done">✓ ' + I18N.t('trailCheckpointDone') + '</span>'; }
         html += '</div>';
       }
 
       html += '</div>'; // trail-level
     });
-
     html += '</div>'; // trail-levels
-    html += '</div>'; // trail-detail
+    return html;
+  }
 
-    container.innerHTML = html;
-
-    // Bind topic clicks
+  function _bindLevels(container) {
     container.querySelectorAll('.trail-topic--clickable').forEach(function (el) {
       el.addEventListener('click', function () {
         var path = el.getAttribute('data-topic');
         if (path) window.location.hash = '#topic/' + path;
       });
     });
-
-    // Bind exam button
     container.querySelectorAll('.trail-exam-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        window.location.hash = '#exam';
-      });
+      btn.addEventListener('click', function () { window.location.hash = '#exam'; });
     });
   }
+
+  // Remember the preferred view (list | roadmap) across paths.
+  var VIEW_KEY = 'k8s_path_view';
+  function _getView() { try { return localStorage.getItem(VIEW_KEY) === 'roadmap' ? 'roadmap' : 'list'; } catch (e) { return 'list'; } }
+  function _setView(v) { try { localStorage.setItem(VIEW_KEY, v); } catch (e) {} }
 
   // ─── Public API ──────────────────────────────────────────────────────────────
   function render(container, trailId) {

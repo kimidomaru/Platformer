@@ -16,6 +16,9 @@ No backend. No database. No build step. No internet required.
 ![No build step](https://img.shields.io/badge/Build-none-success)
 ![Offline first](https://img.shields.io/badge/Offline-first-blue)
 ![License MIT](https://img.shields.io/badge/License-MIT-green)
+![Topics](https://img.shields.io/badge/Topics-231-blueviolet)
+![Certifications](https://img.shields.io/badge/Certifications-10-orange)
+![Trails](https://img.shields.io/badge/Career%20Trails-6-9b59b6)
 ![AI-assisted content](https://img.shields.io/badge/Content-AI--assisted%20%C2%B7%20not%20fully%20verified-yellow)
 
 ![Dashboard](assets/screenshots/dashboard.png)
@@ -33,7 +36,7 @@ No backend. No database. No build step. No internet required.
 - [Screenshots](#screenshots)
 - [Features](#features)
 - [Content coverage](#content-coverage)
-- [Career trails](#career-trails)
+- [Career paths](#career-paths)
 - [How it works (architecture)](#how-it-works-architecture)
 - [Running locally](#running-locally)
 - [Fork it: build your own study platform](#fork-it-build-your-own-study-platform)
@@ -78,7 +81,7 @@ Please read this before using the material to prepare for an exam.
 |---|
 | ![Topic](assets/screenshots/topic.png) |
 
-| Mock Exam — certification/skill-focused by default | Learning Trails — role-based study paths |
+| Mock Exam — certification/skill-focused by default | Career paths — List view ⇄ Roadmap view toggle |
 |---|---|
 | ![Mock Exam](assets/screenshots/exam.png) | ![Trails](assets/screenshots/trails.png) |
 
@@ -95,7 +98,7 @@ Please read this before using the material to prepare for an exam.
 - 🃏 **Flashcards with spaced repetition** — SM-2 scheduling (Again/Hard/Good/Easy), due badges, per-card persistence.
 - 🧪 **Hands-on labs** — scenario, objective, estimated duration, step-by-step instructions with hints, solutions, and **`verify` commands** to self-check.
 - 🚑 **Troubleshooting scenarios** — symptom → diagnosis → solution, graded by difficulty.
-- 🛤️ **Learning trails** — 6 role-based career paths (DevOps, SRE, Platform Engineer, Cloud Engineer, K8s Specialist, AI for DevOps/SRE) with curated levels, checkpoints and certification milestones. Every topic in the catalog is reachable from at least one trail.
+- 🛤️ **Learning trails — two views, one screen** — role-based career paths (DevOps, SRE, Platform Engineer, Cloud Engineer, K8s Specialist, Security, AI for DevOps/SRE) you can view as a **📋 List** (curated levels + certification checkpoints) or toggle to a **🛠️ Roadmap** — a roadmap.sh-style branching flowchart with **real forks** (recommended · alternative · optional), milestones, and nodes colored by progress that link straight into the content. Every topic in the catalog is reachable from a path.
 - 🌌 **Topic map** — an interactive constellation of all topics linked by tags.
 - 📊 **Progress tracking** — per-topic state (*not started / in progress / completed*) persisted in `localStorage`.
 - 🔎 **Local search**, 🌓 **dark mode**, 🌐 **bilingual UI (EN/PT)**, and a 📋 **cheatsheet** view.
@@ -111,7 +114,7 @@ Please read this before using the material to prepare for an exam.
 | **Domains** | 77 |
 | **Skill tracks** | 23 |
 | **Certifications** | 10 |
-| **Career trails** | 6 |
+| **Career paths** | 6 trails (List view) + 7 roadmaps (Roadmap view) |
 | **Languages** | English + Portuguese (full parity) |
 
 **Certification tracks**
@@ -124,18 +127,24 @@ Please read this before using the material to prepare for an exam.
 
 ---
 
-## Career trails
+## Career paths
 
-Six role-based paths cross-reference topics from multiple domains into a structured learning journey. Each trail shows per-level progress, certification checkpoints, and links directly into topics.
+Curated role-based paths cross-reference topics from many domains into a structured journey. Every path can be studied in **two interchangeable views on the same screen**, with a toggle:
 
-| Trail | Levels | Topics | Target certifications |
+- **📋 List view** — a checklist of curated levels with per-level progress and certification checkpoints.
+- **🛠️ Roadmap view** — a roadmap.sh-style branching flowchart with **real forks** (recommended · alternative · optional), inline certification milestones, and nodes colored by progress. Forks model genuine decisions: *Ingress vs Gateway API*, *ArgoCD vs FluxCD*, *Cilium vs Istio*, *AWS vs Azure*, *Kyverno vs OPA*, *Falco vs Tetragon*.
+
+Your view preference is remembered. The picker lists every path; a path may have both views or (for Security) be roadmap-only.
+
+| Path | List view (levels / topics) | Roadmap view (steps / forks) | Target certifications |
 |---|---|---|---|
-| 🛠️ **DevOps Engineer** | 4 | 30 | CKAD → CKA |
-| 📡 **Site Reliability Engineer** | 4 | 35 | CKA |
-| 🏗️ **Platform Engineer** | 5 | 51 | CKA → CKS |
-| ☁️ **Cloud Engineer** | 4 | 27 | AZ-104 → AZ-305 → AWS SAA |
-| ⚙️ **Kubernetes Specialist** | 7 | 63 | KCNA → CKA → CKAD → KCSA → CKS |
-| 🤖 **AI for DevOps / SRE** | 3 | 6 | — |
+| 🛠️ **DevOps Engineer** | 4 / 30 | 8 / 3 | CKAD → CKA |
+| 📡 **Site Reliability Engineer** | 4 / 35 | 8 / 2 | CKA |
+| 🏗️ **Platform Engineer** | 5 / 51 | 9 / 4 | CKA → CKS |
+| ☁️ **Cloud Engineer** | 4 / 27 | 5 / 2 | AZ-104 → AZ-305 → AWS SAA |
+| ⚙️ **Kubernetes Specialist** | 7 / 63 | 13 / 4 *(Kubernetes roadmap)* | KCNA → CKA → CKAD → KCSA → CKS |
+| 🛡️ **Security Specialist** | — *(roadmap-only)* | 10 / 3 | KCSA → CKS |
+| 🤖 **AI for DevOps / SRE** | 3 / 6 | 4 / 1 | — |
 
 ---
 
@@ -321,7 +330,8 @@ kubectl get pods
 │   ├── srs.js              # SM-2 spaced repetition
 │   ├── lab.js              # Hands-on labs
 │   ├── exam.js             # Mock exam engine (cert/skill-scoped + general)
-│   ├── trails.js           # Role-based career trails (6 paths)
+│   ├── trails.js           # Career paths screen — List view + List⇄Roadmap toggle
+│   ├── roadmap.js          # Roadmap view — branching flowcharts with forks (7 roadmaps)
 │   ├── search.js           # Local search
 │   ├── dashboard.js        # Progress dashboard
 │   ├── constellation.js    # Topic map (knowledge graph)

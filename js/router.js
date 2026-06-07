@@ -57,6 +57,16 @@ var Router = (function () {
       }
       Sidebar.setActiveButton('trails');
       Trails.render(contentArea, trailId);
+    } else if (route === 'roadmap') {
+      var roadmapId = parts[1] || null;
+      if (!roadmapId) {
+        // Unified entry point lives under Trails; bare #roadmap redirects there.
+        window.location.hash = '#trails';
+        return;
+      }
+      _setBreadcrumb([{ label: I18N.t('btnTrails'), href: '#trails' }, { label: roadmapId }]);
+      Sidebar.setActiveButton('trails');
+      Roadmap.render(contentArea, roadmapId);
     } else {
       window.location.hash = '#dashboard';
     }

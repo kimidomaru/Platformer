@@ -296,7 +296,21 @@ var I18N = (function () {
       trailCertLabel: 'Meta:',
       trailExamBtn: '▶ Iniciar Simulado',
       trailCheckpoint: 'Checkpoint',
-      trailCheckpointDone: 'Concluido'
+      trailCheckpointDone: 'Concluido',
+
+      // Roadmap (roadmap.sh-style visual paths)
+      btnRoadmap: 'Roadmap',
+      roadmapTitle: '🛠️ Roadmaps Visuais',
+      roadmapSubtitle: 'Caminhos com bifurcacoes (recomendado · alternativo · opcional) ligados direto ao conteudo.',
+      roadmapOpen: 'Abrir Roadmap →',
+      roadmapBack: 'Roadmaps',
+      roadmapForks: 'bifurcacoes',
+      roadmapRecommended: 'recomendado',
+      roadmapAlternative: 'alternativo',
+      roadmapOptional: 'opcional',
+      trailViewRoadmap: 'Roadmap',
+      trailViewList: 'Lista',
+      roadmapOnlyBadge: 'Roadmap'
     },
 
     en: {
@@ -593,7 +607,21 @@ var I18N = (function () {
       trailCertLabel: 'Goal:',
       trailExamBtn: '▶ Start Mock Exam',
       trailCheckpoint: 'Checkpoint',
-      trailCheckpointDone: 'Done'
+      trailCheckpointDone: 'Done',
+
+      // Roadmap (roadmap.sh-style visual paths)
+      btnRoadmap: 'Roadmap',
+      roadmapTitle: '🛠️ Visual Roadmaps',
+      roadmapSubtitle: 'Branching paths (recommended · alternative · optional) linked straight to the content.',
+      roadmapOpen: 'Open Roadmap →',
+      roadmapBack: 'Roadmaps',
+      roadmapForks: 'forks',
+      roadmapRecommended: 'recommended',
+      roadmapAlternative: 'alternative',
+      roadmapOptional: 'optional',
+      trailViewRoadmap: 'Roadmap',
+      trailViewList: 'List',
+      roadmapOnlyBadge: 'Roadmap'
     }
   };
 
