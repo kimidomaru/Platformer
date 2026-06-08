@@ -242,9 +242,9 @@ var Dashboard = (function () {
 
     var html = '<div class="kubeastronaut-card">';
     html += '<div class="kubeastronaut-header">';
-    html += '<div class="kubeastronaut-icon">' + (allDone ? '&#128640;' : '&#127776;') + '</div>';
+    html += '<div class="kubeastronaut-icon">' + (allDone ? '&#128640;' : '&#9784;') + '</div>';
     html += '<div class="kubeastronaut-info">';
-    html += '<h2 class="kubeastronaut-title">KubeAstronaut</h2>';
+    html += '<h2 class="kubeastronaut-title">Kubernetes</h2>';
     html += '<p class="kubeastronaut-sub">' + (allDone ? I18N.t('allCertsDone') : I18N.t('completeCerts')) + '</p>';
     html += '</div>';
     html += '<div class="kubeastronaut-pct">' + overallPct + '%</div>';

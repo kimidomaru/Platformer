@@ -15,8 +15,8 @@ var Roadmap = (function () {
       color: '#326ce5',
       label: { pt: 'Kubernetes', en: 'Kubernetes' },
       summary: {
-        pt: 'Do container ao cluster seguro em produção. A trilha-mãe — com bifurcações em rede, observabilidade, GitOps e service mesh.',
-        en: 'From container to secure production cluster. The flagship path — with forks in networking, observability, GitOps and service mesh.'
+        pt: 'Do container ao cluster em produção. A trilha-mãe — com bifurcações em exposição de serviços e service mesh.',
+        en: 'From container to production cluster. The flagship path — with forks in service exposure and service mesh.'
       },
       steps: [
         {
@@ -59,13 +59,10 @@ var Roadmap = (function () {
           topics: ['cluster-architecture/rbac', 'cluster-architecture/etcd', 'cluster-architecture/kubeadm']
         },
         {
-          type: 'fork',
-          label: { pt: 'Observabilidade', en: 'Observability' },
-          hint: { pt: 'Métricas são essenciais; logs e tracing complementam.', en: 'Metrics are essential; logs and tracing complement.' },
-          branches: [
-            { label: { pt: 'Métricas (Prometheus)', en: 'Metrics (Prometheus)' }, kind: 'recommended', topics: ['prom-fundamentals/prom-architecture', 'prom-fundamentals/promql-basics', 'prom-grafana/grafana-dashboards'] },
-            { label: { pt: 'Logs & Tracing', en: 'Logs & Tracing' }, kind: 'optional', topics: ['loki/loki-fundamentals', 'opentelemetry/otel-k8s'] }
-          ]
+          type: 'core',
+          label: { pt: 'Observabilidade (Prometheus)', en: 'Observability (Prometheus)' },
+          desc: { pt: 'Métricas com Prometheus e dashboards no Grafana.', en: 'Metrics with Prometheus and Grafana dashboards.' },
+          topics: ['prom-fundamentals/prom-architecture', 'prom-fundamentals/promql-basics', 'prom-grafana/grafana-dashboards']
         },
         {
           type: 'core',
@@ -80,32 +77,12 @@ var Roadmap = (function () {
         },
         {
           type: 'fork',
-          label: { pt: 'GitOps', en: 'GitOps' },
-          hint: { pt: 'Escolha uma ferramenta de entrega declarativa.', en: 'Pick one declarative delivery tool.' },
-          branches: [
-            { label: { pt: 'ArgoCD', en: 'ArgoCD' }, kind: 'recommended', topics: ['argocd-fundamentals/argocd-architecture', 'argocd-fundamentals/argocd-applications', 'argocd-patterns/argocd-app-of-apps'] },
-            { label: { pt: 'FluxCD', en: 'FluxCD' }, kind: 'alternative', topics: ['fluxcd/fluxcd-fundamentals', 'fluxcd/fluxcd-sources'] }
-          ]
-        },
-        {
-          type: 'fork',
           label: { pt: 'Rede Avançada & Service Mesh', en: 'Advanced Networking & Service Mesh' },
           hint: { pt: 'eBPF (Cilium) ou sidecar/Ambient (Istio).', en: 'eBPF (Cilium) or sidecar/Ambient (Istio).' },
           branches: [
             { label: { pt: 'Cilium (eBPF)', en: 'Cilium (eBPF)' }, kind: 'recommended', topics: ['cilium-fundamentals/cilium-architecture', 'cilium-fundamentals/cilium-network-policies', 'cilium-advanced/cilium-service-mesh'] },
             { label: { pt: 'Istio', en: 'Istio' }, kind: 'alternative', topics: ['istio-fundamentals/istio-architecture', 'istio-fundamentals/istio-traffic-mgmt', 'istio-advanced/istio-ambient'] }
           ]
-        },
-        {
-          type: 'core',
-          label: { pt: 'Segurança (Hardening)', en: 'Security (Hardening)' },
-          desc: { pt: 'CIS, hardening do API server e runtime security.', en: 'CIS, API server hardening and runtime security.' },
-          topics: ['cks-cluster-setup/cis-benchmarks', 'cks-cluster-hardening/api-server-security', 'cks-runtime-security/falco']
-        },
-        {
-          type: 'milestone',
-          label: { pt: 'CKS — Security Specialist', en: 'CKS — Security Specialist' },
-          exam: 'cks'
         }
       ]
     },
@@ -115,8 +92,8 @@ var Roadmap = (function () {
       color: '#0078d4',
       label: { pt: 'DevOps Engineer', en: 'DevOps Engineer' },
       summary: {
-        pt: 'Entregar software rápido e automatizado: do container ao GitOps, com bifurcações em IaC, GitOps e CI.',
-        en: 'Ship software fast and automated: from container to GitOps, with forks in IaC, GitOps and CI.'
+        pt: 'Entregar software rápido e automatizado: do container ao Kubernetes, com Terraform e Helm.',
+        en: 'Ship software fast and automated: from container to Kubernetes, with Terraform and Helm.'
       },
       steps: [
         {
@@ -126,13 +103,10 @@ var Roadmap = (function () {
           topics: ['docker/container-fundamentals', 'docker/docker-compose', 'docker/docker-production']
         },
         {
-          type: 'fork',
+          type: 'core',
           label: { pt: 'Infraestrutura como Código', en: 'Infrastructure as Code' },
-          hint: { pt: 'Terraform é o padrão; Crossplane traz IaC nativa no K8s.', en: 'Terraform is standard; Crossplane brings K8s-native IaC.' },
-          branches: [
-            { label: { pt: 'Terraform', en: 'Terraform' }, kind: 'recommended', topics: ['iac/terraform-fundamentals', 'iac/terraform-patterns'] },
-            { label: { pt: 'Crossplane', en: 'Crossplane' }, kind: 'optional', topics: ['crossplane/crossplane-fundamentals'] }
-          ]
+          desc: { pt: 'Terraform: do básico aos padrões avançados.', en: 'Terraform: from basics to advanced patterns.' },
+          topics: ['iac/terraform-fundamentals', 'iac/terraform-patterns']
         },
         {
           type: 'core',
@@ -147,30 +121,6 @@ var Roadmap = (function () {
           topics: ['app-deployment/helm', 'helm/helm-chart-development', 'helm/helm-advanced']
         },
         {
-          type: 'fork',
-          label: { pt: 'GitOps', en: 'GitOps' },
-          hint: { pt: 'Escolha sua ferramenta de entrega contínua declarativa.', en: 'Pick your declarative continuous-delivery tool.' },
-          branches: [
-            { label: { pt: 'ArgoCD', en: 'ArgoCD' }, kind: 'recommended', topics: ['argocd-fundamentals/argocd-architecture', 'argocd-fundamentals/argocd-applications', 'argocd-patterns/argocd-app-of-apps'] },
-            { label: { pt: 'FluxCD', en: 'FluxCD' }, kind: 'alternative', topics: ['fluxcd/fluxcd-fundamentals', 'fluxcd/fluxcd-sources', 'fluxcd/fluxcd-advanced'] }
-          ]
-        },
-        {
-          type: 'fork',
-          label: { pt: 'CI Pipelines', en: 'CI Pipelines' },
-          hint: { pt: 'SaaS (GitHub Actions) ou nativo no K8s (Tekton).', en: 'SaaS (GitHub Actions) or K8s-native (Tekton).' },
-          branches: [
-            { label: { pt: 'GitHub Actions', en: 'GitHub Actions' }, kind: 'recommended', topics: ['cicd/github-actions', 'cicd/pipeline-security'] },
-            { label: { pt: 'Tekton', en: 'Tekton' }, kind: 'alternative', topics: ['cicd/tekton'] }
-          ]
-        },
-        {
-          type: 'core',
-          label: { pt: 'Policy & Autoscaling', en: 'Policy & Autoscaling' },
-          desc: { pt: 'Garantias de governança e escala dirigida a eventos.', en: 'Governance guardrails and event-driven scaling.' },
-          topics: ['kyverno/kyverno-policies', 'keda/keda-fundamentals']
-        },
-        {
           type: 'milestone',
           label: { pt: 'CKAD → CKA', en: 'CKAD → CKA' },
           exam: 'ckad'
@@ -183,8 +133,8 @@ var Roadmap = (function () {
       color: '#107c10',
       label: { pt: 'Site Reliability Engineer', en: 'Site Reliability Engineer' },
       summary: {
-        pt: 'Confiabilidade e operação em produção: do mindset SRE ao caos, com bifurcações em visualização/logs e tracing.',
-        en: 'Reliability and production operations: from SRE mindset to chaos, with forks in visualization/logs and tracing.'
+        pt: 'Confiabilidade e operação em produção: do mindset SRE à observabilidade com Prometheus/Grafana e capacidade.',
+        en: 'Reliability and production operations: from SRE mindset to Prometheus/Grafana observability and capacity.'
       },
       steps: [
         {
@@ -206,33 +156,16 @@ var Roadmap = (function () {
           topics: ['prom-fundamentals/prom-architecture', 'prom-fundamentals/promql-basics', 'prom-fundamentals/promql-advanced', 'prom-fundamentals/prom-alerting']
         },
         {
-          type: 'fork',
-          label: { pt: 'Visualização & Logs', en: 'Visualization & Logs' },
-          hint: { pt: 'Grafana para dashboards; Loki para logs.', en: 'Grafana for dashboards; Loki for logs.' },
-          branches: [
-            { label: { pt: 'Grafana', en: 'Grafana' }, kind: 'recommended', topics: ['prom-grafana/grafana-dashboards', 'prom-grafana/grafana-alerting'] },
-            { label: { pt: 'Loki (logs)', en: 'Loki (logs)' }, kind: 'optional', topics: ['loki/loki-fundamentals', 'loki/logql-alerting'] }
-          ]
-        },
-        {
-          type: 'fork',
-          label: { pt: 'Tracing Distribuído', en: 'Distributed Tracing' },
-          hint: { pt: 'OpenTelemetry é o padrão CNCF para tracing.', en: 'OpenTelemetry is the CNCF standard for tracing.' },
-          branches: [
-            { label: { pt: 'OpenTelemetry', en: 'OpenTelemetry' }, kind: 'recommended', topics: ['opentelemetry/otel-fundamentals', 'opentelemetry/otel-k8s', 'opentelemetry/otel-collector'] }
-          ]
+          type: 'core',
+          label: { pt: 'Visualização (Grafana)', en: 'Visualization (Grafana)' },
+          desc: { pt: 'Dashboards e alerting no Grafana.', en: 'Grafana dashboards and alerting.' },
+          topics: ['prom-grafana/grafana-dashboards', 'prom-grafana/grafana-alerting']
         },
         {
           type: 'core',
-          label: { pt: 'Caos & Capacidade', en: 'Chaos & Capacity' },
-          desc: { pt: 'Experimentos de caos e planejamento de capacidade.', en: 'Chaos experiments and capacity planning.' },
-          topics: ['chaos-engineering/chaos-fundamentals', 'chaos-engineering/chaos-mesh', 'sre-fundamentals/sre-capacity-planning']
-        },
-        {
-          type: 'core',
-          label: { pt: 'Custo (FinOps)', en: 'Cost (FinOps)' },
-          desc: { pt: 'Gestão de custo de Kubernetes e práticas FinOps.', en: 'Kubernetes cost management and FinOps practices.' },
-          topics: ['finops/finops-practices', 'finops/k8s-cost-management']
+          label: { pt: 'Capacidade', en: 'Capacity' },
+          desc: { pt: 'Planejamento de capacidade e previsão de demanda.', en: 'Capacity planning and demand forecasting.' },
+          topics: ['sre-fundamentals/sre-capacity-planning']
         },
         {
           type: 'milestone',
@@ -267,15 +200,6 @@ var Roadmap = (function () {
           ]
         },
         {
-          type: 'fork',
-          label: { pt: 'Arquitetura Avançada', en: 'Advanced Architecture' },
-          hint: { pt: 'Nível profissional/expert do provedor escolhido.', en: 'Professional/expert level of the chosen provider.' },
-          branches: [
-            { label: { pt: 'AWS SAA → SAP', en: 'AWS SAA → SAP' }, kind: 'recommended', topics: ['aws-new-solutions/serverless-architecture', 'aws-org-complexity/multi-account', 'aws-migration/migration-strategies'] },
-            { label: { pt: 'Azure AZ-305', en: 'Azure AZ-305' }, kind: 'alternative', topics: ['az305-infrastructure/compute-solutions', 'az305-data/relational-nosql', 'az305-security/security-design'] }
-          ]
-        },
-        {
           type: 'core',
           label: { pt: 'IaC Multi-Cloud', en: 'Multi-Cloud IaC' },
           desc: { pt: 'Terraform como camada comum entre provedores.', en: 'Terraform as the common layer across providers.' },
@@ -294,8 +218,8 @@ var Roadmap = (function () {
       color: '#8764b8',
       label: { pt: 'Platform Engineer', en: 'Platform Engineer' },
       summary: {
-        pt: 'Construir a plataforma interna que outros times consomem. Bifurcações em policy, GitOps e service mesh.',
-        en: 'Build the internal platform other teams consume. Forks in policy, GitOps and service mesh.'
+        pt: 'Construir a plataforma interna que outros times consomem: policy (OPA), service mesh e developer platform.',
+        en: 'Build the internal platform other teams consume: policy (OPA), service mesh and developer platform.'
       },
       steps: [
         {
@@ -305,34 +229,10 @@ var Roadmap = (function () {
           topics: ['cluster-architecture/pods', 'cluster-architecture/rbac', 'cluster-architecture/crds-operators']
         },
         {
-          type: 'fork',
-          label: { pt: 'Policy as Code', en: 'Policy as Code' },
-          hint: { pt: 'Governança e admission control no cluster.', en: 'Governance and admission control in the cluster.' },
-          branches: [
-            { label: { pt: 'Kyverno', en: 'Kyverno' }, kind: 'recommended', topics: ['kyverno/kyverno-fundamentals', 'kyverno/kyverno-policies', 'kyverno/kyverno-advanced'] },
-            { label: { pt: 'OPA / Gatekeeper', en: 'OPA / Gatekeeper' }, kind: 'alternative', topics: ['opa/opa-gatekeeper', 'opa/opa-beyond-k8s'] }
-          ]
-        },
-        {
           type: 'core',
-          label: { pt: 'Provisionamento (IaC nativo)', en: 'Provisioning (native IaC)' },
-          desc: { pt: 'Crossplane: control plane universal para infraestrutura.', en: 'Crossplane: universal control plane for infrastructure.' },
-          topics: ['crossplane/crossplane-fundamentals', 'crossplane/crossplane-providers', 'crossplane/crossplane-compositions']
-        },
-        {
-          type: 'fork',
-          label: { pt: 'GitOps', en: 'GitOps' },
-          hint: { pt: 'Entrega declarativa do estado da plataforma.', en: 'Declarative delivery of the platform state.' },
-          branches: [
-            { label: { pt: 'ArgoCD', en: 'ArgoCD' }, kind: 'recommended', topics: ['argocd-fundamentals/argocd-architecture', 'argocd-fundamentals/argocd-applications', 'argocd-patterns/argocd-app-of-apps'] },
-            { label: { pt: 'FluxCD', en: 'FluxCD' }, kind: 'alternative', topics: ['fluxcd/fluxcd-fundamentals', 'fluxcd/fluxcd-sources', 'fluxcd/fluxcd-advanced'] }
-          ]
-        },
-        {
-          type: 'core',
-          label: { pt: 'Secrets & Certificados', en: 'Secrets & Certificates' },
-          desc: { pt: 'Vault, cert-manager e External Secrets.', en: 'Vault, cert-manager and External Secrets.' },
-          topics: ['security-tooling/vault-k8s', 'security-tooling/cert-manager', 'security-tooling/external-secrets']
+          label: { pt: 'Policy as Code (OPA)', en: 'Policy as Code (OPA)' },
+          desc: { pt: 'Governança e admission control com OPA/Gatekeeper.', en: 'Governance and admission control with OPA/Gatekeeper.' },
+          topics: ['opa/opa-gatekeeper', 'opa/opa-beyond-k8s']
         },
         {
           type: 'fork',
@@ -350,97 +250,9 @@ var Roadmap = (function () {
           topics: ['platform-engineering/idp-concepts', 'platform-engineering/backstage', 'platform-engineering/golden-paths', 'platform-engineering/platform-metrics']
         },
         {
-          type: 'fork',
-          label: { pt: 'Escala & Dados', en: 'Scale & Data' },
-          hint: { pt: 'Autoscaling dirigido a eventos e dados como serviço.', en: 'Event-driven autoscaling and data-as-a-service.' },
-          branches: [
-            { label: { pt: 'KEDA (autoscaling)', en: 'KEDA (autoscaling)' }, kind: 'recommended', topics: ['keda/keda-fundamentals', 'keda/keda-advanced'] },
-            { label: { pt: 'Databases on K8s', en: 'Databases on K8s' }, kind: 'optional', topics: ['databases-k8s/db-k8s-fundamentals', 'databases-k8s/postgresql-k8s'] }
-          ]
-        },
-        {
           type: 'milestone',
-          label: { pt: 'CKA → CKS', en: 'CKA → CKS' },
+          label: { pt: 'CKA — Administrator', en: 'CKA — Administrator' },
           exam: 'cka'
-        }
-      ]
-    },
-    {
-      id: 'security',
-      icon: '🛡️',
-      color: '#d9534f',
-      label: { pt: 'Security Specialist', en: 'Security Specialist' },
-      summary: {
-        pt: 'Segurança Kubernetes da KCSA ao CKS: hardening, supply chain e runtime, com bifurcações em policy e detecção.',
-        en: 'Kubernetes security from KCSA to CKS: hardening, supply chain and runtime, with forks in policy and detection.'
-      },
-      steps: [
-        {
-          type: 'core',
-          label: { pt: 'Fundamentos (Modelo 4C)', en: 'Fundamentals (4C Model)' },
-          desc: { pt: 'Cloud, Cluster, Container, Code — Pod Security e RBAC.', en: 'Cloud, Cluster, Container, Code — Pod Security and RBAC.' },
-          topics: ['kcsa-security-overview/4c-security-model', 'kcsa-k8s-security/pod-security-overview', 'kcsa-k8s-security/rbac-overview']
-        },
-        {
-          type: 'core',
-          label: { pt: 'Threat Modeling', en: 'Threat Modeling' },
-          desc: { pt: 'Vetores de ataque e segurança de rede do cluster.', en: 'Attack vectors and cluster network security.' },
-          topics: ['kcsa-threat-model/threat-modeling', 'kcsa-threat-model/attack-vectors', 'kcsa-cluster-security/k8s-networking-security']
-        },
-        {
-          type: 'milestone',
-          label: { pt: 'KCSA — Security Associate', en: 'KCSA — Security Associate' },
-          exam: 'kcsa'
-        },
-        {
-          type: 'core',
-          label: { pt: 'Cluster Hardening', en: 'Cluster Hardening' },
-          desc: { pt: 'CIS benchmarks, RBAC avançado e API server.', en: 'CIS benchmarks, advanced RBAC and API server.' },
-          topics: ['cks-cluster-setup/cis-benchmarks', 'cks-cluster-hardening/rbac-advanced', 'cks-cluster-hardening/api-server-security']
-        },
-        {
-          type: 'fork',
-          label: { pt: 'System Hardening', en: 'System Hardening' },
-          hint: { pt: 'Restringir o que o container pode fazer no host.', en: 'Restrict what the container can do on the host.' },
-          branches: [
-            { label: { pt: 'Seccomp & AppArmor', en: 'Seccomp & AppArmor' }, kind: 'recommended', topics: ['cks-system-hardening/seccomp', 'cks-system-hardening/apparmor', 'cks-system-hardening/os-hardening'] },
-            { label: { pt: 'Sandboxing (gVisor)', en: 'Sandboxing (gVisor)' }, kind: 'alternative', topics: ['cks-microservice-vuln/runtime-sandboxing'] }
-          ]
-        },
-        {
-          type: 'core',
-          label: { pt: 'Supply Chain', en: 'Supply Chain' },
-          desc: { pt: 'Scanning, hardening e assinatura de imagens.', en: 'Image scanning, hardening and signing.' },
-          topics: ['cks-supply-chain/image-scanning', 'cks-supply-chain/image-hardening', 'cks-supply-chain/image-signing']
-        },
-        {
-          type: 'fork',
-          label: { pt: 'Admission & Policy', en: 'Admission & Policy' },
-          hint: { pt: 'Barrar workloads inseguros na entrada do cluster.', en: 'Block insecure workloads at cluster admission.' },
-          branches: [
-            { label: { pt: 'Kyverno', en: 'Kyverno' }, kind: 'recommended', topics: ['cks-microservice-vuln/pod-security-standards', 'kyverno/kyverno-policies'] },
-            { label: { pt: 'OPA / Gatekeeper', en: 'OPA / Gatekeeper' }, kind: 'alternative', topics: ['cks-microservice-vuln/opa-gatekeeper', 'opa/opa-gatekeeper'] }
-          ]
-        },
-        {
-          type: 'fork',
-          label: { pt: 'Runtime Security', en: 'Runtime Security' },
-          hint: { pt: 'Detecção e resposta em tempo de execução.', en: 'Detection and response at runtime.' },
-          branches: [
-            { label: { pt: 'Falco + Auditoria', en: 'Falco + Audit' }, kind: 'recommended', topics: ['cks-runtime-security/falco', 'cks-runtime-security/audit-logging', 'cks-runtime-security/container-immutability'] },
-            { label: { pt: 'Tetragon (eBPF)', en: 'Tetragon (eBPF)' }, kind: 'optional', topics: ['cilium-advanced/cilium-tetragon'] }
-          ]
-        },
-        {
-          type: 'core',
-          label: { pt: 'Secrets Management', en: 'Secrets Management' },
-          desc: { pt: 'Secrets do K8s, Vault e External Secrets.', en: 'K8s secrets, Vault and External Secrets.' },
-          topics: ['cks-microservice-vuln/secrets-management', 'security-tooling/vault-k8s', 'security-tooling/external-secrets']
-        },
-        {
-          type: 'milestone',
-          label: { pt: 'CKS — Security Specialist', en: 'CKS — Security Specialist' },
-          exam: 'cks'
         }
       ]
     },

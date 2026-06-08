@@ -10,8 +10,8 @@ var Trails = (function () {
       color: '#0078d4',
       label: { pt: 'DevOps Engineer', en: 'DevOps Engineer' },
       summary: {
-        pt: 'Entregar software rápido, confiável e automatizado. Do container ao GitOps.',
-        en: 'Ship software fast, reliably, and automatically. From containers to GitOps.'
+        pt: 'Entregar software rápido, confiável e automatizado. Do container ao Kubernetes com Helm.',
+        en: 'Ship software fast, reliably, and automatically. From containers to Kubernetes with Helm.'
       },
       levels: [
         {
@@ -20,9 +20,7 @@ var Trails = (function () {
             'docker/container-fundamentals',
             'docker/docker-compose',
             'docker/docker-production',
-            'iac/terraform-fundamentals',
-            'cicd/github-actions',
-            'cicd/pipeline-security'
+            'iac/terraform-fundamentals'
           ]
         },
         {
@@ -37,28 +35,16 @@ var Trails = (function () {
           ]
         },
         {
-          label: { pt: 'Nível 3 — Empacotamento, GitOps & CI', en: 'Level 3 — Packaging, GitOps & CI' },
+          label: { pt: 'Nível 3 — Empacotamento (Helm)', en: 'Level 3 — Packaging (Helm)' },
           topics: [
             'app-deployment/helm',
             'helm/helm-chart-development',
-            'helm/helm-advanced',
-            'argocd-fundamentals/argocd-architecture',
-            'argocd-fundamentals/argocd-applications',
-            'argocd-fundamentals/argocd-sync-strategies',
-            'argocd-fundamentals/argocd-projects',
-            'fluxcd/fluxcd-fundamentals',
-            'fluxcd/fluxcd-sources',
-            'cicd/tekton'
+            'helm/helm-advanced'
           ]
         },
         {
-          label: { pt: 'Nível 4 — GitOps Avançado & Confiabilidade', en: 'Level 4 — Advanced GitOps & Reliability' },
+          label: { pt: 'Nível 4 — IaC Avançado & Confiabilidade', en: 'Level 4 — Advanced IaC & Reliability' },
           topics: [
-            'argocd-patterns/argocd-app-of-apps',
-            'argocd-patterns/argocd-advanced',
-            'fluxcd/fluxcd-advanced',
-            'kyverno/kyverno-policies',
-            'keda/keda-fundamentals',
             'observability/probes',
             'iac/terraform-patterns',
             'iac/terraform-testing'
@@ -106,7 +92,7 @@ var Trails = (function () {
           ]
         },
         {
-          label: { pt: 'Nível 3 — Stack de Observabilidade', en: 'Level 3 — Observability Stack' },
+          label: { pt: 'Nível 3 — Stack de Observabilidade (Prometheus)', en: 'Level 3 — Observability Stack (Prometheus)' },
           topics: [
             'prom-fundamentals/prom-architecture',
             'prom-fundamentals/promql-basics',
@@ -115,27 +101,15 @@ var Trails = (function () {
             'prom-fundamentals/prom-service-discovery',
             'prom-fundamentals/prom-exporters',
             'prom-grafana/grafana-dashboards',
-            'prom-grafana/grafana-alerting',
-            'loki/loki-fundamentals',
-            'loki/logql-alerting',
-            'opentelemetry/otel-fundamentals',
-            'opentelemetry/otel-k8s',
-            'opentelemetry/otel-collector'
+            'prom-grafana/grafana-alerting'
           ]
         },
         {
-          label: { pt: 'Nível 4 — Caos, Capacidade & Custo', en: 'Level 4 — Chaos, Capacity & Cost' },
+          label: { pt: 'Nível 4 — Capacidade & Segurança de Deploy', en: 'Level 4 — Capacity & Deployment Safety' },
           topics: [
-            'chaos-engineering/chaos-fundamentals',
-            'chaos-engineering/chaos-mesh',
-            'chaos-engineering/litmus-chaos',
             'sre-fundamentals/sre-capacity-planning',
             'sre-operations/sre-deployment-safety',
-            'sre-operations/sre-capacity',
-            'keda/keda-fundamentals',
-            'keda/keda-advanced',
-            'finops/finops-practices',
-            'finops/k8s-cost-management'
+            'sre-operations/sre-capacity'
           ]
         },
         {
@@ -169,19 +143,10 @@ var Trails = (function () {
           ]
         },
         {
-          label: { pt: 'Nível 2 — Extensibilidade & Policy', en: 'Level 2 — Extensibility & Policy' },
+          label: { pt: 'Nível 2 — Policy as Code (OPA)', en: 'Level 2 — Policy as Code (OPA)' },
           topics: [
-            'kyverno/kyverno-fundamentals',
-            'kyverno/kyverno-policies',
-            'kyverno/kyverno-advanced',
             'opa/opa-gatekeeper',
-            'opa/opa-beyond-k8s',
-            'keda/keda-fundamentals',
-            'crossplane/crossplane-fundamentals',
-            'crossplane/crossplane-providers',
-            'crossplane/crossplane-compositions',
-            'security-tooling/cert-manager',
-            'security-tooling/external-secrets'
+            'opa/opa-beyond-k8s'
           ]
         },
         {
@@ -197,9 +162,7 @@ var Trails = (function () {
             'istio-fundamentals/istio-traffic-mgmt',
             'istio-fundamentals/istio-gateway',
             'istio-advanced/istio-security',
-            'istio-advanced/istio-observability',
-            'kong/kong-fundamentals',
-            'kong/kong-plugins'
+            'istio-advanced/istio-observability'
           ]
         },
         {
@@ -210,13 +173,7 @@ var Trails = (function () {
             'platform-engineering/golden-paths',
             'platform-engineering/platform-metrics',
             'helm/helm-chart-development',
-            'iac/terraform-k8s',
-            'fluxcd/fluxcd-sources',
-            'fluxcd/fluxcd-advanced',
-            'databases-k8s/db-k8s-fundamentals',
-            'databases-k8s/postgresql-k8s',
-            'databases-k8s/redis-k8s',
-            'finops/k8s-cost-management'
+            'iac/terraform-k8s'
           ]
         },
         {
@@ -226,18 +183,14 @@ var Trails = (function () {
             'cilium-advanced/cilium-encryption',
             'cilium-advanced/cilium-egress-gateway',
             'istio-advanced/istio-advanced-patterns',
-            'istio-advanced/istio-ambient',
-            'kong/kong-advanced',
-            'argocd-patterns/argocd-app-of-apps',
-            'argocd-patterns/argocd-advanced',
-            'security-tooling/vault-k8s'
+            'istio-advanced/istio-ambient'
           ]
         },
         {
           label: { pt: 'Certificações', en: 'Certifications' },
           certs: true,
-          topics: ['CKA → CKS'],
-          exam: ['cka', 'cks']
+          topics: ['CKA'],
+          exam: ['cka']
         }
       ]
     },
@@ -269,9 +222,7 @@ var Trails = (function () {
             'aws-technology-services/compute-services',
             'aws-technology-services/storage-databases',
             'aws-secure-arch/network-security',
-            'aws-resilient-arch/ha-fault-tolerance',
-            'aws-new-solutions/serverless-architecture',
-            'aws-migration/migration-strategies'
+            'aws-resilient-arch/ha-fault-tolerance'
           ]
         },
         {
@@ -286,14 +237,8 @@ var Trails = (function () {
           ]
         },
         {
-          label: { pt: 'Nível 4 — Arquitetura de Soluções (AZ-305)', en: 'Level 4 — Solutions Architecture (AZ-305)' },
+          label: { pt: 'Nível 4 — IaC Multi-Cloud', en: 'Level 4 — Multi-Cloud IaC' },
           topics: [
-            'az305-infrastructure/compute-solutions',
-            'az305-infrastructure/network-topology',
-            'az305-data/relational-nosql',
-            'az305-security/security-design',
-            'az305-continuity/bcdr-design',
-            'az305-application/microservices-design',
             'iac/terraform-fundamentals',
             'iac/terraform-patterns',
             'iac/terraform-testing'
@@ -302,8 +247,8 @@ var Trails = (function () {
         {
           label: { pt: 'Certificações', en: 'Certifications' },
           certs: true,
-          topics: ['AZ-104 → AZ-305 → AWS SAA'],
-          exam: ['az-104', 'az-305', 'aws-saa']
+          topics: ['AZ-104 → AWS SAA'],
+          exam: ['az-104', 'aws-saa']
         }
       ]
     },
@@ -314,8 +259,8 @@ var Trails = (function () {
       color: '#326ce5',
       label: { pt: 'Kubernetes Specialist', en: 'Kubernetes Specialist' },
       summary: {
-        pt: 'Domínio completo do ecossistema Kubernetes — da KCNA ao CKS. A trilha mais longa e mais completa.',
-        en: 'Complete mastery of the Kubernetes ecosystem — from KCNA to CKS. The longest and most complete track.'
+        pt: 'Domínio completo do ecossistema Kubernetes — da KCNA ao CKAD. A trilha mais longa e mais completa.',
+        en: 'Complete mastery of the Kubernetes ecosystem — from KCNA to CKAD. The longest and most complete track.'
       },
       levels: [
         {
@@ -373,37 +318,7 @@ var Trails = (function () {
           ]
         },
         {
-          label: { pt: 'Nível 4 — KCSA', en: 'Level 4 — KCSA' },
-          checkpoint: 'kcsa',
-          topics: [
-            'kcsa-security-overview/4c-security-model',
-            'kcsa-k8s-security/pod-security-overview',
-            'kcsa-k8s-security/rbac-overview',
-            'kcsa-cluster-security/k8s-networking-security',
-            'kcsa-threat-model/threat-modeling',
-            'kcsa-platform-security/supply-chain-overview',
-            'kcsa-compliance/compliance-frameworks'
-          ]
-        },
-        {
-          label: { pt: 'Nível 5 — CKS', en: 'Level 5 — CKS' },
-          checkpoint: 'cks',
-          topics: [
-            'cks-cluster-setup/cis-benchmarks',
-            'cks-cluster-hardening/rbac-advanced',
-            'cks-cluster-hardening/api-server-security',
-            'cks-system-hardening/seccomp',
-            'cks-system-hardening/apparmor',
-            'cks-microservice-vuln/pod-security-standards',
-            'cks-microservice-vuln/secrets-management',
-            'cks-supply-chain/image-scanning',
-            'cks-supply-chain/image-signing',
-            'cks-runtime-security/falco',
-            'cks-runtime-security/audit-logging'
-          ]
-        },
-        {
-          label: { pt: 'Nível 6 — Especialização', en: 'Level 6 — Specialization' },
+          label: { pt: 'Nível 4 — Especialização', en: 'Level 4 — Specialization' },
           topics: [
             'cilium-fundamentals/cilium-architecture',
             'cilium-fundamentals/cilium-hubble',
@@ -416,8 +331,6 @@ var Trails = (function () {
             'istio-fundamentals/istio-architecture',
             'istio-advanced/istio-security',
             'istio-advanced/istio-ambient',
-            'security-tooling/vault-k8s',
-            'argocd-patterns/argocd-app-of-apps',
             'ai-engineering/llm-fundamentals'
           ]
         }

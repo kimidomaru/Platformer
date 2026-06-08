@@ -4,9 +4,11 @@
 
 ### A local-first study platform for Cloud Native & Cloud certifications
 
-Study **Kubernetes (CKA · CKAD · CKS · KCNA · KCSA)**, **AWS (CLF · SAA · SAP)** and **Azure (AZ-104 · AZ-305)** — plus 23 lateral skill tracks — entirely **offline, in a single browser tab**.
+Study **Kubernetes (CKA · CKAD · KCNA)**, **AWS (CLF · SAA)** and **Azure (AZ-104)** — plus 10 lateral skill tracks — entirely **offline, in a single browser tab**.
 
 No backend. No database. No build step. No internet required.
+
+> 🌱 **Minimal edition** — a focused, beginner-friendly subset (foundational certifications + core skills). The advanced surface (CKS · KCSA · AWS SAP · AZ-305 and 13 extra skill tracks) lives in the full edition.
 
 ### [🚀 Live Demo → kimidomaru.github.io/Platformer](https://kimidomaru.github.io/Platformer)
 
@@ -16,8 +18,8 @@ No backend. No database. No build step. No internet required.
 ![No build step](https://img.shields.io/badge/Build-none-success)
 ![Offline first](https://img.shields.io/badge/Offline-first-blue)
 ![License MIT](https://img.shields.io/badge/License-MIT-green)
-![Topics](https://img.shields.io/badge/Topics-231-blueviolet)
-![Certifications](https://img.shields.io/badge/Certifications-10-orange)
+![Topics](https://img.shields.io/badge/Topics-132-blueviolet)
+![Certifications](https://img.shields.io/badge/Certifications-6-orange)
 ![Trails](https://img.shields.io/badge/Career%20Trails-6-9b59b6)
 ![AI-assisted content](https://img.shields.io/badge/Content-AI--assisted%20%C2%B7%20not%20fully%20verified-yellow)
 
@@ -67,10 +69,10 @@ Please read this before using the material to prepare for an exam.
 
 - **AI-assisted content.** The theory, quizzes, flashcards, labs and troubleshooting scenarios were **generated with the help of large language models** and are **not exhaustively human-reviewed**. Expect occasional inaccuracies, outdated API versions, or commands that need adapting to your environment.
 - **Always verify against official sources.** Treat this as a study companion, not an authority. Cross-check anything important with the official docs:
-  [kubernetes.io/docs](https://kubernetes.io/docs/) · [docs.aws.amazon.com](https://docs.aws.amazon.com/) · [learn.microsoft.com](https://learn.microsoft.com/) · [training.linuxfoundation.org](https://training.linuxfoundation.org/) (CKA/CKAD/CKS/KCNA/KCSA).
+  [kubernetes.io/docs](https://kubernetes.io/docs/) · [docs.aws.amazon.com](https://docs.aws.amazon.com/) · [learn.microsoft.com](https://learn.microsoft.com/) · [training.linuxfoundation.org](https://training.linuxfoundation.org/) (CKA/CKAD/KCNA).
 - **Run labs in a throwaway environment.** Practice in a disposable cluster/sandbox (kind, minikube, k3s, a personal cloud account), never against production. Commands are provided as-is, **without warranty**.
 - **No guarantee of exam outcomes.** Passing scores and exam formats change; this project may lag behind. It does not guarantee you will pass any certification.
-- **Trademarks** (Kubernetes, CKA, CKAD, CKS, KCNA, KCSA, AWS, Azure, etc.) belong to their respective owners and are used here for descriptive, educational purposes only.
+- **Trademarks** (Kubernetes, CKA, CKAD, KCNA, AWS, Azure, etc.) belong to their respective owners and are used here for descriptive, educational purposes only.
 - **Found a mistake?** Corrections are very welcome — please open an issue or a pull request. Community review is exactly how this content improves.
 
 ---
@@ -98,7 +100,7 @@ Please read this before using the material to prepare for an exam.
 - 🃏 **Flashcards with spaced repetition** — SM-2 scheduling (Again/Hard/Good/Easy), due badges, per-card persistence.
 - 🧪 **Hands-on labs** — scenario, objective, estimated duration, step-by-step instructions with hints, solutions, and **`verify` commands** to self-check.
 - 🚑 **Troubleshooting scenarios** — symptom → diagnosis → solution, graded by difficulty.
-- 🛤️ **Learning trails — two views, one screen** — role-based career paths (DevOps, SRE, Platform Engineer, Cloud Engineer, K8s Specialist, Security, AI for DevOps/SRE) you can view as a **📋 List** (curated levels + certification checkpoints) or toggle to a **🛠️ Roadmap** — a roadmap.sh-style branching flowchart with **real forks** (recommended · alternative · optional), milestones, and nodes colored by progress that link straight into the content. Every topic in the catalog is reachable from a path.
+- 🛤️ **Learning trails — two views, one screen** — role-based career paths (DevOps, SRE, Platform Engineer, Cloud Engineer, Kubernetes Specialist, AI for DevOps/SRE) you can view as a **📋 List** (curated levels + certification checkpoints) or toggle to a **🛠️ Roadmap** — a roadmap.sh-style branching flowchart with **real forks** (recommended · alternative · optional), milestones, and nodes colored by progress that link straight into the content. Every topic in the catalog is reachable from a path.
 - 🌌 **Topic map** — an interactive constellation of all topics linked by tags.
 - 📊 **Progress tracking** — per-topic state (*not started / in progress / completed*) persisted in `localStorage`.
 - 🔎 **Local search**, 🌓 **dark mode**, 🌐 **bilingual UI (EN/PT)**, and a 📋 **cheatsheet** view.
@@ -109,21 +111,21 @@ Please read this before using the material to prepare for an exam.
 
 | | Count |
 |---|---|
-| **Topics** | **231** (every topic ships quiz + flashcards) |
-| **Hands-on labs** | ~175 |
-| **Domains** | 77 |
-| **Skill tracks** | 23 |
-| **Certifications** | 10 |
-| **Career paths** | 6 trails (List view) + 7 roadmaps (Roadmap view) |
+| **Topics** | **132** (every topic ships quiz + flashcards) |
+| **Hands-on labs** | ~99 |
+| **Domains** | 41 |
+| **Skill tracks** | 10 |
+| **Certifications** | 6 |
+| **Career paths** | 6 trails (List view) + 6 roadmaps (Roadmap view) |
 | **Languages** | English + Portuguese (full parity) |
 
 **Certification tracks**
 
-| Cloud Native (Kubestronaut path) | AWS | Azure |
+| Cloud Native | AWS | Azure |
 |---|---|---|
-| CKA · CKAD · CKS · KCNA · KCSA | CLF · SAA · SAP | AZ-104 · AZ-305 |
+| CKA · CKAD · KCNA | CLF · SAA | AZ-104 |
 
-**Skill tracks** *(certification-independent)*: Cilium & eBPF, Istio, Kong, Prometheus, Grafana, Loki, OpenTelemetry, ArgoCD, FluxCD, Helm, Kyverno, OPA/Gatekeeper, KEDA, Crossplane, Chaos Engineering, FinOps, SRE Practices, Platform Engineering, Databases-on-K8s, Security Tooling (Vault · cert-manager · external-secrets), Terraform/IaC, CI/CD, AI Engineering.
+**Skill tracks** *(certification-independent)*: Cilium & eBPF, Istio, Prometheus & Grafana, Helm, OPA/Gatekeeper, SRE Practices, Platform Engineering, Terraform/IaC, Docker & Containers, AI Engineering.
 
 ---
 
@@ -132,18 +134,17 @@ Please read this before using the material to prepare for an exam.
 Curated role-based paths cross-reference topics from many domains into a structured journey. Every path can be studied in **two interchangeable views on the same screen**, with a toggle:
 
 - **📋 List view** — a checklist of curated levels with per-level progress and certification checkpoints.
-- **🛠️ Roadmap view** — a roadmap.sh-style branching flowchart with **real forks** (recommended · alternative · optional), inline certification milestones, and nodes colored by progress. Forks model genuine decisions: *Ingress vs Gateway API*, *ArgoCD vs FluxCD*, *Cilium vs Istio*, *AWS vs Azure*, *Kyverno vs OPA*, *Falco vs Tetragon*.
+- **🛠️ Roadmap view** — a roadmap.sh-style branching flowchart with **real forks** (recommended · alternative · optional), inline certification milestones, and nodes colored by progress. Forks model genuine decisions: *Ingress vs Gateway API*, *Cilium vs Istio*, *AWS vs Azure*.
 
-Your view preference is remembered. The picker lists every path; a path may have both views or (for Security) be roadmap-only.
+Your view preference is remembered. The picker lists every path, each with both views available.
 
 | Path | List view (levels / topics) | Roadmap view (steps / forks) | Target certifications |
 |---|---|---|---|
-| 🛠️ **DevOps Engineer** | 4 / 30 | 8 / 3 | CKAD → CKA |
-| 📡 **Site Reliability Engineer** | 4 / 35 | 8 / 2 | CKA |
-| 🏗️ **Platform Engineer** | 5 / 51 | 9 / 4 | CKA → CKS |
-| ☁️ **Cloud Engineer** | 4 / 27 | 5 / 2 | AZ-104 → AZ-305 → AWS SAA |
-| ⚙️ **Kubernetes Specialist** | 7 / 63 | 13 / 4 *(Kubernetes roadmap)* | KCNA → CKA → CKAD → KCSA → CKS |
-| 🛡️ **Security Specialist** | — *(roadmap-only)* | 10 / 3 | KCSA → CKS |
+| 🛠️ **DevOps Engineer** | 5 / 16 | 5 / 0 | CKAD → CKA |
+| 📡 **Site Reliability Engineer** | 5 / 23 | 6 / 0 | CKA |
+| 🏗️ **Platform Engineer** | 6 / 30 | 5 / 1 | CKA |
+| ☁️ **Cloud Engineer** | 5 / 19 | 4 / 1 | AZ-104 → AWS SAA |
+| ⚙️ **Kubernetes Specialist** | 5 / 43 | 10 / 2 *(Kubernetes roadmap)* | KCNA → CKA → CKAD |
 | 🤖 **AI for DevOps / SRE** | 3 / 6 | 4 / 1 | — |
 
 ---
@@ -331,7 +332,7 @@ kubectl get pods
 │   ├── lab.js              # Hands-on labs
 │   ├── exam.js             # Mock exam engine (cert/skill-scoped + general)
 │   ├── trails.js           # Career paths screen — List view + List⇄Roadmap toggle
-│   ├── roadmap.js          # Roadmap view — branching flowcharts with forks (7 roadmaps)
+│   ├── roadmap.js          # Roadmap view — branching flowcharts with forks (6 roadmaps)
 │   ├── search.js           # Local search
 │   ├── dashboard.js        # Progress dashboard
 │   ├── constellation.js    # Topic map (knowledge graph)
@@ -355,7 +356,7 @@ kubectl get pods
 | **Vanilla JS, no framework** | Zero build, zero dependencies, no supply-chain churn. Opens and runs for years without `npm install`. |
 | **No bundler / no build step** | The repo *is* the deployable artifact. Clone and serve. |
 | **Content as data, not code** | Engine and content evolve independently; new topics can't break the app shell. |
-| **Lazy loading per topic** | Fast first paint and low memory even with 230+ topics. |
+| **Lazy loading per topic** | Fast first paint and low memory even with 130+ topics. |
 | **`localStorage` for state** | Fully offline; no accounts, no server, no privacy concerns. |
 | **IIFE modules** | Simple namespacing without a module loader; works from `file://` and HTTP alike. |
 | **Full PT/EN parity** | Every topic ships both `topic.js` (PT) and `topic-en.js` (EN). The loader falls back gracefully. |

@@ -2,14 +2,10 @@ window.K8S_REGISTRY = {
   certifications: [
     { id: 'cka',  label: 'CKA',  fullName: 'Certified Kubernetes Administrator', passScore: 66, group: 'kubernetes' },
     { id: 'ckad', label: 'CKAD', fullName: 'Certified Kubernetes Application Developer', passScore: 66, group: 'kubernetes' },
-    { id: 'cks',  label: 'CKS',  fullName: 'Certified Kubernetes Security Specialist', passScore: 67, group: 'kubernetes' },
     { id: 'kcna', label: 'KCNA', fullName: 'Kubernetes and Cloud Native Associate', passScore: 75, group: 'kubernetes' },
-    { id: 'kcsa', label: 'KCSA', fullName: 'Kubernetes and Cloud Native Security Associate', passScore: 75, group: 'kubernetes' },
     { id: 'aws-clf', label: 'CLF', fullName: 'AWS Cloud Practitioner (CLF-C02)', passScore: 70, group: 'aws' },
     { id: 'aws-saa', label: 'SAA', fullName: 'AWS Solutions Architect Associate (SAA-C03)', passScore: 72, group: 'aws' },
-    { id: 'aws-sap', label: 'SAP', fullName: 'AWS Solutions Architect Professional (SAP-C02)', passScore: 75, group: 'aws' },
     { id: 'az-104', label: 'AZ-104', fullName: 'Microsoft Azure Administrator', passScore: 70, group: 'azure' },
-    { id: 'az-305', label: 'AZ-305', fullName: 'Microsoft Azure Solutions Architect Expert', passScore: 70, group: 'azure' }
   ],
 
   // ═══════════════════════════════════════════════════════════════════════
@@ -17,27 +13,14 @@ window.K8S_REGISTRY = {
   // ═══════════════════════════════════════════════════════════════════════
   skillTracks: [
     { id: 'prometheus',       label: 'PROM',    fullName: 'Prometheus & Monitoring Stack',           icon: '🔥' },
-    { id: 'argocd',           label: 'ARGO',    fullName: 'ArgoCD & GitOps',                         icon: '🐙' },
     { id: 'sre-practices',    label: 'SRE',     fullName: 'SRE Practices & Reliability',             icon: '📈' },
     { id: 'cilium',           label: 'CILIUM',  fullName: 'Cilium & eBPF Networking',                icon: '🐝' },
     { id: 'istio',            label: 'ISTIO',   fullName: 'Istio Service Mesh',                      icon: '🕸️' },
-    { id: 'security-tooling', label: 'SECTOOL', fullName: 'Security Tooling (Vault, cert-manager)',  icon: '🔐' },
     { id: 'platform-eng',     label: 'PLAT',    fullName: 'Platform Engineering & IDPs',             icon: '🏗️' },
     { id: 'iac',              label: 'IAC',     fullName: 'Infrastructure as Code (Terraform)',       icon: '⚙️' },
     { id: 'helm-advanced',    label: 'HELM',    fullName: 'Helm Chart Development & Advanced',        icon: '⛵' },
-    { id: 'otel',             label: 'OTEL',    fullName: 'OpenTelemetry & Distributed Tracing',     icon: '🔭' },
-    { id: 'chaos-eng',        label: 'CHAOS',   fullName: 'Chaos Engineering',                       icon: '🌀' },
-    { id: 'crossplane',       label: 'XPLANE',  fullName: 'Crossplane & Platform APIs',              icon: '⚓' },
-    { id: 'kyverno',          label: 'KYVRNO',  fullName: 'Kyverno Policy Engine',                   icon: '📜' },
-    { id: 'fluxcd',           label: 'FLUX',    fullName: 'FluxCD & GitOps',                         icon: '🌊' },
-    { id: 'kong',             label: 'KONG',    fullName: 'Kong API Gateway',                        icon: '🦍' },
     { id: 'ai-engineering',   label: 'AI',      fullName: 'AI Engineering para DevOps/SRE',          icon: '🤖' },
     { id: 'docker',           label: 'DOCKER',  fullName: 'Docker & Containers',                     icon: '🐳' },
-    { id: 'cicd',             label: 'CICD',    fullName: 'CI/CD Pipelines',                         icon: '🚀' },
-    { id: 'loki',             label: 'LOKI',    fullName: 'Loki & Logging Stack',                    icon: '📋' },
-    { id: 'keda',             label: 'KEDA',    fullName: 'KEDA & Event-Driven Autoscaling',         icon: '⚡' },
-    { id: 'finops',           label: 'FINOPS',  fullName: 'FinOps & Kubernetes Cost Management',     icon: '💰' },
-    { id: 'databases-k8s',   label: 'DBK8S',   fullName: 'Databases on Kubernetes',                 icon: '🗄️' },
     { id: 'opa',              label: 'OPA',     fullName: 'OPA & Gatekeeper',                        icon: '🛡️' }
   ],
 
@@ -51,11 +34,11 @@ window.K8S_REGISTRY = {
       weight: 25, icon: '\u{1F3D7}', cert: ['cka'], type: 'cert',
       topics: [
         { id: 'pods', name: 'Understanding Pods', difficulty: 'easy', path: 'cluster-architecture/pods', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['pod','container','basic'] },
-        { id: 'rbac', name: 'RBAC', difficulty: 'medium', path: 'cluster-architecture/rbac', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['rbac','role','clusterrole','rolebinding','security'], related: ['cks-cluster-hardening/rbac-advanced', 'kcsa-k8s-security/rbac-overview', 'app-environment/security'] },
+        { id: 'rbac', name: 'RBAC', difficulty: 'medium', path: 'cluster-architecture/rbac', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['rbac','role','clusterrole','rolebinding','security'], related: ['app-environment/security'] },
         { id: 'kubeadm', name: 'Kubeadm & Cluster Lifecycle', difficulty: 'hard', path: 'cluster-architecture/kubeadm', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['kubeadm','install','upgrade','cluster'] },
         { id: 'etcd', name: 'ETCD Backup & Restore', difficulty: 'hard', path: 'cluster-architecture/etcd', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['etcd','backup','restore','snapshot'] },
-        { id: 'helm-kustomize', name: 'Helm & Kustomize', difficulty: 'medium', path: 'cluster-architecture/helm-kustomize', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['helm','kustomize','package','template'], related: ['app-deployment/helm', 'app-deployment/kustomize', 'fluxcd/fluxcd-sources'] },
-        { id: 'crds-operators', name: 'CRDs, Operators & Extensions', difficulty: 'hard', path: 'cluster-architecture/crds-operators', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['crd','operator','cni','csi','cri'], related: ['kyverno/kyverno-fundamentals'] },
+        { id: 'helm-kustomize', name: 'Helm & Kustomize', difficulty: 'medium', path: 'cluster-architecture/helm-kustomize', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['helm','kustomize','package','template'], related: ['app-deployment/helm', 'app-deployment/kustomize'] },
+        { id: 'crds-operators', name: 'CRDs, Operators & Extensions', difficulty: 'hard', path: 'cluster-architecture/crds-operators', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['crd','operator','cni','csi','cri']},
         { id: 'kubectl-productivity', name: 'kubectl: Speed, JSONPath & Output', difficulty: 'medium', path: 'cluster-architecture/kubectl-productivity', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['kubectl','jsonpath','dry-run','custom-columns','imperative','exam-speed'], related: ['cluster-architecture/pods', 'workloads/deployments', 'troubleshooting/monitoring'] }
       ]
     },
@@ -68,9 +51,9 @@ window.K8S_REGISTRY = {
       weight: 15, icon: '\u{2699}', cert: ['cka', 'ckad'], type: 'cert',
       topics: [
         { id: 'deployments', name: 'Deployments & Rolling Updates', difficulty: 'medium', path: 'workloads/deployments', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['deployment','replicaset','rollout','scaling'] },
-        { id: 'configmaps-secrets', name: 'ConfigMaps & Secrets', difficulty: 'medium', path: 'workloads/configmaps-secrets', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['configmap','secret','env','volume','config'], related: ['cks-microservice-vuln/secrets-management', 'security-tooling/vault-k8s', 'security-tooling/external-secrets', 'kcsa-k8s-security/secrets-overview'] },
+        { id: 'configmaps-secrets', name: 'ConfigMaps & Secrets', difficulty: 'medium', path: 'workloads/configmaps-secrets', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['configmap','secret','env','volume','config']},
         { id: 'scheduling', name: 'Pod Scheduling', difficulty: 'hard', path: 'workloads/scheduling', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['taint','toleration','affinity','nodeselector','scheduler'] },
-        { id: 'autoscaling', name: 'Autoscaling & Self-Healing', difficulty: 'medium', path: 'workloads/autoscaling', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['hpa','replicaset','liveness','readiness','self-healing'], related: ['keda/keda-fundamentals', 'finops/k8s-cost-management'] }
+        { id: 'autoscaling', name: 'Autoscaling & Self-Healing', difficulty: 'medium', path: 'workloads/autoscaling', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['hpa','replicaset','liveness','readiness','self-healing']}
       ]
     },
     // ═══════════════════════════════════════════════════════════════════════
@@ -82,8 +65,8 @@ window.K8S_REGISTRY = {
       weight: 20, icon: '\u{1F310}', cert: ['cka', 'ckad'], type: 'cert',
       topics: [
         { id: 'services', name: 'Service Types & Endpoints', difficulty: 'medium', path: 'services-networking/services', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['service','clusterip','nodeport','loadbalancer','endpoint'], related: ['cilium-advanced/cilium-service-mesh', 'istio-fundamentals/istio-traffic-mgmt'] },
-        { id: 'network-policies', name: 'Network Policies', difficulty: 'hard', path: 'services-networking/network-policies', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['networkpolicy','ingress','egress','isolation'], related: ['cilium-fundamentals/cilium-network-policies', 'kcsa-cluster-security/k8s-networking-security'] },
-        { id: 'ingress', name: 'Ingress & Gateway API', difficulty: 'medium', path: 'services-networking/ingress', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['ingress','ingresscontroller','gateway','routing'], related: ['services-networking/gateway-api', 'kong/kong-fundamentals', 'security-tooling/cert-manager', 'istio-fundamentals/istio-gateway'] },
+        { id: 'network-policies', name: 'Network Policies', difficulty: 'hard', path: 'services-networking/network-policies', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['networkpolicy','ingress','egress','isolation'], related: ['cilium-fundamentals/cilium-network-policies'] },
+        { id: 'ingress', name: 'Ingress & Gateway API', difficulty: 'medium', path: 'services-networking/ingress', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['ingress','ingresscontroller','gateway','routing'], related: ['services-networking/gateway-api', 'istio-fundamentals/istio-gateway'] },
         { id: 'gateway-api', name: 'Gateway API', difficulty: 'medium', path: 'services-networking/gateway-api', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['gateway-api','gatewayclass','httproute','referencegrant','routing','traffic-splitting'], related: ['services-networking/ingress', 'services-networking/services', 'istio-fundamentals/istio-gateway', 'cilium-advanced/cilium-service-mesh'] },
         { id: 'coredns', name: 'CoreDNS', difficulty: 'medium', path: 'services-networking/coredns', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['dns','coredns','service-discovery','resolution'] }
       ]
@@ -108,7 +91,7 @@ window.K8S_REGISTRY = {
         { id: 'cluster-troubleshooting', name: 'Cluster & Node Troubleshooting', difficulty: 'hard', path: 'troubleshooting/cluster-troubleshooting', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['kubelet','node','notready','component'], related: ['troubleshooting/crictl-runtime'] },
         { id: 'crictl-runtime', name: 'crictl & Container Runtime Debugging', difficulty: 'hard', path: 'troubleshooting/crictl-runtime', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['crictl','containerd','cri','static-pod','runtime','kubelet'], related: ['troubleshooting/cluster-troubleshooting', 'cluster-architecture/kubeadm', 'cluster-architecture/etcd'] },
         { id: 'network-troubleshooting', name: 'Service & Network Troubleshooting', difficulty: 'hard', path: 'troubleshooting/network-troubleshooting', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['service','dns','connectivity','endpoint'] },
-        { id: 'monitoring', name: 'Monitoring & Logging', difficulty: 'medium', path: 'troubleshooting/monitoring', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['metrics','top','logs','events','monitoring'], related: ['prom-fundamentals/prom-architecture', 'kcna-observability/observability-fundamentals', 'opentelemetry/otel-fundamentals', 'sre-fundamentals/sre-observability'] }
+        { id: 'monitoring', name: 'Monitoring & Logging', difficulty: 'medium', path: 'troubleshooting/monitoring', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['metrics','top','logs','events','monitoring'], related: ['prom-fundamentals/prom-architecture', 'kcna-observability/observability-fundamentals', 'sre-fundamentals/sre-observability'] }
       ]
     },
     // ── CKAD: Application Design and Build (20%) ────────────────────────
@@ -150,7 +133,7 @@ window.K8S_REGISTRY = {
       weight: 25, icon: '\u{1F512}', cert: ['ckad'], type: 'cert',
       topics: [
         { id: 'requests-limits', name: 'Requests, Limits & Quotas', difficulty: 'medium', path: 'app-environment/requests-limits', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['requests','limits','quota','limitrange','resources'] },
-        { id: 'security', name: 'Security Contexts & ServiceAccounts', difficulty: 'hard', path: 'app-environment/security', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['securitycontext','serviceaccount','capabilities','runasuser','rbac'], related: ['cks-system-hardening/seccomp', 'cks-system-hardening/apparmor', 'cks-microservice-vuln/pod-security-standards'] }
+        { id: 'security', name: 'Security Contexts & ServiceAccounts', difficulty: 'hard', path: 'app-environment/security', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['securitycontext','serviceaccount','capabilities','runasuser','rbac']}
       ]
     },
 
@@ -158,73 +141,6 @@ window.K8S_REGISTRY = {
     //   CKS — Certified Kubernetes Security Specialist
     // ═══════════════════════════════════════════════════════════════════════
 
-    // ── CKS: Cluster Setup (10%) ────────────────────────────────────────
-    {
-      id: 'cks-cluster-setup',
-      name: 'Cluster Setup',
-      weight: 10, icon: '\u{1F6E1}', cert: ['cks'], type: 'cert',
-      topics: [
-        { id: 'cis-benchmarks', name: 'CIS Benchmarks & kube-bench', difficulty: 'medium', path: 'cks-cluster-setup/cis-benchmarks', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['cis','kube-bench','compliance','audit'] },
-        { id: 'ingress-tls', name: 'Ingress Security & TLS', difficulty: 'medium', path: 'cks-cluster-setup/ingress-tls', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['ingress','tls','certificate','https'] },
-        { id: 'node-metadata', name: 'Node Metadata Protection', difficulty: 'hard', path: 'cks-cluster-setup/node-metadata', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['metadata','cloud','imds','firewall'] }
-      ]
-    },
-    // ── CKS: Cluster Hardening (15%) ────────────────────────────────────
-    {
-      id: 'cks-cluster-hardening',
-      name: 'Cluster Hardening',
-      weight: 15, icon: '\u{1F510}', cert: ['cks'], type: 'cert',
-      topics: [
-        { id: 'rbac-advanced', name: 'RBAC Hardening', difficulty: 'hard', path: 'cks-cluster-hardening/rbac-advanced', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['rbac','least-privilege','serviceaccount','audit'], related: ['kcsa-k8s-security/rbac-overview', 'cks-cluster-hardening/serviceaccount-hardening'] },
-        { id: 'api-server-security', name: 'API Server Security', difficulty: 'hard', path: 'cks-cluster-hardening/api-server-security', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['apiserver','anonymous-auth','admission-controller','encryption'] },
-        { id: 'serviceaccount-hardening', name: 'ServiceAccount Hardening', difficulty: 'medium', path: 'cks-cluster-hardening/serviceaccount-hardening', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['serviceaccount','automount','token','least-privilege'] }
-      ]
-    },
-    // ── CKS: System Hardening (15%) ─────────────────────────────────────
-    {
-      id: 'cks-system-hardening',
-      name: 'System Hardening',
-      weight: 15, icon: '\u{1F9F1}', cert: ['cks'], type: 'cert',
-      topics: [
-        { id: 'apparmor', name: 'AppArmor Profiles', difficulty: 'hard', path: 'cks-system-hardening/apparmor', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['apparmor','profile','kernel','security'] },
-        { id: 'seccomp', name: 'Seccomp Profiles', difficulty: 'hard', path: 'cks-system-hardening/seccomp', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['seccomp','syscall','filter','security'] },
-        { id: 'os-hardening', name: 'OS Level Security', difficulty: 'medium', path: 'cks-system-hardening/os-hardening', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['os','footprint','packages','iam'] }
-      ]
-    },
-    // ── CKS: Minimize Microservice Vulnerabilities (20%) ────────────────
-    {
-      id: 'cks-microservice-vuln',
-      name: 'Minimize Microservice Vulnerabilities',
-      weight: 20, icon: '\u{1F41E}', cert: ['cks'], type: 'cert',
-      topics: [
-        { id: 'pod-security-standards', name: 'Pod Security Standards & Admission', difficulty: 'hard', path: 'cks-microservice-vuln/pod-security-standards', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['pss','psa','privileged','baseline','restricted'], related: ['kcsa-k8s-security/pod-security-overview'] },
-        { id: 'opa-gatekeeper', name: 'OPA & Gatekeeper', difficulty: 'hard', path: 'cks-microservice-vuln/opa-gatekeeper', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['opa','gatekeeper','rego','policy','admission'], related: ['opa/opa-gatekeeper', 'kyverno/kyverno-fundamentals', 'kcsa-platform-security/admission-controllers-overview'] },
-        { id: 'secrets-management', name: 'Secrets Management & Encryption', difficulty: 'hard', path: 'cks-microservice-vuln/secrets-management', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['secrets','encryption','etcd','kms','encryptionconfiguration'] },
-        { id: 'runtime-sandboxing', name: 'Container Runtime Sandboxing', difficulty: 'hard', path: 'cks-microservice-vuln/runtime-sandboxing', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['gvisor','kata','runtimeclass','sandbox','isolation'] }
-      ]
-    },
-    // ── CKS: Supply Chain Security (20%) ────────────────────────────────
-    {
-      id: 'cks-supply-chain',
-      name: 'Supply Chain Security',
-      weight: 20, icon: '\u{1F517}', cert: ['cks'], type: 'cert',
-      topics: [
-        { id: 'image-scanning', name: 'Image Scanning & Vulnerability Analysis', difficulty: 'medium', path: 'cks-supply-chain/image-scanning', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['trivy','clair','scanning','cve','vulnerability'], related: ['cicd/pipeline-security', 'kcsa-platform-security/supply-chain-overview'] },
-        { id: 'image-hardening', name: 'Image Hardening & Dockerfile Best Practices', difficulty: 'medium', path: 'cks-supply-chain/image-hardening', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['dockerfile','distroless','alpine','multi-stage','sbom'] },
-        { id: 'image-signing', name: 'Image Signing & Admission Control', difficulty: 'hard', path: 'cks-supply-chain/image-signing', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['cosign','notary','signing','verification','registry'], related: ['cicd/pipeline-security'] }
-      ]
-    },
-    // ── CKS: Monitoring, Logging and Runtime Security (20%) ─────────────
-    {
-      id: 'cks-runtime-security',
-      name: 'Monitoring, Logging and Runtime Security',
-      weight: 20, icon: '\u{1F6A8}', cert: ['cks'], type: 'cert',
-      topics: [
-        { id: 'falco', name: 'Falco & Runtime Threat Detection', difficulty: 'hard', path: 'cks-runtime-security/falco', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['falco','runtime','syscall','detection','alert'] },
-        { id: 'audit-logging', name: 'Kubernetes Audit Logging', difficulty: 'hard', path: 'cks-runtime-security/audit-logging', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['audit','auditpolicy','logging','apiserver'], related: ['kcsa-cluster-security/control-plane-security'] },
-        { id: 'container-immutability', name: 'Container Immutability & Forensics', difficulty: 'medium', path: 'cks-runtime-security/container-immutability', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['immutability','readonly','filesystem','forensics'] }
-      ]
-    },
 
     // ═══════════════════════════════════════════════════════════════════════
     //   KCNA — Kubernetes and Cloud Native Associate
@@ -279,7 +195,7 @@ window.K8S_REGISTRY = {
       name: 'Cloud Native Application Delivery',
       weight: 8, icon: '\u{1F69A}', cert: ['kcna'], type: 'cert',
       topics: [
-        { id: 'gitops-cicd', name: 'GitOps & CI/CD Concepts', difficulty: 'easy', path: 'kcna-app-delivery/gitops-cicd', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['gitops','cicd','argocd','flux','tekton'], related: ['argocd-fundamentals/argocd-architecture', 'fluxcd/fluxcd-fundamentals', 'cicd/github-actions'] }
+        { id: 'gitops-cicd', name: 'GitOps & CI/CD Concepts', difficulty: 'easy', path: 'kcna-app-delivery/gitops-cicd', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['gitops','cicd','argocd','flux','tekton']}
       ]
     },
 
@@ -287,67 +203,6 @@ window.K8S_REGISTRY = {
     //   KCSA — Kubernetes and Cloud Native Security Associate
     // ═══════════════════════════════════════════════════════════════════════
 
-    // ── KCSA: Overview of Cloud Native Security (14%) ───────────────────
-    {
-      id: 'kcsa-security-overview',
-      name: 'Overview of Cloud Native Security',
-      weight: 14, icon: '\u{1F30D}', cert: ['kcsa'], type: 'cert',
-      topics: [
-        { id: '4c-security-model', name: 'The 4C Security Model', difficulty: 'easy', path: 'kcsa-security-overview/4c-security-model', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['4c','cloud','cluster','container','code','layers'] },
-        { id: 'cloud-provider-security', name: 'Cloud Provider & Infrastructure Security', difficulty: 'medium', path: 'kcsa-security-overview/cloud-provider-security', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['cloud','iam','vpc','firewall','infrastructure'] }
-      ]
-    },
-    // ── KCSA: Kubernetes Cluster Component Security (22%) ───────────────
-    {
-      id: 'kcsa-cluster-security',
-      name: 'Kubernetes Cluster Component Security',
-      weight: 22, icon: '\u{1F3E0}', cert: ['kcsa'], type: 'cert',
-      topics: [
-        { id: 'control-plane-security', name: 'Control Plane Component Security', difficulty: 'medium', path: 'kcsa-cluster-security/control-plane-security', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['apiserver','etcd','scheduler','controller-manager','security'] },
-        { id: 'worker-node-security', name: 'Worker Node Security', difficulty: 'medium', path: 'kcsa-cluster-security/worker-node-security', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['kubelet','kube-proxy','container-runtime','node'] },
-        { id: 'k8s-networking-security', name: 'Kubernetes Networking Security', difficulty: 'medium', path: 'kcsa-cluster-security/k8s-networking-security', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['networkpolicy','cni','ingress','service','isolation'] }
-      ]
-    },
-    // ── KCSA: Kubernetes Security Fundamentals (22%) ────────────────────
-    {
-      id: 'kcsa-k8s-security',
-      name: 'Kubernetes Security Fundamentals',
-      weight: 22, icon: '\u{1F511}', cert: ['kcsa'], type: 'cert',
-      topics: [
-        { id: 'pod-security-overview', name: 'Pod Security Standards Overview', difficulty: 'medium', path: 'kcsa-k8s-security/pod-security-overview', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['pss','psa','privileged','baseline','restricted'] },
-        { id: 'rbac-overview', name: 'RBAC & Authentication Overview', difficulty: 'medium', path: 'kcsa-k8s-security/rbac-overview', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['rbac','role','authentication','authorization'] },
-        { id: 'secrets-overview', name: 'Secrets & Data Protection', difficulty: 'medium', path: 'kcsa-k8s-security/secrets-overview', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['secrets','encryption','etcd','kms'] }
-      ]
-    },
-    // ── KCSA: Kubernetes Threat Model (16%) ──────────────────────────────
-    {
-      id: 'kcsa-threat-model',
-      name: 'Kubernetes Threat Model',
-      weight: 16, icon: '\u{26A0}', cert: ['kcsa'], type: 'cert',
-      topics: [
-        { id: 'threat-modeling', name: 'STRIDE & Kubernetes Threat Modeling', difficulty: 'medium', path: 'kcsa-threat-model/threat-modeling', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['stride','threat','attack','vector','surface'] },
-        { id: 'attack-vectors', name: 'Common Attack Vectors & Mitigations', difficulty: 'hard', path: 'kcsa-threat-model/attack-vectors', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['attack','privilege-escalation','container-escape','supply-chain'] }
-      ]
-    },
-    // ── KCSA: Platform Security (16%) ───────────────────────────────────
-    {
-      id: 'kcsa-platform-security',
-      name: 'Platform Security',
-      weight: 16, icon: '\u{1F6E1}', cert: ['kcsa'], type: 'cert',
-      topics: [
-        { id: 'supply-chain-overview', name: 'Supply Chain Security Overview', difficulty: 'medium', path: 'kcsa-platform-security/supply-chain-overview', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['supply-chain','sbom','image-scanning','signing'] },
-        { id: 'admission-controllers-overview', name: 'Admission Controllers & Policy Engines', difficulty: 'medium', path: 'kcsa-platform-security/admission-controllers-overview', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['admission','opa','gatekeeper','kyverno','policy'] }
-      ]
-    },
-    // ── KCSA: Compliance and Security Frameworks (10%) ──────────────────
-    {
-      id: 'kcsa-compliance',
-      name: 'Compliance and Security Frameworks',
-      weight: 10, icon: '\u{1F4CB}', cert: ['kcsa'], type: 'cert',
-      topics: [
-        { id: 'compliance-frameworks', name: 'Compliance Frameworks & CIS Benchmarks', difficulty: 'easy', path: 'kcsa-compliance/compliance-frameworks', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['compliance','cis','nist','soc2','hipaa','benchmark'] }
-      ]
-    },
 
     // ═══════════════════════════════════════════════════════════════════════
     //   AWS — Cloud Practitioner (CLF-C02)
@@ -446,48 +301,6 @@ window.K8S_REGISTRY = {
     //   AWS — Solutions Architect Professional (SAP-C02)
     // ═══════════════════════════════════════════════════════════════════════
 
-    // ── SAP: Design for Organizational Complexity (26%) ─────────────────
-    {
-      id: 'aws-org-complexity',
-      name: 'Design for Organizational Complexity',
-      weight: 26, icon: '\u{1F3E2}', cert: ['aws-sap'], type: 'cert',
-      topics: [
-        { id: 'multi-account', name: 'Multi-Account Strategy & Governance', difficulty: 'hard', path: 'aws-org-complexity/multi-account', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['organizations','control-tower','scp','landing-zone','cross-account','ram','service-catalog'] },
-        { id: 'hybrid-networking', name: 'Hybrid & Multi-Region Networking', difficulty: 'hard', path: 'aws-org-complexity/hybrid-networking', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['transit-gateway','direct-connect','site-to-site-vpn','privatelink','peering','global-accelerator','network-firewall'] },
-        { id: 'cost-optimization-pro', name: 'Advanced Cost Optimization', difficulty: 'hard', path: 'aws-org-complexity/cost-optimization-pro', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['savings-plans','reserved-instances','spot-instances','mixed-instances','cost-anomaly-detection','cost-allocation-tags','rightsizing','s3-lifecycle','compute-optimizer','budgets','ri-marketplace'] }
-      ]
-    },
-    // ── SAP: Design for New Solutions (29%) ──────────────────────────────
-    {
-      id: 'aws-new-solutions',
-      name: 'Design for New Solutions',
-      weight: 29, icon: '\u{1F4A1}', cert: ['aws-sap'], type: 'cert',
-      topics: [
-        { id: 'serverless-architecture', name: 'Serverless Architecture at Scale', difficulty: 'hard', path: 'aws-new-solutions/serverless-architecture', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['lambda','api-gateway','step-functions','dynamodb','appsync','eventbridge','sqs','sns'] },
-        { id: 'containers-at-scale', name: 'Containers & Microservices at Scale', difficulty: 'hard', path: 'aws-new-solutions/containers-at-scale', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['ecs','eks','fargate','app-runner','ecr','service-mesh','app-mesh','cloud-map'] },
-        { id: 'advanced-networking', name: 'Advanced Networking & Connectivity', difficulty: 'hard', path: 'aws-new-solutions/advanced-networking', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['transit-gateway','direct-connect','vpc-peering','privatelink','vpc-sharing','ram','network-firewall','security-groups','nacls','vpc-endpoints','gateway-endpoint','interface-endpoint','bgp'] }
-      ]
-    },
-    // ── SAP: Continuous Improvement (25%) ────────────────────────────────
-    {
-      id: 'aws-continuous-improvement',
-      name: 'Continuous Improvement for Existing Solutions',
-      weight: 25, icon: '\u{1F504}', cert: ['aws-sap'], type: 'cert',
-      topics: [
-        { id: 'monitoring-optimization', name: 'Monitoring, Logging & Optimization', difficulty: 'hard', path: 'aws-continuous-improvement/monitoring-optimization', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['cloudwatch','x-ray','config','trusted-advisor','compute-optimizer','well-architected-tool'] },
-        { id: 'operational-excellence', name: 'Operational Excellence & Automation', difficulty: 'hard', path: 'aws-continuous-improvement/operational-excellence', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['systems-manager','cloudformation','cdk','service-catalog','proton','codepipeline','codebuild'] }
-      ]
-    },
-    // ── SAP: Workload Migration & Modernization (20%) ───────────────────
-    {
-      id: 'aws-migration',
-      name: 'Workload Migration & Modernization',
-      weight: 20, icon: '\u{1F69A}', cert: ['aws-sap'], type: 'cert',
-      topics: [
-        { id: 'migration-strategies', name: 'Migration Strategies & Tools', difficulty: 'hard', path: 'aws-migration/migration-strategies', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['7rs','mgn','dms','sct','datasync','transfer-family','snow-family','app2container'] },
-        { id: 'modernization-patterns', name: 'Application Modernization', difficulty: 'hard', path: 'aws-migration/modernization-patterns', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['strangler-fig','microservices','serverless','containers','refactoring','event-driven','cqrs'] }
-      ]
-    },
 
     // ═══════════════════════════════════════════════════════════════════════
     //   SKILL TRACKS — Lateral Skills Beyond K8s Certifications
@@ -517,27 +330,6 @@ window.K8S_REGISTRY = {
       ]
     },
 
-    // ── ArgoCD & GitOps ─────────────────────────────────────────────────
-    {
-      id: 'argocd-fundamentals',
-      name: 'ArgoCD Fundamentals',
-      weight: 0, icon: '\u{1F419}', track: ['argocd'], type: 'skill',
-      topics: [
-        { id: 'argocd-architecture', name: 'ArgoCD Architecture & GitOps', difficulty: 'easy', path: 'argocd-fundamentals/argocd-architecture', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['argocd','gitops','architecture','reconciliation','pull-model'], related: ['fluxcd/fluxcd-fundamentals', 'platform-engineering/idp-concepts'] },
-        { id: 'argocd-applications', name: 'Applications & Source Types', difficulty: 'medium', path: 'argocd-fundamentals/argocd-applications', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['application','helm','kustomize','directory','multiple-sources'] },
-        { id: 'argocd-sync-strategies', name: 'Sync Strategies & Hooks', difficulty: 'medium', path: 'argocd-fundamentals/argocd-sync-strategies', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['sync','auto-sync','prune','self-heal','waves','hooks'] },
-        { id: 'argocd-projects', name: 'AppProjects, RBAC & SSO', difficulty: 'hard', path: 'argocd-fundamentals/argocd-projects', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['appproject','rbac','casbin','sync-windows','sso','dex'] }
-      ]
-    },
-    {
-      id: 'argocd-patterns',
-      name: 'ArgoCD Patterns & Operations',
-      weight: 0, icon: '\u{1F3AF}', track: ['argocd'], type: 'skill',
-      topics: [
-        { id: 'argocd-app-of-apps', name: 'App of Apps & ApplicationSets', difficulty: 'hard', path: 'argocd-patterns/argocd-app-of-apps', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['app-of-apps','applicationset','generators','cluster-generator','git-generator'] },
-        { id: 'argocd-advanced', name: 'Multi-Cluster, Notifications & Image Updater', difficulty: 'hard', path: 'argocd-patterns/argocd-advanced', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['multi-cluster','notifications','image-updater','disaster-recovery','best-practices'] }
-      ]
-    },
 
     // ── SRE Practices & Reliability ─────────────────────────────────────
     {
@@ -570,8 +362,8 @@ window.K8S_REGISTRY = {
       weight: 0, icon: '\u{1F41D}', track: ['cilium'], type: 'skill',
       topics: [
         { id: 'cilium-architecture', name: 'Cilium Architecture & eBPF', difficulty: 'easy', path: 'cilium-fundamentals/cilium-architecture', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['cilium','ebpf','cni','identity','kube-proxy-replacement','architecture'] },
-        { id: 'cilium-network-policies', name: 'CiliumNetworkPolicy & L7 Security', difficulty: 'medium', path: 'cilium-fundamentals/cilium-network-policies', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['ciliumnetworkpolicy','l7','fqdn','http','kafka','identity-aware'], related: ['cks-cluster-setup/ingress-tls'] },
-        { id: 'cilium-hubble', name: 'Hubble Observability', difficulty: 'medium', path: 'cilium-fundamentals/cilium-hubble', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['hubble','flows','service-map','dns','metrics','observability'], related: ['opentelemetry/otel-fundamentals'] }
+        { id: 'cilium-network-policies', name: 'CiliumNetworkPolicy & L7 Security', difficulty: 'medium', path: 'cilium-fundamentals/cilium-network-policies', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['ciliumnetworkpolicy','l7','fqdn','http','kafka','identity-aware']},
+        { id: 'cilium-hubble', name: 'Hubble Observability', difficulty: 'medium', path: 'cilium-fundamentals/cilium-hubble', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['hubble','flows','service-map','dns','metrics','observability']}
       ]
     },
     {
@@ -582,8 +374,8 @@ window.K8S_REGISTRY = {
         { id: 'cilium-service-mesh', name: 'Service Mesh & Gateway API', difficulty: 'hard', path: 'cilium-advanced/cilium-service-mesh', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['service-mesh','gateway-api','mtls','envoy','traffic-splitting','sidecar-free'] },
         { id: 'cilium-bgp-lb', name: 'BGP & Load Balancing', difficulty: 'hard', path: 'cilium-advanced/cilium-bgp-lb', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['bgp','lb-ipam','dsr','maglev','xdp','loadbalancer'] },
         { id: 'cilium-cluster-mesh', name: 'ClusterMesh & Multi-Cluster', difficulty: 'hard', path: 'cilium-advanced/cilium-cluster-mesh', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['clustermesh','multi-cluster','global-service','failover','disaster-recovery'] },
-        { id: 'cilium-tetragon', name: 'Tetragon: Runtime Security', difficulty: 'hard', path: 'cilium-advanced/cilium-tetragon', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['tetragon','ebpf','runtime-security','tracingpolicy','enforcement','observability'], related: ['cilium-fundamentals/cilium-architecture', 'cks-runtime-security/falco', 'cilium-fundamentals/cilium-hubble'] },
-        { id: 'cilium-encryption', name: 'Transparent Encryption (WireGuard/IPsec)', difficulty: 'hard', path: 'cilium-advanced/cilium-encryption', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['wireguard','ipsec','encryption','transparent-encryption','compliance','zero-trust'], related: ['cilium-fundamentals/cilium-architecture', 'cks-cluster-setup/ingress-tls', 'services-networking/network-policies'] },
+        { id: 'cilium-tetragon', name: 'Tetragon: Runtime Security', difficulty: 'hard', path: 'cilium-advanced/cilium-tetragon', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['tetragon','ebpf','runtime-security','tracingpolicy','enforcement','observability'], related: ['cilium-fundamentals/cilium-architecture', 'cilium-fundamentals/cilium-hubble'] },
+        { id: 'cilium-encryption', name: 'Transparent Encryption (WireGuard/IPsec)', difficulty: 'hard', path: 'cilium-advanced/cilium-encryption', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['wireguard','ipsec','encryption','transparent-encryption','compliance','zero-trust'], related: ['cilium-fundamentals/cilium-architecture', 'services-networking/network-policies'] },
         { id: 'cilium-egress-gateway', name: 'Egress Gateway (Static Egress IP)', difficulty: 'hard', path: 'cilium-advanced/cilium-egress-gateway', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['egress-gateway','egress-ip','snat','static-ip','firewall','allowlist'], related: ['cilium-fundamentals/cilium-network-policies', 'services-networking/services', 'cilium-fundamentals/cilium-architecture'] }
       ]
     },
@@ -611,17 +403,6 @@ window.K8S_REGISTRY = {
       ]
     },
 
-    // ── Security Tooling ──────────────────────────────────────────────────
-    {
-      id: 'security-tooling',
-      name: 'Security Tooling',
-      weight: 0, icon: '\u{1F510}', track: ['security-tooling'], type: 'skill',
-      topics: [
-        { id: 'vault-k8s', name: 'HashiCorp Vault & Kubernetes', difficulty: 'hard', path: 'security-tooling/vault-k8s', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['vault','secrets','agent-injector','csi-driver','pki','dynamic-secrets','encryption'] },
-        { id: 'cert-manager', name: 'cert-manager & TLS Automation', difficulty: 'medium', path: 'security-tooling/cert-manager', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['cert-manager','tls','letsencrypt','acme','clusterissuer','certificate','x509'], related: ['cks-cluster-setup/ingress-tls'] },
-        { id: 'external-secrets', name: 'External Secrets Operator', difficulty: 'medium', path: 'security-tooling/external-secrets', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['external-secrets','eso','aws-sm','vault','azure-kv','gcp-sm','secretstore'] }
-      ]
-    },
 
     // ── Platform Engineering ──────────────────────────────────────────────
     {
@@ -641,7 +422,7 @@ window.K8S_REGISTRY = {
       weight: 0, icon: '\u{2699}', track: ['iac'], type: 'skill',
       topics: [
         { id: 'terraform-fundamentals', name: 'Terraform Fundamentals', difficulty: 'medium', path: 'iac/terraform-fundamentals', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['terraform','hcl','providers','state','plan','apply','modules','iac'] },
-        { id: 'terraform-k8s', name: 'Terraform & Kubernetes', difficulty: 'hard', path: 'iac/terraform-k8s', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['terraform','kubernetes','eks','gke','aks','helm-provider','kubernetes-provider'], related: ['crossplane/crossplane-fundamentals', 'platform-engineering/idp-concepts'] },
+        { id: 'terraform-k8s', name: 'Terraform & Kubernetes', difficulty: 'hard', path: 'iac/terraform-k8s', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['terraform','kubernetes','eks','gke','aks','helm-provider','kubernetes-provider'], related: ['platform-engineering/idp-concepts'] },
         { id: 'terraform-patterns', name: 'Terraform Advanced Patterns', difficulty: 'hard', path: 'iac/terraform-patterns', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['terraform','modules','workspaces','remote-state','atlantis','terragrunt','ci-cd','drift'] },
         { id: 'terraform-testing', name: 'Terraform Testing & Quality Gates', difficulty: 'hard', path: 'iac/terraform-testing', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['terraform','testing','checkov','tflint','terratest','terraform-test','security-scanning','quality-gates','pre-commit','sarif'] }
       ]
@@ -654,74 +435,8 @@ window.K8S_REGISTRY = {
       name: 'Helm Chart Development',
       weight: 0, icon: '\u{26F5}', track: ['helm-advanced'], type: 'skill',
       topics: [
-        { id: 'helm-chart-development', name: 'Helm Chart Development', difficulty: 'medium', path: 'helm/helm-chart-development', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['helm','chart','templates','values','helpers','hooks','tests','toYaml','nindent','go-template','sprig','packaging'], related: ['app-deployment/helm', 'argocd-fundamentals/argocd-applications', 'fluxcd/fluxcd-sources'] },
+        { id: 'helm-chart-development', name: 'Helm Chart Development', difficulty: 'medium', path: 'helm/helm-chart-development', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['helm','chart','templates','values','helpers','hooks','tests','toYaml','nindent','go-template','sprig','packaging'], related: ['app-deployment/helm'] },
         { id: 'helm-advanced', name: 'Helm Avançado: OCI, Library Charts & CI/CD', difficulty: 'hard', path: 'helm/helm-advanced', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['helm','oci-registry','library-chart','subcharts','dependencies','values-schema','helm-test','ci-cd','github-actions','harbor','ecr'] }
-      ]
-    },
-    {
-      id: 'opentelemetry',
-      name: 'OpenTelemetry',
-      weight: 0, icon: '\u{1F52D}', track: ['otel'], type: 'skill',
-      topics: [
-        { id: 'otel-fundamentals', name: 'OpenTelemetry Fundamentals', difficulty: 'medium', path: 'opentelemetry/otel-fundamentals', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['opentelemetry','otel','traces','metrics','logs','signals','sdk','collector','otlp'] },
-        { id: 'otel-collector', name: 'OTel Collector & Pipelines', difficulty: 'hard', path: 'opentelemetry/otel-collector', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['otel-collector','receivers','processors','exporters','pipelines','filelog','batch','memory-limiter'] },
-        { id: 'otel-k8s', name: 'OpenTelemetry on Kubernetes', difficulty: 'hard', path: 'opentelemetry/otel-k8s', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['otel-operator','auto-instrumentation','sidecar','daemonset','k8sattributes','jaeger','tempo','loki'] }
-      ]
-    },
-    // ═══════════════════════════════════════════════════════════════════════
-    // Skill Track: Chaos Engineering
-    // ═══════════════════════════════════════════════════════════════════════
-    {
-      id: 'chaos-engineering',
-      name: 'Chaos Engineering',
-      weight: 0, icon: '\u{1F300}', track: ['chaos-eng'], type: 'skill',
-      topics: [
-        { id: 'chaos-fundamentals', name: 'Chaos Engineering Fundamentals', difficulty: 'medium', path: 'chaos-engineering/chaos-fundamentals', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['chaos-engineering','principles','steady-state','blast-radius','gameday','resilience'], related: ['sre-fundamentals/sre-principles'] },
-        { id: 'litmus-chaos', name: 'LitmusChaos on Kubernetes', difficulty: 'hard', path: 'chaos-engineering/litmus-chaos', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['litmus','chaosexperiment','chaosengine','chaosresult','probes','workflows','hub'] },
-        { id: 'chaos-mesh', name: 'Chaos Mesh on Kubernetes', difficulty: 'hard', path: 'chaos-engineering/chaos-mesh', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['chaos-mesh','podchaos','networkchaos','iochaos','stresschaos','schedule','workflow'] }
-      ]
-    },
-    // ═══════════════════════════════════════════════════════════════════════
-    // Skill Track: Crossplane
-    // ═══════════════════════════════════════════════════════════════════════
-    {
-      id: 'crossplane',
-      name: 'Crossplane & Platform APIs',
-      weight: 0, icon: '\u{2693}', track: ['crossplane'], type: 'skill',
-      topics: [
-        { id: 'crossplane-fundamentals', name: 'Crossplane Fundamentals', difficulty: 'medium', path: 'crossplane/crossplane-fundamentals', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['crossplane','control-plane','providers','managed-resources','composite','xrd','cncf'], related: ['platform-engineering/golden-paths', 'cluster-architecture/crds-operators'] },
-        { id: 'crossplane-providers', name: 'Crossplane Providers & MRs', difficulty: 'hard', path: 'crossplane/crossplane-providers', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['provider-aws','provider-gcp','provider-azure','managed-resources','providerconfig','s3','rds','vpc'] },
-        { id: 'crossplane-compositions', name: 'Compositions & XRDs', difficulty: 'hard', path: 'crossplane/crossplane-compositions', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['xrd','composition','compositeresource','claim','patches','transforms','pipeline-mode','function'] }
-      ]
-    },
-    {
-      id: 'kyverno',
-      name: 'Kyverno Policy Engine',
-      weight: 0, icon: '\u{1F4DC}', track: ['kyverno'], type: 'skill',
-      topics: [
-        { id: 'kyverno-fundamentals', name: 'Kyverno Fundamentals', difficulty: 'medium', path: 'kyverno/kyverno-fundamentals', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['kyverno','clusterpolicy','policy','validate','mutate','generate','admission-webhook','cncf'] },
-        { id: 'kyverno-policies', name: 'Validate, Mutate & Generate', difficulty: 'hard', path: 'kyverno/kyverno-policies', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['validate','mutate','generate','pattern','deny','foreach','context','jmespath','preconditions'] },
-        { id: 'kyverno-advanced', name: 'Policy Exceptions & Testing', difficulty: 'hard', path: 'kyverno/kyverno-advanced', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['policyexception','kyverno-cli','test','reports','policyreport','metrics','verify-images','cosign'] }
-      ]
-    },
-    {
-      id: 'fluxcd',
-      name: 'FluxCD & GitOps',
-      weight: 0, icon: '\u{1F30A}', track: ['fluxcd'], type: 'skill',
-      topics: [
-        { id: 'fluxcd-fundamentals', name: 'FluxCD & GitOps Fundamentals', difficulty: 'medium', path: 'fluxcd/fluxcd-fundamentals', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['fluxcd','gitops','source-controller','kustomize-controller','helm-controller','cncf','reconciliation'] },
-        { id: 'fluxcd-sources', name: 'Sources, Kustomizations & Helm', difficulty: 'hard', path: 'fluxcd/fluxcd-sources', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['gitrepository','helmrepository','helmrelease','kustomization','ocirepository','substitution','dependson'] },
-        { id: 'fluxcd-advanced', name: 'Image Automation & Notifications', difficulty: 'hard', path: 'fluxcd/fluxcd-advanced', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['image-automation','imagepolicy','imagerepository','imageupdateautomation','alerts','providers','receivers','multi-tenancy'] }
-      ]
-    },
-    {
-      id: 'kong',
-      name: 'Kong API Gateway',
-      weight: 0, icon: '\u{1F98D}', track: ['kong'], type: 'skill',
-      topics: [
-        { id: 'kong-fundamentals', name: 'Kong Gateway Fundamentals', difficulty: 'medium', path: 'kong/kong-fundamentals', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['kong','api-gateway','ingress','kubernetes-ingress-controller','kic','service','route','upstream'] },
-        { id: 'kong-plugins', name: 'Kong Plugins & Traffic Control', difficulty: 'hard', path: 'kong/kong-plugins', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['plugins','rate-limiting','authentication','key-auth','jwt','oauth2','cors','request-transformer','proxy-cache'] },
-        { id: 'kong-advanced', name: 'Kong Mesh, Observability & Production', difficulty: 'hard', path: 'kong/kong-advanced', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['deck','konnect','gateway-api','httproute','grpcroute','canary','blue-green','prometheus','opentelemetry'] }
       ]
     },
     {
@@ -745,53 +460,6 @@ window.K8S_REGISTRY = {
         { id: 'container-fundamentals', name: 'Container Fundamentals', difficulty: 'easy', path: 'docker/container-fundamentals', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['docker','dockerfile','layers','multi-stage','buildkit','images','containers','oci'] },
         { id: 'docker-compose', name: 'Docker Compose & Dev Workflows', difficulty: 'easy', path: 'docker/docker-compose', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['docker-compose','volumes','networks','profiles','override','dev-environment','services'] },
         { id: 'docker-production', name: 'Docker em Produção', difficulty: 'medium', path: 'docker/docker-production', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['buildkit','trivy','cosign','harbor','registry','scanning','signing','sbom','supply-chain'] }
-      ]
-    },
-    {
-      id: 'cicd',
-      name: 'CI/CD Pipelines',
-      weight: 0, icon: '\u{1F680}', track: ['cicd'], type: 'skill',
-      topics: [
-        { id: 'github-actions', name: 'GitHub Actions para K8s & Plataforma', difficulty: 'medium', path: 'cicd/github-actions', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['github-actions','workflows','runners','secrets','oidc','reusable-workflows','environments','matrix'] },
-        { id: 'tekton', name: 'Tekton Pipelines', difficulty: 'hard', path: 'cicd/tekton', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['tekton','pipeline','task','pipelinerun','workspace','triggers','tekton-chains','kubernetes-native'] },
-        { id: 'pipeline-security', name: 'Pipeline Security & Supply Chain', difficulty: 'hard', path: 'cicd/pipeline-security', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['slsa','cosign','sbom','syft','sigstore','rekor','fulcio','attestation','provenance','supply-chain'] }
-      ]
-    },
-    {
-      id: 'loki',
-      name: 'Loki & Logging Stack',
-      weight: 0, icon: '\u{1F4CB}', track: ['loki'], type: 'skill',
-      topics: [
-        { id: 'loki-fundamentals', name: 'Loki + Promtail: Fundamentos', difficulty: 'medium', path: 'loki/loki-fundamentals', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['loki','promtail','grafana','log-aggregation','labels','chunks','index','storage','helm'] },
-        { id: 'logql-alerting', name: 'LogQL, Alertas & Correlação', difficulty: 'hard', path: 'loki/logql-alerting', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['logql','filter','metric-query','alertmanager','recording-rules','grafana-dashboard','trace-correlation','tempo'], related: ['prom-fundamentals/prom-alerting'] }
-      ]
-    },
-    {
-      id: 'keda',
-      name: 'KEDA & Event-Driven Autoscaling',
-      weight: 0, icon: '⚡', track: ['keda'], type: 'skill',
-      topics: [
-        { id: 'keda-fundamentals', name: 'KEDA Fundamentals', difficulty: 'medium', path: 'keda/keda-fundamentals', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['keda','scaledobject','scaledjob','triggers','http-scaler','cron-scaler','hpa','autoscaling'] },
-        { id: 'keda-advanced', name: 'KEDA Avançado: Kafka, Prometheus & Custom', difficulty: 'hard', path: 'keda/keda-advanced', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['kafka-scaler','prometheus-scaler','external-scaler','keda-http-addon','scaled-jobs','triggerauthentication','workload-identity'] }
-      ]
-    },
-    {
-      id: 'finops',
-      name: 'FinOps & Kubernetes Cost Management',
-      weight: 0, icon: '\u{1F4B0}', track: ['finops'], type: 'skill',
-      topics: [
-        { id: 'k8s-cost-management', name: 'Kubernetes Cost Management', difficulty: 'medium', path: 'finops/k8s-cost-management', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['kubecost','goldilocks','vpa','limitrange','resourcequota','rightsizing','cost-allocation','namespace-quotas'] },
-        { id: 'finops-practices', name: 'FinOps Practices & Chargeback', difficulty: 'hard', path: 'finops/finops-practices', hasQuiz: true, hasFlashcards: true, hasLab: false, tags: ['finops','chargeback','showback','focus-standard','cost-allocation','team-billing','waste-detection','commitment-based-discounts'] }
-      ]
-    },
-    {
-      id: 'databases-k8s',
-      name: 'Databases on Kubernetes',
-      weight: 0, icon: '\u{1F5C4}', track: ['databases-k8s'], type: 'skill',
-      topics: [
-        { id: 'db-k8s-fundamentals', name: 'Databases on K8s: Fundamentos', difficulty: 'medium', path: 'databases-k8s/db-k8s-fundamentals', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['statefulset','pvc','storage-class','operators','velero','backup','restore','headless-service'], related: ['storage/pv-pvc'] },
-        { id: 'postgresql-k8s', name: 'PostgreSQL on Kubernetes', difficulty: 'hard', path: 'databases-k8s/postgresql-k8s', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['cloudnativepg','cnpg','postgresql','ha','failover','pgbouncer','barman','backup','replication'] },
-        { id: 'redis-k8s', name: 'Redis & Caching on Kubernetes', difficulty: 'medium', path: 'databases-k8s/redis-k8s', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['redis','redis-operator','sentinel','cluster-mode','dragonfly','valkey','caching','session-store'] }
       ]
     },
     {
@@ -858,68 +526,5 @@ window.K8S_REGISTRY = {
       ]
     },
 
-    // ═══════════════════════════════════════════════════════════════════════
-    // AZ-305: Microsoft Azure Solutions Architect Expert
-    // ═══════════════════════════════════════════════════════════════════════
-    {
-      id: 'az305-identity',
-      name: 'Identity, Governance & Monitoring Design',
-      weight: 28, icon: '\u{1F3DB}', cert: ['az-305'], type: 'cert',
-      topics: [
-        { id: 'identity-solutions', name: 'Design de Soluções de Identidade', difficulty: 'hard', path: 'az305-identity/identity-solutions', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['pim','jit','zero-trust','hybrid-identity','phs','pta','federation','conditional-access','b2b','b2c','app-registration','enterprise-app','managed-identity','identity-protection'] },
-        { id: 'governance-solutions', name: 'Design de Governance & Compliance', difficulty: 'hard', path: 'az305-identity/governance-solutions', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['landing-zone','management-groups','azure-policy','tagging-strategy','secure-score','defender-for-cloud','cost-management','budgets','reservations','savings-plans','regulatory-compliance','blueprints'] },
-        { id: 'monitoring-design', name: 'Design de Monitoramento & Observabilidade', difficulty: 'hard', path: 'az305-identity/monitoring-design', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['azure-monitor','log-analytics','application-insights','kql','diagnostic-settings','metric-alerts','workbooks','sampling','workspace-strategy','data-retention','archive'] }
-      ]
-    },
-    {
-      id: 'az305-data',
-      name: 'Data Storage & Integration Design',
-      weight: 28, icon: '\u{1F5C3}', cert: ['az-305'], type: 'cert',
-      topics: [
-        { id: 'relational-nosql', name: 'Design Relacional & NoSQL', difficulty: 'hard', path: 'az305-data/relational-nosql', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['cosmos-db','azure-sql','managed-instance','elastic-pool','consistency-levels','rtu','partition-key','geo-replication','failover-groups','redis-cache','synapse','hyperscale','serverless-sql'] },
-        { id: 'data-integration', name: 'Integração & Analytics de Dados', difficulty: 'hard', path: 'az305-data/data-integration', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['azure-data-factory','adf','synapse-analytics','stream-analytics','event-hub','service-bus','data-lake','self-hosted-ir','lambda-architecture','window-functions','etl','elt','databricks'] },
-        { id: 'storage-design', name: 'Design de Soluções de Storage', difficulty: 'hard', path: 'az305-data/storage-design', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['blob-storage','adls-gen2','managed-disks','lifecycle-management','worm','immutability','storage-tiers','hot-cool-archive','premium-ssd','ultra-disk','hierarchical-namespace','data-lake'] },
-        { id: 'caching-messaging', name: 'Design de Caching & Messaging', difficulty: 'hard', path: 'az305-data/caching-messaging', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['redis-cache','service-bus','event-grid','event-hub','cache-aside','read-through','write-through','dead-letter','topics-subscriptions','outbox-pattern','pub-sub','fifo'] }
-      ]
-    },
-    {
-      id: 'az305-continuity',
-      name: 'Business Continuity Design',
-      weight: 12, icon: '\u{1F504}', cert: ['az-305'], type: 'cert',
-      topics: [
-        { id: 'bcdr-design', name: 'Design de BCDR', difficulty: 'hard', path: 'az305-continuity/bcdr-design', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['bcdr','rpo','rto','azure-site-recovery','asr','warm-standby','pilot-light','active-active','backup-restore','recovery-plan','test-failover','failback','geo-replication','traffic-manager'] }
-      ]
-    },
-    {
-      id: 'az305-infrastructure',
-      name: 'Infrastructure Solutions Design',
-      weight: 32, icon: '\u{1F3D7}', cert: ['az-305'], type: 'cert',
-      topics: [
-        { id: 'compute-solutions', name: 'Design de Soluções de Compute', difficulty: 'hard', path: 'az305-infrastructure/compute-solutions', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['iaas-paas-serverless','azure-functions','container-apps','aci','aks','app-service-design','vmss','azure-batch','cold-start','premium-plan','consumption-plan','durable-functions','logic-apps'] },
-        { id: 'network-topology', name: 'Design de Topologia de Rede', difficulty: 'hard', path: 'az305-infrastructure/network-topology', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['hub-spoke','virtual-wan','vwan','azure-firewall','nva','private-endpoint','service-endpoint','ddos-protection','azure-firewall-premium','tls-inspection','idps','dns-private-resolver','vnet-peering-transitive'] },
-        { id: 'migration-solutions', name: 'Design de Soluções de Migração', difficulty: 'medium', path: 'az305-infrastructure/migration-solutions', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['azure-migrate','rehost','refactor','rearchitect','lift-and-shift','dms','database-migration','data-box','data-box-heavy','test-migration','cutover','assessment','dependency-analysis','5rs'] },
-        { id: 'application-architecture', name: 'Design de Arquitetura de Aplicações', difficulty: 'hard', path: 'az305-infrastructure/application-architecture', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['microservices','monolith','strangler-fig','cqrs','event-sourcing','saga','bff','durable-functions','circuit-breaker','bounded-context','distributed-transactions','outbox'] },
-        { id: 'api-management-design', name: 'Design com Azure API Management', difficulty: 'hard', path: 'az305-infrastructure/api-management-design', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['apim','azure-api-management','policies','rate-limiting','jwt-validation','caching','products','developer-portal','self-hosted-gateway','oauth','consumption-tier','backend-for-frontend'] },
-        { id: 'devops-solutions', name: 'Design de Soluções DevOps', difficulty: 'medium', path: 'az305-infrastructure/devops-solutions', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['azure-devops','github-actions','azure-pipelines','acr','container-registry','environments','approval-gates','key-vault','variable-groups','helm-deploy','gitops','deployment-environments'] }
-      ]
-    },
-    {
-      id: 'az305-security',
-      name: 'Security Solutions Design',
-      weight: 20, icon: '\u{1F512}', cert: ['az-305'], type: 'cert',
-      topics: [
-        { id: 'security-design', name: 'Design de Soluções de Segurança', difficulty: 'hard', path: 'az305-security/security-design', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['defense-in-depth','key-vault','managed-identity','system-assigned','user-assigned','waf','ddos-standard','defender-for-cloud','network-segmentation','zero-secrets','purge-protection','service-principal'] },
-        { id: 'compliance-design', name: 'Design de Compliance & Regulatório', difficulty: 'hard', path: 'az305-security/compliance-design', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['gdpr','lgpd','pci-dss','iso-27001','regulatory-compliance','purview','data-residency','allowed-locations','cmk','byok','pmk','encryption-at-rest','tls-1-2','data-classification','worm'] }
-      ]
-    },
-    {
-      id: 'az305-application',
-      name: 'Application Design Solutions',
-      weight: 20, icon: '\u{1F4E6}', cert: ['az-305'], type: 'cert',
-      topics: [
-        { id: 'event-driven-design', name: 'Design Event-Driven Architecture', difficulty: 'hard', path: 'az305-application/event-driven-design', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['event-grid','event-hub','service-bus','event-driven','pub-sub','idempotency','at-least-once','capture','consumer-groups','checkpointing','stream-analytics','event-aggregation','lambda-architecture'] },
-        { id: 'microservices-design', name: 'Design de Microserviços', difficulty: 'hard', path: 'az305-application/microservices-design', hasQuiz: true, hasFlashcards: true, hasLab: true, tags: ['container-apps','aks','aci','dapr','keda','service-discovery','circuit-breaker','health-probes','canary','revision-traffic','strangler-fig','bounded-context','database-per-service'] }
-      ]
-    }
   ]
 };
