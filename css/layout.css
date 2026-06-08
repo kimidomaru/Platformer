@@ -36,8 +36,11 @@
 }
 
 .logo-icon {
-  font-size: 1.5rem;
-  color: var(--accent);
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  border-radius: 6px;
+  flex-shrink: 0;
 }
 
 .logo-text {
