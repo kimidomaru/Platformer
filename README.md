@@ -1,6 +1,8 @@
 <div align="center">
 
-# 🛰️ Platformer
+<img src="assets/platformer.png" alt="Platformer" width="240">
+
+# Platformer
 
 ### A local-first study platform for Cloud Native & Cloud certifications
 
