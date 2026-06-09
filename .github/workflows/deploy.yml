@@ -10,7 +10,7 @@ name: Deploy to GitHub Pages
 # gate — switch to GitHub Actions so validation runs first.
 on:
   push:
-    branches: [master]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
