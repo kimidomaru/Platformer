@@ -75,13 +75,13 @@ var Review = (function () {
 
     if (_flipped) {
       html += '<div class="review-grades">';
-      html += '<button class="fc-grade fc-again" data-grade="again">' + I18N.t('srsAgain') + '</button>';
-      html += '<button class="fc-grade fc-hard" data-grade="hard">' + I18N.t('srsHard') + '</button>';
-      html += '<button class="fc-grade fc-good" data-grade="good">' + I18N.t('srsGood') + '</button>';
-      html += '<button class="fc-grade fc-easy" data-grade="easy">' + I18N.t('srsEasy') + '</button>';
+      html += '<button class="fc-grade fc-again" data-grade="again"><kbd>1</kbd> ' + I18N.t('srsAgain') + '</button>';
+      html += '<button class="fc-grade fc-hard" data-grade="hard"><kbd>2</kbd> ' + I18N.t('srsHard') + '</button>';
+      html += '<button class="fc-grade fc-good" data-grade="good"><kbd>3</kbd> ' + I18N.t('srsGood') + '</button>';
+      html += '<button class="fc-grade fc-easy" data-grade="easy"><kbd>4</kbd> ' + I18N.t('srsEasy') + '</button>';
       html += '</div>';
     } else {
-      html += '<div class="review-grades"><button class="btn btn-primary" data-action="flip">' + I18N.t('reviewShowAnswer') + '</button></div>';
+      html += '<div class="review-grades"><button class="btn btn-primary" data-action="flip"><kbd>' + I18N.t('keySpace') + '</kbd> ' + I18N.t('reviewShowAnswer') + '</button></div>';
     }
     html += '</div>';
 
@@ -139,6 +139,26 @@ var Review = (function () {
     var btn = _container.querySelector('[data-action="dashboard"]');
     if (btn) btn.addEventListener('click', function () { window.location.hash = '#dashboard'; });
   }
+
+  // Keyboard shortcuts for the daily review loop: Space/Enter flips the card,
+  // 1–4 grade it once flipped. Bound once; gated to the active review view.
+  function _onKey(e) {
+    if (!_container || !_container.isConnected) return;
+    if ((location.hash || '').indexOf('review') === -1) return;
+    var tag = e.target && e.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target && e.target.isContentEditable)) return;
+    if (_queue.length === 0) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+    if (!_flipped) {
+      if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); _flipped = true; _renderCard(); }
+      return;
+    }
+    var map = { '1': 'again', '2': 'hard', '3': 'good', '4': 'easy' };
+    if (map[e.key]) { e.preventDefault(); _grade(map[e.key]); }
+  }
+
+  document.addEventListener('keydown', _onKey);
 
   return { render: render };
 })();

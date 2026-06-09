@@ -1,0 +1,38 @@
+name: Validate content
+
+# Quality gate for the study platform. Runs the Python validators (never Node)
+# on every push and PR. Registry integrity is a hard gate; the content linter is
+# reported but non-blocking until the curation backlog (roadmap Wave 2.1) is cleared.
+on:
+  push:
+    branches: [master, min_version]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Registry integrity (hard gate)
+        run: python scripts/validate_registry.py
+
+      - name: Content health report (informational)
+        # TODO: drop `continue-on-error` once Wave 2.1 curation lands so the
+        # content schema becomes a hard gate too.
+        continue-on-error: true
+        run: python scripts/validate_content.py --warnings
+
+      - name: Search index freshness (informational)
+        # Warns if content/search-index.js is stale vs the theory content.
+        continue-on-error: true
+        run: |
+          python scripts/build_search_index.py
+          git diff --exit-code content/search-index.js \
+            || echo "::warning::search-index.js is stale — run python scripts/build_search_index.py and commit."

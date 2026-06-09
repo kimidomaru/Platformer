@@ -336,6 +336,12 @@ var Constellation = (function () {
     html += '<button id="map-reset" class="btn btn-secondary">' + I18N.t('mapReset') + '</button>';
     html += '</div>';
 
+    html += '<div class="map-legend" aria-hidden="true">';
+    html += '<span class="map-legend__item"><span class="map-legend__dot done"></span>' + I18N.t('completed') + '</span>';
+    html += '<span class="map-legend__item"><span class="map-legend__dot progress"></span>' + I18N.t('in-progress') + '</span>';
+    html += '<span class="map-legend__item"><span class="map-legend__dot pending"></span>' + I18N.t('not-started') + '</span>';
+    html += '</div>';
+
     html += '<div class="map-wrap"><canvas id="map-canvas"></canvas>';
     html += '<div id="map-panel" class="map-panel hidden"></div>';
     html += '</div>';

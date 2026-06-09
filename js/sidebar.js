@@ -247,8 +247,28 @@ var Sidebar = (function () {
   function _bindToggle() {
     var toggle = document.getElementById('sidebar-toggle');
     var sidebar = document.getElementById('sidebar');
-    toggle.addEventListener('click', function () { sidebar.classList.toggle('open'); });
-    window.addEventListener('hashchange', function () { sidebar.classList.remove('open'); });
+
+    // Backdrop shown behind the drawer on mobile; tap to dismiss.
+    var scrim = document.createElement('div');
+    scrim.className = 'sidebar-scrim';
+    document.body.appendChild(scrim);
+
+    function sync() {
+      scrim.classList.toggle('show', sidebar.classList.contains('open'));
+    }
+
+    toggle.addEventListener('click', function () {
+      sidebar.classList.toggle('open');
+      sync();
+    });
+    scrim.addEventListener('click', function () {
+      sidebar.classList.remove('open');
+      sync();
+    });
+    window.addEventListener('hashchange', function () {
+      sidebar.classList.remove('open');
+      sync();
+    });
   }
 
   function _bindFooterButtons() {

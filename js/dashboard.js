@@ -22,7 +22,18 @@ var Dashboard = (function () {
       });
     });
 
-    var html = '<div class="topic-header"><h1>' + I18N.t('dashboardTitle') + '</h1></div>';
+    var html = '<div class="topic-header dashboard-header"><h1>' + I18N.t('dashboardTitle') + '</h1>';
+    html += '<div class="data-tools">';
+    html += '<button class="btn btn-ghost" data-action="export" title="' + I18N.t('exportHint') + '">&#11015; ' + I18N.t('exportBtn') + '</button>';
+    html += '<button class="btn btn-ghost" data-action="import" title="' + I18N.t('importHint') + '">&#11014; ' + I18N.t('importBtn') + '</button>';
+    html += '<input type="file" accept="application/json,.json" class="hidden" id="import-file-input">';
+    html += '</div></div>';
+
+    // Welcome hero for brand-new visitors (no progress yet)
+    var isNewUser = completed === 0 && inProgress === 0 && recent.length === 0;
+    if (isNewUser) {
+      html += _renderWelcomeHero();
+    }
 
     // Spaced-repetition daily review widget
     html += _renderReviewWidget();
@@ -133,6 +144,68 @@ var Dashboard = (function () {
     if (weakBtn) {
       weakBtn.addEventListener('click', function () { window.location.hash = '#weak'; });
     }
+
+    // Bind quick-start cards (welcome hero)
+    container.querySelectorAll('.quickstart-card[data-route]').forEach(function (card) {
+      card.addEventListener('click', function () {
+        window.location.hash = '#' + card.getAttribute('data-route');
+      });
+    });
+
+    // Bind backup tools
+    _bindDataTools(container);
+  }
+
+  // Export downloads a JSON snapshot; import restores it (with confirmation + reload).
+  function _bindDataTools(container) {
+    var exportBtn = container.querySelector('[data-action="export"]');
+    var importBtn = container.querySelector('[data-action="import"]');
+    var fileInput = container.querySelector('#import-file-input');
+
+    if (exportBtn) {
+      exportBtn.addEventListener('click', function () {
+        var payload = State.exportData();
+        var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        var stamp = new Date().toISOString().slice(0, 10);
+        a.href = url;
+        a.download = 'platformer-progress-' + stamp + '.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      });
+    }
+
+    if (importBtn && fileInput) {
+      importBtn.addEventListener('click', function () { fileInput.click(); });
+      fileInput.addEventListener('change', function () {
+        var file = fileInput.files && fileInput.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function () {
+          var payload;
+          try {
+            payload = JSON.parse(reader.result);
+          } catch (e) {
+            alert(I18N.t('importInvalid'));
+            fileInput.value = '';
+            return;
+          }
+          if (!confirm(I18N.t('importConfirm'))) { fileInput.value = ''; return; }
+          var n = State.importData(payload);
+          if (n < 0) {
+            alert(I18N.t('importInvalid'));
+            fileInput.value = '';
+            return;
+          }
+          alert(I18N.t('importDone').replace('{n}', n));
+          window.location.reload();
+        };
+        reader.readAsText(file);
+      });
+    }
   }
 
   function _renderWeakWidget() {
@@ -155,6 +228,32 @@ var Dashboard = (function () {
     html += '</p>';
     html += '</div>';
     html += '<button class="btn btn-primary" data-action="weak">' + I18N.t('weakWidgetBtn') + '</button>';
+    html += '</div>';
+    return html;
+  }
+
+  // Branded welcome + quick-start guidance for first-time visitors.
+  function _renderWelcomeHero() {
+    var html = '<div class="welcome-hero">';
+    html += '<img class="welcome-hero__logo" src="assets/platformer.png" alt="Platformer">';
+    html += '<div class="welcome-hero__text">';
+    html += '<h2 class="welcome-hero__title">' + I18N.t('welcomeTitle') + '</h2>';
+    html += '<p class="welcome-hero__sub">' + I18N.t('welcomeSub') + '</p>';
+    html += '</div></div>';
+
+    html += '<div class="quickstart-grid">';
+    html += _quickStartCard('trails', '&#128506;', I18N.t('qsTrailsTitle'), I18N.t('qsTrailsDesc'));
+    html += _quickStartCard('map', '&#10022;', I18N.t('qsMapTitle'), I18N.t('qsMapDesc'));
+    html += _quickStartCard('exam', '&#9200;', I18N.t('qsExamTitle'), I18N.t('qsExamDesc'));
+    html += '</div>';
+    return html;
+  }
+
+  function _quickStartCard(route, icon, title, desc) {
+    var html = '<div class="quickstart-card" data-route="' + route + '">';
+    html += '<div class="quickstart-card__icon">' + icon + '</div>';
+    html += '<div class="quickstart-card__title">' + title + '</div>';
+    html += '<div class="quickstart-card__desc">' + desc + '</div>';
     html += '</div>';
     return html;
   }

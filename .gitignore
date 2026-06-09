@@ -1,4 +1,5 @@
 .claude*
+!scripts/*.py
 *.py
 CLAUDE.MD
 tools/

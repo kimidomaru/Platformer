@@ -62,15 +62,20 @@ var Renderer = (function () {
     if (content.troubleshooting && content.troubleshooting.length) tabs.push({ id: 'troubleshooting', label: I18N.t('troubleshooting') });
 
     // Tabs navigation
-    html += '<div class="tabs">';
+    html += '<div class="tabs" role="tablist" aria-label="' + I18N.t('theory') + '">';
     tabs.forEach(function (tab, idx) {
-      html += '<button class="tab-btn' + (idx === 0 ? ' active' : '') + '" data-tab="' + tab.id + '">' + tab.label + '</button>';
+      html += '<button class="tab-btn' + (idx === 0 ? ' active' : '') + '"'
+        + ' role="tab" id="tab-' + tab.id + '" aria-controls="panel-' + tab.id + '"'
+        + ' aria-selected="' + (idx === 0 ? 'true' : 'false') + '"'
+        + ' tabindex="' + (idx === 0 ? '0' : '-1') + '"'
+        + ' data-tab="' + tab.id + '">' + tab.label + '</button>';
     });
     html += '</div>';
 
     // Tab panels
     tabs.forEach(function (tab, idx) {
-      html += '<div class="tab-panel' + (idx === 0 ? ' active' : '') + '" id="panel-' + tab.id + '"></div>';
+      html += '<div class="tab-panel' + (idx === 0 ? ' active' : '') + '" id="panel-' + tab.id + '"'
+        + ' role="tabpanel" aria-labelledby="tab-' + tab.id + '"' + (idx === 0 ? '' : ' hidden') + '></div>';
     });
 
     container.innerHTML = html;
@@ -80,16 +85,39 @@ var Renderer = (function () {
       _renderPanel(tabs[0].id, content, topicPath);
     }
 
-    // Tab switching
-    container.querySelectorAll('.tab-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        container.querySelectorAll('.tab-btn').forEach(function (b) { b.classList.remove('active'); });
-        container.querySelectorAll('.tab-panel').forEach(function (p) { p.classList.remove('active'); });
-        btn.classList.add('active');
-        var tabId = btn.getAttribute('data-tab');
-        var panel = document.getElementById('panel-' + tabId);
-        panel.classList.add('active');
-        _renderPanel(tabId, content, topicPath);
+    // Tab switching (click + roving-tabindex keyboard nav per WAI-ARIA)
+    var tabBtns = Array.prototype.slice.call(container.querySelectorAll('.tab-btn'));
+
+    function _activateTab(btn, focus) {
+      tabBtns.forEach(function (b) {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+        b.setAttribute('tabindex', '-1');
+      });
+      container.querySelectorAll('.tab-panel').forEach(function (p) {
+        p.classList.remove('active');
+        p.setAttribute('hidden', '');
+      });
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+      btn.setAttribute('tabindex', '0');
+      var tabId = btn.getAttribute('data-tab');
+      var panel = document.getElementById('panel-' + tabId);
+      panel.classList.add('active');
+      panel.removeAttribute('hidden');
+      if (focus) btn.focus();
+      _renderPanel(tabId, content, topicPath);
+    }
+
+    tabBtns.forEach(function (btn, idx) {
+      btn.addEventListener('click', function () { _activateTab(btn, false); });
+      btn.addEventListener('keydown', function (e) {
+        var next = null;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = tabBtns[(idx + 1) % tabBtns.length];
+        else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = tabBtns[(idx - 1 + tabBtns.length) % tabBtns.length];
+        else if (e.key === 'Home') next = tabBtns[0];
+        else if (e.key === 'End') next = tabBtns[tabBtns.length - 1];
+        if (next) { e.preventDefault(); _activateTab(next, true); }
       });
     });
 

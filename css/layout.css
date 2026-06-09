@@ -154,6 +154,33 @@
   color: var(--text-muted);
 }
 
+.search-result-item .result-snippet {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.search-result-item .result-snippet mark {
+  background: var(--warning-bg);
+  color: var(--text-primary);
+  padding: 0 1px;
+  border-radius: 2px;
+}
+
+.search-section-label {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+}
+
 /* ── Sidebar Navigation ── */
 
 #sidebar-nav {

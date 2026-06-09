@@ -7,6 +7,92 @@ var Exam = (function () {
     return domain.type !== 'skill';
   }
 
+  // Map domain NAME -> blueprint weight (cert-type domains). Used to sample a
+  // shortened exam proportionally to each domain's exam weight, not its raw
+  // question count — so a quick/challenge run mirrors the real cert blueprint.
+  function _buildDomainWeights() {
+    var registry = window.K8S_REGISTRY;
+    var map = {};
+    (registry.domains || []).forEach(function (d) {
+      if (d.type === 'skill') return;
+      map[d.name] = (typeof d.weight === 'number' && d.weight > 0) ? d.weight : 1;
+    });
+    return map;
+  }
+
+  function _shuffle(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+
+  // Pick `target` questions from `questions`, allocating slots across domains in
+  // proportion to blueprint weight (largest-remainder), then filling any shortfall
+  // (domains with too few questions) from the leftover pool. Falls back to a plain
+  // shuffle when weights don't apply. Returns a shuffled array of <= target items.
+  function _weightedSample(questions, target) {
+    if (!target || target >= questions.length) return _shuffle(questions.slice());
+
+    var weights = _buildDomainWeights();
+
+    // group by domain
+    var groups = {};
+    questions.forEach(function (q) {
+      var d = q.domain || 'Other';
+      (groups[d] = groups[d] || []).push(q);
+    });
+    var domains = Object.keys(groups);
+
+    // if no domain has a known blueprint weight, just shuffle+slice uniformly
+    var anyWeighted = domains.some(function (d) { return weights[d] !== undefined && weights[d] !== 1; });
+    if (!anyWeighted) return _shuffle(questions.slice()).slice(0, target);
+
+    var sumW = domains.reduce(function (s, d) { return s + (weights[d] || 1); }, 0);
+
+    // ideal (fractional) allocation per domain
+    var alloc = {}, remainder = [], used = 0;
+    domains.forEach(function (d) {
+      var ideal = target * (weights[d] || 1) / sumW;
+      var base = Math.min(groups[d].length, Math.floor(ideal));
+      alloc[d] = base;
+      used += base;
+      remainder.push({ d: d, frac: ideal - Math.floor(ideal) });
+    });
+
+    // distribute the leftover slots by largest fractional remainder (respecting capacity)
+    remainder.sort(function (a, b) { return b.frac - a.frac; });
+    var ri = 0;
+    while (used < target) {
+      var progressed = false;
+      for (ri = 0; ri < remainder.length && used < target; ri++) {
+        var d2 = remainder[ri].d;
+        if (alloc[d2] < groups[d2].length) { alloc[d2]++; used++; progressed = true; }
+      }
+      if (!progressed) break; // all domains exhausted
+    }
+
+    // collect picks
+    var picked = [];
+    domains.forEach(function (d) {
+      var pool = _shuffle(groups[d].slice());
+      for (var k = 0; k < alloc[d]; k++) picked.push(pool[k]);
+    });
+
+    // if still short (rare), top up from any remaining questions
+    if (picked.length < target) {
+      var chosen = {};
+      picked.forEach(function (q) { chosen[(q.source || '') + '|' + q.question] = true; });
+      var rest = _shuffle(questions.filter(function (q) {
+        return !chosen[(q.source || '') + '|' + q.question];
+      }));
+      for (var m = 0; m < rest.length && picked.length < target; m++) picked.push(rest[m]);
+    }
+
+    return _shuffle(picked);
+  }
+
   // Helper: check if any skill domains have quiz-enabled topics
   function _hasSkillQuizTopics() {
     var registry = window.K8S_REGISTRY;
@@ -403,25 +489,22 @@ var Exam = (function () {
       });
 
       // Shuffle using Fisher-Yates
-      for (var i = questions.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = questions[i];
-        questions[i] = questions[j];
-        questions[j] = temp;
-      }
+      _shuffle(questions);
 
       // Effective length: scoped exams (cert/skill) carry their length in
       // lengthMode; general mixed exams carry it directly in `mode`.
+      // Shortened runs sample proportionally to each domain's blueprint weight
+      // (_weightedSample) so the mix mirrors the real exam instead of the bank.
       var lengthSel = lengthMode || mode;
       var timeMinutes = 120;
       if (lengthSel === 'quick') {
-        questions = questions.slice(0, 20);
+        questions = _weightedSample(questions, 20);
         timeMinutes = 30;
       } else if (lengthSel === 'hard') {
-        questions = questions.slice(0, 25);
+        questions = _weightedSample(questions, 25);
         timeMinutes = 45;
       } else if (mode === 'skill') {
-        // Full-length scoped skill exam
+        // Full-length scoped skill exam (single domain → no weighting needed)
         questions = questions.slice(0, 40);
         timeMinutes = Math.max(20, Math.ceil(questions.length * 1.4));
       } else if (mode === 'domain') {
