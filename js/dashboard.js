@@ -22,7 +22,12 @@ var Dashboard = (function () {
       });
     });
 
-    var html = '<div class="topic-header"><h1>' + I18N.t('dashboardTitle') + '</h1></div>';
+    var html = '<div class="topic-header dashboard-header"><h1>' + I18N.t('dashboardTitle') + '</h1>';
+    html += '<div class="data-tools">';
+    html += '<button class="btn btn-ghost" data-action="export" title="' + I18N.t('exportHint') + '">&#11015; ' + I18N.t('exportBtn') + '</button>';
+    html += '<button class="btn btn-ghost" data-action="import" title="' + I18N.t('importHint') + '">&#11014; ' + I18N.t('importBtn') + '</button>';
+    html += '<input type="file" accept="application/json,.json" class="hidden" id="import-file-input">';
+    html += '</div></div>';
 
     // Spaced-repetition daily review widget
     html += _renderReviewWidget();
@@ -132,6 +137,61 @@ var Dashboard = (function () {
     var weakBtn = container.querySelector('[data-action="weak"]');
     if (weakBtn) {
       weakBtn.addEventListener('click', function () { window.location.hash = '#weak'; });
+    }
+
+    // Bind backup tools (export / import progress)
+    _bindDataTools(container);
+  }
+
+  // Export downloads a JSON snapshot; import restores it (with confirmation + reload).
+  function _bindDataTools(container) {
+    var exportBtn = container.querySelector('[data-action="export"]');
+    var importBtn = container.querySelector('[data-action="import"]');
+    var fileInput = container.querySelector('#import-file-input');
+
+    if (exportBtn) {
+      exportBtn.addEventListener('click', function () {
+        var payload = State.exportData();
+        var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        var stamp = new Date().toISOString().slice(0, 10);
+        a.href = url;
+        a.download = 'platformer-progress-' + stamp + '.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      });
+    }
+
+    if (importBtn && fileInput) {
+      importBtn.addEventListener('click', function () { fileInput.click(); });
+      fileInput.addEventListener('change', function () {
+        var file = fileInput.files && fileInput.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function () {
+          var payload;
+          try {
+            payload = JSON.parse(reader.result);
+          } catch (e) {
+            alert(I18N.t('importInvalid'));
+            fileInput.value = '';
+            return;
+          }
+          if (!confirm(I18N.t('importConfirm'))) { fileInput.value = ''; return; }
+          var n = State.importData(payload);
+          if (n < 0) {
+            alert(I18N.t('importInvalid'));
+            fileInput.value = '';
+            return;
+          }
+          alert(I18N.t('importDone').replace('{n}', n));
+          window.location.reload();
+        };
+        reader.readAsText(file);
+      });
     }
   }
 

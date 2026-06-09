@@ -221,6 +221,39 @@ var State = (function () {
     return _get(KEYS.notes, {});
   }
 
+  // ── Backup: export / import all platform state ──
+  // Bundles every k8s_* key into a portable object (download) and restores it.
+  function exportData() {
+    var data = {};
+    Object.keys(KEYS).forEach(function (name) {
+      var raw = null;
+      try { raw = localStorage.getItem(KEYS[name]); } catch (e) {}
+      if (raw !== null) {
+        try { data[KEYS[name]] = JSON.parse(raw); } catch (e) { data[KEYS[name]] = raw; }
+      }
+    });
+    return { app: 'platformer', version: 1, exportedAt: new Date().toISOString(), data: data };
+  }
+
+  // Restore from a parsed export bundle. Only known k8s_* keys are written.
+  // Returns the number of keys restored, or -1 if the payload is invalid.
+  function importData(payload) {
+    if (!payload || typeof payload !== 'object' || !payload.data || typeof payload.data !== 'object') {
+      return -1;
+    }
+    var known = {};
+    Object.keys(KEYS).forEach(function (name) { known[KEYS[name]] = true; });
+    var restored = 0;
+    Object.keys(payload.data).forEach(function (key) {
+      if (!known[key]) return; // ignore unknown keys
+      try {
+        localStorage.setItem(key, JSON.stringify(payload.data[key]));
+        restored++;
+      } catch (e) { /* quota — skip */ }
+    });
+    return restored;
+  }
+
   return {
     getProgress: getProgress,
     setProgress: setProgress,
@@ -247,6 +280,8 @@ var State = (function () {
     getWeakByTopic: getWeakByTopic,
     getNote: getNote,
     setNote: setNote,
-    getAllNotes: getAllNotes
+    getAllNotes: getAllNotes,
+    exportData: exportData,
+    importData: importData
   };
 })();
