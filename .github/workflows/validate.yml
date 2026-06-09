@@ -1,9 +1,5 @@
 name: Validate content
 
-# PR quality gate. Pushes to main are validated inside deploy.yml (validate → deploy),
-# so this workflow covers pull requests and manual runs to avoid double-running on main.
-# Registry integrity is a hard gate; the content linter stays informational until the
-# Wave 2.1 curation backlog is cleared.
 on:
   pull_request:
   workflow_dispatch:
@@ -23,13 +19,10 @@ jobs:
         run: python scripts/validate_registry.py
 
       - name: Content health report (informational)
-        # TODO: drop `continue-on-error` once Wave 2.1 curation lands so the
-        # content schema becomes a hard gate too.
         continue-on-error: true
         run: python scripts/validate_content.py --warnings
 
       - name: Search index freshness (informational)
-        # Warns if content/search-index.js is stale vs the theory content.
         continue-on-error: true
         run: |
           python scripts/build_search_index.py

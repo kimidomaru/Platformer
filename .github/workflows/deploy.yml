@@ -1,13 +1,5 @@
 name: Deploy to GitHub Pages
 
-# Validate-then-deploy pipeline. The `deploy` job depends on `validate`, so a
-# broken registry blocks the Pages deploy. The content linter stays informational
-# (continue-on-error) until the Wave 2.1 curation backlog is cleared.
-#
-# IMPORTANT: this requires Pages "Source" set to GitHub Actions
-# (repo Settings → Pages → Build and deployment → Source: GitHub Actions).
-# With the classic "Deploy from a branch" source, Pages deploys WITHOUT this
-# gate — switch to GitHub Actions so validation runs first.
 on:
   push:
     branches: [main]
@@ -18,7 +10,6 @@ permissions:
   pages: write
   id-token: write
 
-# Don't cancel an in-progress deploy; queue the next one.
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -38,8 +29,6 @@ jobs:
         run: python scripts/validate_registry.py
 
       - name: Content health report (informational)
-        # TODO: drop `continue-on-error` once Wave 2.1 curation lands so the
-        # content schema becomes a hard gate too.
         continue-on-error: true
         run: python scripts/validate_content.py --warnings
 
@@ -51,7 +40,7 @@ jobs:
             || echo "::warning::search-index.js is stale — run python scripts/build_search_index.py and commit."
 
   deploy:
-    needs: validate          # deploy only runs if validate succeeded
+    needs: validate 
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -65,7 +54,7 @@ jobs:
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.'        # static site lives at repo root (index.html)
+          path: '.'
 
       - name: Deploy to GitHub Pages
         id: deployment
