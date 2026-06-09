@@ -1,0 +1,72 @@
+name: Deploy to GitHub Pages
+
+# Validate-then-deploy pipeline. The `deploy` job depends on `validate`, so a
+# broken registry blocks the Pages deploy. The content linter stays informational
+# (continue-on-error) until the Wave 2.1 curation backlog is cleared.
+#
+# IMPORTANT: this requires Pages "Source" set to GitHub Actions
+# (repo Settings → Pages → Build and deployment → Source: GitHub Actions).
+# With the classic "Deploy from a branch" source, Pages deploys WITHOUT this
+# gate — switch to GitHub Actions so validation runs first.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Don't cancel an in-progress deploy; queue the next one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Registry integrity (hard gate — blocks deploy)
+        run: python scripts/validate_registry.py
+
+      - name: Content health report (informational)
+        # TODO: drop `continue-on-error` once Wave 2.1 curation lands so the
+        # content schema becomes a hard gate too.
+        continue-on-error: true
+        run: python scripts/validate_content.py --warnings
+
+      - name: Search index freshness (informational)
+        continue-on-error: true
+        run: |
+          python scripts/build_search_index.py
+          git diff --exit-code content/search-index.js \
+            || echo "::warning::search-index.js is stale — run python scripts/build_search_index.py and commit."
+
+  deploy:
+    needs: validate          # deploy only runs if validate succeeded
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'        # static site lives at repo root (index.html)
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

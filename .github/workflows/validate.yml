@@ -1,11 +1,10 @@
 name: Validate content
 
-# Quality gate for the study platform. Runs the Python validators (never Node)
-# on every push and PR. Registry integrity is a hard gate; the content linter is
-# reported but non-blocking until the curation backlog (roadmap Wave 2.1) is cleared.
+# PR quality gate. Pushes to master are validated inside deploy.yml (validate → deploy),
+# so this workflow covers pull requests and manual runs to avoid double-running on master.
+# Registry integrity is a hard gate; the content linter stays informational until the
+# Wave 2.1 curation backlog is cleared.
 on:
-  push:
-    branches: [master, min_version]
   pull_request:
   workflow_dispatch:
 
